@@ -1,0 +1,14 @@
+#
+# users file.
+#
+# The format of this is
+# <username>:<crypted password>
+# Lines beginning with a # and blank
+# lines are ignored.
+
+
+charliebrown:snCedLzbuy6yg
+linus:AR2NVnqrzOh2M
+elmer:fucVibC2NzOtg
+thor:fucVibC2NzOtg
+this.user.has.a.dot@dot.com:fucVibC2NzOtg

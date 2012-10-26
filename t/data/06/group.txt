@@ -1,0 +1,14 @@
+#
+# Group file.
+#
+# The format of this is --
+# <groupname> : user1,user2,...
+#
+public  : *
+group5  : grimlock,optimus,rodimus
+group7  : grimlock,rodimus
+group9  : nightbeat,starscream,soundwave
+group10 : nightbeat,starscream,soundwave
+group11 : nightbeat,starscream,soundwave
+group14 : nightbeat,starscream,soundwave
+group15 : nightbeat,starscream,soundwave

@@ -1,0 +1,25 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use FindBin;
+
+# PODNAME: plugauth
+# ABSTRACT: PlugAuth server
+# VERSION
+
+=head2 DESCRIPTION
+
+plugauth is invoked like any other L<Mojolicious> or L<Clustericious>
+application.  More detailed documentation can be found in L<PlugAuth>.
+
+=cut
+
+use lib "$FindBin::Bin/../lib";
+use lib "$FindBin::Bin/../../lib";
+
+use Clustericious::Commands;
+
+$ENV{MOJO_APP} ||= 'PlugAuth';
+
+Clustericious::Commands->start;
