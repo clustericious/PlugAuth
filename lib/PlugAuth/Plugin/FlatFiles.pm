@@ -21,6 +21,7 @@ use File::stat qw/stat/;
 use Text::Glob qw/match_glob/;
 use Fcntl qw/ :flock /;
 use Clone qw( clone );
+use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 
 our $config;              # Instance of Clustericious::Config
 our %Userpw;              # Keys are usernames, values are lists of crypted passwords.
@@ -136,13 +137,27 @@ Given a user and password, check to see if the password is correct.
 
 =cut
 
+sub _validate_pw
+{
+    my($plain, $encrypted) = @_;
+    return 1 if crypt($plain, $encrypted) eq $encrypted;
+    
+    # idea borrowed from Authen::Simple::Password
+    if($encrypted =~ /^\$(\w+)\$/) {
+        return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted );
+        return 1 if $1 eq 'apr1' && apache_md5_crypt( $plain, $encrypted );
+    }
+    return 0;
+}
+
 sub check_credentials {
     my ($class, $user,$pw) = @_;
     $user = lc $user;
 
-    return 1
-          if $pw && $Userpw{$user}
-              && grep { crypt( $pw, $_ ) eq $_ } @{ $Userpw{$user} };
+    if($pw && $Userpw{$user})
+    {
+      return 1 if grep { _validate_pw($pw, $_) } @{ $Userpw{$user} };
+    }
     return 0;
 }
 

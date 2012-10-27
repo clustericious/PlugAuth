@@ -1,4 +1,5 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - accept Apache or Unix MD5 encrypted passwords
   - renamed PlugAuth from SimpleAuth

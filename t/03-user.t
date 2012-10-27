@@ -15,6 +15,7 @@ $t->get_ok("http://localhost:$port/user")
     ->status_is(200)
     ->json_content_is([
         'charliebrown',
+        'deckard',
         'elmer',
         'linus',
         'this.user.has.a.dot@dot.com',
@@ -32,6 +33,7 @@ $t->get_ok("http://localhost:$port/users/public")
     ->status_is(200)
     ->json_content_is([
         'charliebrown',
+        'deckard',
         'elmer',
         'linus',
         'this.user.has.a.dot@dot.com',

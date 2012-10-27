@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 39;
+use Test::More tests => 42;
 use Test::Mojo;
 
 my $logdir = "$FindBin::Bin/log";
@@ -75,6 +75,11 @@ $t->get_ok("http://CharlieBrown:snoopy\@localhost:$port/auth")
 $t->get_ok("http://CharlieBrown:badpass\@localhost:$port/auth")
   ->status_is(403)
   ->content_is("not ok", 'case insensative username auth failed');
+
+# apache md5
+$t->get_ok("http://deckard:androidsdream\@localhost:$port/auth")
+  ->status_is(200)
+  ->content_is("ok", "apache md5 password is okay");
 
 1;
 

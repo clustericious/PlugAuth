@@ -12,3 +12,4 @@ linus:AR2NVnqrzOh2M
 elmer:fucVibC2NzOtg
 thor:fucVibC2NzOtg
 this.user.has.a.dot@dot.com:fucVibC2NzOtg
+deckard:$apr1$vyS3rvbH$Ye8UqFG2CKAbdrFYMPHVY1
