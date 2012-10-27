@@ -19,5 +19,5 @@ my @modules = grep !/^PlugAuth::Plugin::Unimplemented/, all_modules();
 
 plan tests => scalar @modules;
 
-pod_coverage_ok( $_, { also_private => [ qr/^register(|_plugin)|startup$/ ] })
+pod_coverage_ok( $_, { also_private => [ qr/^(register(|_plugin)|startup|new)$/ ] })
   for @modules;

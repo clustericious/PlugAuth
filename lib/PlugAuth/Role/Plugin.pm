@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use v5.10;
 use Role::Tiny;
-use Scalar::Util qw( refaddr );
 
 # ABSTRACT: Role for PlugAuth plugins
 # VERSION
@@ -57,8 +56,8 @@ sub plugin_config
   }
   else
   {
-    $plugin_configs{refaddr $self} = $new_value if defined $new_value;
-    return $plugin_configs{refaddr $self};
+    $plugin_configs{$self} = $new_value if defined $new_value;
+    return $plugin_configs{$self};
   }
 }
 

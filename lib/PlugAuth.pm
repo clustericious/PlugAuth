@@ -328,7 +328,12 @@ sub startup {
             $plugin = $plugin_class;
         }
 
-        $auth_plugin = $plugin if $plugin->does('PlugAuth::Role::Auth');
+        if($plugin->does('PlugAuth::Role::Auth'))
+        {
+          $plugin->next_auth($auth_plugin);
+          $auth_plugin = $plugin;
+        }
+
         $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
         $admin_plugin = $plugin if $plugin->does('PlugAuth::Role::Admin');
         push @refresh_plugins, $plugin if $plugin->does('PlugAuth::Role::Refresh')
