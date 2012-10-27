@@ -144,8 +144,8 @@ sub _validate_pw
     
     # idea borrowed from Authen::Simple::Password
     if($encrypted =~ /^\$(\w+)\$/) {
-        return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted );
-        return 1 if $1 eq 'apr1' && apache_md5_crypt( $plain, $encrypted );
+        return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted ) eq $encrypted;
+        return 1 if $1 eq 'apr1' && apache_md5_crypt( $plain, $encrypted ) eq $encrypted;
     }
     return 0;
 }
