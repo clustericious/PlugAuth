@@ -24,11 +24,12 @@ use Clone qw( clone );
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
 
+with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Auth';
 with 'PlugAuth::Role::Authz';
 with 'PlugAuth::Role::Admin';
+with 'PlugAuth::Role::Refresh';
 
-our $config;              # Instance of Clustericious::Config
 our %Userpw;              # Keys are usernames, values are lists of crypted passwords.
 our %groupUser;           # $groupUser{$group}{$user} is true iff $user is in $group
 our %userGroups;          # $userGroups{$user}{$group} is true iff $user is in $group
@@ -39,20 +40,6 @@ our %MTimes;
 
 =head1 METHODS
 
-=head2 PlugAuth::Plugin::FlatFiles-E<gt>config( [ $config ] )
-
-Set/get the instance of L<Clustericious::Config> to use for configuring
-PlugAuth.
-
-=cut
-
-sub config {
-    my($class, $new_value) = @_;
-    $config = $new_value if defined $new_value;
-    $config;
-}
-
-
 =head2 PlugAuth::Plugin::FlatFiles-E<gt>refresh
 
 Refresh the data (checks the files, and re-reads if necessary).
@@ -61,6 +48,7 @@ Refresh the data (checks the files, and re-reads if necessary).
 
 sub refresh {
     # Should be called with every request.
+    my $config = __PACKAGE__->global_config;
     my @user_files = $config->user_file;
     if ( grep _has_changed($_), @user_files ) {
         my @users = map +{ PlugAuth::Plugin::FlatFiles->_read_file($_) }, @user_files;
@@ -384,7 +372,7 @@ sub create_user
         return 0;
     }
 
-    foreach my $filename ($config->user_file) {
+    foreach my $filename ($class->global_config->user_file) {
         next unless -w $filename;
 
         $password = _created_encrypted_password($password);
@@ -445,7 +433,7 @@ sub change_password
 
     $password = _created_encrypted_password($password);
 
-    foreach my $filename ($config->user_file) {
+    foreach my $filename ($class->global_config->user_file) {
         eval {
             use autodie;
 
@@ -502,7 +490,7 @@ sub delete_user
         return 0;
     }
 
-    foreach my $filename ($config->user_file) {
+    foreach my $filename ($class->global_config->user_file) {
         eval {
             use autodie;
 
@@ -562,7 +550,7 @@ sub create_group
 
     $users = '' unless defined $users;
 
-    my $filename = $config->group_file;
+    my $filename = $class->global_config->group_file;
 
     eval {
         use autodie;
@@ -597,7 +585,7 @@ sub delete_group
         return 0;
     }
 
-    my $filename = $config->group_file;
+    my $filename = $class->global_config->group_file;
 
     eval {
         use autodie;
@@ -646,7 +634,7 @@ sub update_group
 
     return 1 unless defined $users;
 
-    my $filename = $config->group_file;
+    my $filename = $class->global_config->group_file;
 
     eval {
         use autodie;
@@ -700,7 +688,7 @@ sub grant
       return 1;
     }
 
-    my $filename = $config->resource_file;
+    my $filename = $class->global_config->resource_file;
 
     eval {
         use autodie;

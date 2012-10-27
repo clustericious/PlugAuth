@@ -292,11 +292,14 @@ use PlugAuth::Routes;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use List::MoreUtils qw( all );
+use PlugAuth::Role::Plugin;
 
 sub startup {
     my $self = shift;
     $self->SUPER::startup(@_);
     $self->plugin('Subdispatch');
+
+    PlugAuth::Role::Plugin->global_config($self->config);
 
     my @plugins_config = eval {
         my $plugins = $self->config->plugins(default => []);
@@ -342,7 +345,6 @@ sub startup {
             $plugin = 'PlugAuth::Plugin::FlatFiles';
         }
         push @refresh_plugins, $plugin;
-        $plugin->config($self->config);
         $auth_plugin  //= $plugin;
         $authz_plugin //= $plugin;
         $admin_plugin //= $authz_plugin eq 'PlugAuth::Plugin::FlatFiles' ? $authz_plugin : do {

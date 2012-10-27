@@ -3,7 +3,7 @@ use warnings;
 use File::HomeDir::Test;
 use File::HomeDir;
 use File::Spec;
-use Test::More tests => 32;
+use Test::More tests => 38;
 use PlugAuth;
 use Clustericious::Config;
 use YAML ();
@@ -156,4 +156,32 @@ do {
   is $app->auth,  'PlugAuth::Plugin::FlatFiles',     '[JustAdmin@] auth  = FlatFiles';
   is $app->authz, 'PlugAuth::Plugin::FlatFiles',     '[JustAdmin@] authz = FLatFiles';
   is $app->admin, 'JustAdmin',                       '[JustAdmin@] admin = JustAdmin';
+};
+
+eval {
+  package
+    JustRefresh;
+  use Role::Tiny::With;
+  with 'PlugAuth::Role::Plugin';
+  with 'PlugAuth::Role::Refresh';
+  my $refresh_count = 0;
+  sub refresh { $refresh_count ++ }
+  sub get_refresh_count { $refresh_count }
+  $INC{'JustRefresh.pm'} = __FILE__;  
+};
+die $@ if $@;
+
+ok(JustRefresh->does('PlugAuth::Role::Plugin'), "JustRefresh does Plugin");
+ok(JustRefresh->does('PlugAuth::Role::Refresh'), "JustRefresh does Refresh");
+
+do {
+  is(JustRefresh->get_refresh_count, 0, "refresh count = 0");
+  YAML::DumpFile($config_filename, { plugins => [ qw( JustRefresh JustAuth JustAuthz JustAdmin ) ] });
+  my $app = PlugAuth->new;
+  isa_ok $app, 'PlugAuth';
+  $app->startup;
+  is(JustRefresh->get_refresh_count, 0, "refresh count = 0");
+  eval { $app->refresh };
+  diag $@ if $@;
+  is(JustRefresh->get_refresh_count, 1, "refresh count = 1");
 };

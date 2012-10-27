@@ -30,25 +30,7 @@ use v5.10;
 use Net::LDAP;
 use Log::Log4perl qw/:easy/;
 
-our $Ldap;
-
 =head1 METHODS
-
-=head2 PlugAuth::Plugin::LDAP-E<gt>config( [ $config ] )
-
-Set/get the instance of L<Clustericious::Config> to use for configuring
-PlugAuth.
-
-=cut
-
-sub config {
-    my($class, $new_value) = @_;
-    if(defined $new_value) {
-        $Ldap = $new_value->ldap(default => '');
-    }
-    $class->SUPER::config($new_value);
-}
-
 
 =head2 PlugAuth::Plugin::LDAP-E<gt>check_credentials( $user, $password )
 
@@ -60,12 +42,14 @@ sub check_credentials {
     my ($class, $user,$pw) = @_;
     $user = lc $user;
 
-    if (!$Ldap or !$Ldap->{authoritative}) {
+    my $ldap_config = $class->global_config->ldap(default => '');
+
+    if (!$ldap_config or !$ldap_config->{authoritative}) {
         # Check files first.
         return 1 if $class->SUPER::check_credentials($user, $pw);
     }
-    return 0 unless $Ldap;
-    my $server = $Ldap->{server} or LOGDIE "Missing ldap server";
+    return 0 unless $ldap_config;
+    my $server = $ldap_config->{server} or LOGDIE "Missing ldap server";
     my $ldap = Net::LDAP->new($server, timeout => 5) or do {
         ERROR "Could not connect to ldap server $server: $@";
         return 0;
@@ -73,7 +57,7 @@ sub check_credentials {
     my $orig = $user;
     my $extra = $user =~ tr/a-zA-Z0-9@._-//dc;
     WARN "Invalid username '$orig', turned into $user" if $extra;
-    my $dn = sprintf($Ldap->{dn},$user);
+    my $dn = sprintf($ldap_config->{dn},$user);
     my $mesg = $ldap->bind($dn, password => $pw);
     $mesg->code or return 1;
     INFO "Ldap returned ".$mesg->code." : ".$mesg->error;
