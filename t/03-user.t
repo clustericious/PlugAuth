@@ -14,6 +14,7 @@ my $port = $t->ua->app_url->port;
 $t->get_ok("http://localhost:$port/user")
     ->status_is(200)
     ->json_content_is([
+        'bar',
         'charliebrown',
         'deckard',
         'elmer',
@@ -32,6 +33,7 @@ $t->get_ok("http://localhost:$port/users/peanuts")
 $t->get_ok("http://localhost:$port/users/public")
     ->status_is(200)
     ->json_content_is([
+        'bar',
         'charliebrown',
         'deckard',
         'elmer',

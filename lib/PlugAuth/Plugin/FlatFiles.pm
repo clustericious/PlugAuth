@@ -144,8 +144,11 @@ sub _validate_pw
     
     # idea borrowed from Authen::Simple::Password
     if($encrypted =~ /^\$(\w+)\$/) {
-        return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted ) eq $encrypted;
         return 1 if $1 eq 'apr1' && apache_md5_crypt( $plain, $encrypted ) eq $encrypted;
+
+        # on at least modern Linux crypt will accept a UNIX 
+        # MD5 password, so this may be redundant
+        return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted ) eq $encrypted;
     }
     return 0;
 }
@@ -353,6 +356,13 @@ Create a new user with the given password.
 
 =cut
 
+sub _created_encrypted_password
+{
+    my($plain) = @_;
+    my $salt = join '', ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[rand 64, rand 64];
+    apache_md5_crypt($plain, $salt);
+}
+
 sub create_user
 {
     my($class, $user, $password) = @_;
@@ -372,8 +382,7 @@ sub create_user
     foreach my $filename ($config->user_file) {
         next unless -w $filename;
 
-        my $salt = join '', ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[rand 64, rand 64];
-        $password = crypt($password, $salt);
+        $password = _created_encrypted_password($password);
 
         eval {
             use autodie;
@@ -429,8 +438,7 @@ sub change_password
         return 0;
     }
 
-    my $salt = join '', ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[rand 64, rand 64];
-    $password = crypt($password, $salt);
+    $password = _created_encrypted_password($password);
 
     foreach my $filename ($config->user_file) {
         eval {

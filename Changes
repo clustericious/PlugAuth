@@ -1,5 +1,6 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - use Apache MD5 password when creating/changing passwords
   - accept Apache or Unix MD5 encrypted passwords
   - renamed PlugAuth from SimpleAuth
