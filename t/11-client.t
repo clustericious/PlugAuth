@@ -37,7 +37,7 @@ my $client = do {
 isa_ok $client, 'PlugAuth::Client';
 
 # The basics
-is $client->welcome, 'welcome to simple auth', 'client.welcome';
+is $client->welcome, 'welcome to plug auth', 'client.welcome';
 is $client->version->[0], '0.01', 'client.version';
 
 # Good password

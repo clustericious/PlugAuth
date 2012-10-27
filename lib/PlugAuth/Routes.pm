@@ -1,6 +1,6 @@
 package PlugAuth::Routes;
 
-# ABSTRACT: routes for simpleauth
+# ABSTRACT: routes for plugauth
 # VERSION
 
 =head1 DESCRIPTION
@@ -25,7 +25,7 @@ use List::MoreUtils qw/mesh/;
 use Clustericious::RouteBuilder;
 use Clustericious::Config;
 
-get '/' => sub { shift->render_text("welcome to simple auth") } => "index" ;
+get '/' => sub { shift->render_text("welcome to plug auth") } => "index" ;
 
 ladder sub { shift->data->refresh };
 
