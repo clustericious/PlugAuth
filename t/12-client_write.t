@@ -9,27 +9,27 @@ use Test::Differences;
 
 BEGIN {
   my $min_version = '0.09';
-  plan skip_all => 'requires SimpleAuth::Client' 
-    # fake it if the SimpleAuth::Client dist is checkout as a sibling
+  plan skip_all => 'requires PlugAuth::Client' 
+    # fake it if the PlugAuth::Client dist is checkout as a sibling
     unless eval q{
-      use lib "$FindBin::Bin/../../SimpleAuth-Client/lib";
-      use SimpleAuth::Client;
+      use lib "$FindBin::Bin/../../PlugAuth-Client/lib";
+      use PlugAuth::Client;
       1;
     }
-    # test only works if SimpleAuth::Client is installed
-    ||     eval qq{ use SimpleAuth::Client $min_version; 1 };
+    # test only works if PlugAuth::Client is installed
+    ||     eval qq{ use PlugAuth::Client $min_version; 1 };
   plan tests => 25;
 }
 
 my $client = do {
   my $t = Test::Mojo->new('PlugAuth');
   my $port = $t->ua->app_url->port;
-  my $client = SimpleAuth::Client->new(server_url => "http://localhost:$port");
+  my $client = PlugAuth::Client->new(server_url => "http://localhost:$port");
   $client->client($t->ua);
   $client;
 };
 
-isa_ok $client, 'SimpleAuth::Client';
+isa_ok $client, 'PlugAuth::Client';
 
 $client->login('primus', 'cybertron');
 eq_or_diff [grep /^thrust$/, @{ $client->user }], [], 'user thrust does not exist';
