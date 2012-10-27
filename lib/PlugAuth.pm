@@ -341,15 +341,16 @@ sub startup {
 
     unless(all { defined $_ } ($auth_plugin,$authz_plugin,$admin_plugin))
     {
+        require PlugAuth::Plugin::FlatFiles;
         my $plugin;
         if($self->config->ldap(default => '')) {
             require PlugAuth::Plugin::LDAP;
             $plugin = 'PlugAuth::Plugin::LDAP';
+            $plugin->next_auth('PlugAuth::Plugin::FlatFiles');
         } else {
-            require PlugAuth::Plugin::FlatFiles;
             $plugin = 'PlugAuth::Plugin::FlatFiles';
         }
-        push @refresh_plugins, $plugin;
+        push @refresh_plugins, 'PlugAuth::Plugin::FlatFiles';
         $auth_plugin  //= $plugin;
         $authz_plugin //= $plugin;
         $admin_plugin //= $authz_plugin eq 'PlugAuth::Plugin::FlatFiles' ? $authz_plugin : do {

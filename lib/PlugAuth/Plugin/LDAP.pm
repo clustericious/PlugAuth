@@ -25,10 +25,13 @@ Everything else is handled by L<PlugAuth::Plugin::FlatFiles>
 
 use strict;
 use warnings;
-use base qw( PlugAuth::Plugin::FlatFiles );
 use v5.10;
 use Net::LDAP;
 use Log::Log4perl qw/:easy/;
+use Role::Tiny::With;
+
+with 'PlugAuth::Role::Plugin';
+with 'PlugAuth::Role::Auth';
 
 =head1 METHODS
 
@@ -46,7 +49,7 @@ sub check_credentials {
 
     if (!$ldap_config or !$ldap_config->{authoritative}) {
         # Check files first.
-        return 1 if $class->SUPER::check_credentials($user, $pw);
+        return 1 if $class->deligate_check_credentials($user, $pw);
     }
     return 0 unless $ldap_config;
     my $server = $ldap_config->{server} or LOGDIE "Missing ldap server";
@@ -63,6 +66,14 @@ sub check_credentials {
     INFO "Ldap returned ".$mesg->code." : ".$mesg->error;
     return 0;
 }
+
+=head2 PlugAuth::Plugin::LDAP-E<gt>all_users
+
+Returns an empty list.
+
+=cut
+
+sub all_users { () }
 
 1;
 
