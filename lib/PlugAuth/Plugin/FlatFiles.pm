@@ -22,6 +22,11 @@ use Text::Glob qw/match_glob/;
 use Fcntl qw/ :flock /;
 use Clone qw( clone );
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
+use Role::Tiny::With;
+
+with 'PlugAuth::Role::Auth';
+with 'PlugAuth::Role::Authz';
+with 'PlugAuth::Role::Admin';
 
 our $config;              # Instance of Clustericious::Config
 our %Userpw;              # Keys are usernames, values are lists of crypted passwords.

@@ -15,4 +15,9 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-all_pod_coverage_ok( { also_private => [ qr/^register(|_plugin)|startup$/ ] } );
+my @modules = grep !/^PlugAuth::Plugin::Unimplemented/, all_modules();
+
+plan tests => scalar @modules;
+
+pod_coverage_ok( $_, { also_private => [ qr/^register(|_plugin)|startup$/ ] })
+  for @modules;

@@ -286,39 +286,76 @@ L<SimpleAuth::Client>
 
 use strict;
 use warnings;
+use v5.10;
 use base 'Clustericious::App';
 use PlugAuth::Routes;
 use Log::Log4perl qw( :easy );
+use Role::Tiny ();
+use List::MoreUtils qw( all );
 
 sub startup {
     my $self = shift;
     $self->SUPER::startup(@_);
     $self->plugin('Subdispatch');
 
-    my $data_class = $self->config->data_class(default => '');
+    my @plugins_config = eval {
+        my $plugins = $self->config->plugins(default => []);
+        ref($plugins) ? @$plugins : ($plugins);
+    };
 
-    unless($data_class) {
-        if($self->config->ldap(default => '')) {
-            $data_class = 'PlugAuth::Plugin::LDAP';
-
-        } else {
-            $data_class = 'PlugAuth::Plugin::FlatFiles';
+    my $auth_plugin;
+    my $authz_plugin;
+    my $admin_plugin;
+    my @refresh_plugins;
+    
+    foreach my $plugin_class (reverse @plugins_config)
+    {
+        eval qq{ require $plugin_class };
+        LOGDIE $@ if $@;
+        Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
+            || LOGDIE "$plugin_class is not a PlugAuth plugin";
+        
+        my $plugin;
+        if($plugin_class->does('PlugAuth::Role::Instance'))
+        {
+            $plugin = $plugin_class->new($self->config);
         }
+        else
+        {
+            $plugin = $plugin_class;
+        }
+
+        $auth_plugin = $plugin if $plugin->does('PlugAuth::Role::Auth');
+        $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
+        $admin_plugin = $plugin if $plugin->does('PlugAuth::Role::Admin');
+        push @refresh_plugins, $plugin if $plugin->does('PlugAuth::Role::Refresh')
     }
 
-    eval qq{ require $data_class };
-    LOGDIE $@ if $@;
-
-    my $data_instance;
-    if($data_class->can('new')) {
-        $data_instance = $data_class->new($self->config);
-
-    } else {
-        $data_instance = $data_class;
-        $data_instance->config($self->config);
+    unless(all { defined $_ } ($auth_plugin,$authz_plugin,$admin_plugin))
+    {
+        my $plugin;
+        if($self->config->ldap(default => '')) {
+            require PlugAuth::Plugin::LDAP;
+            $plugin = 'PlugAuth::Plugin::LDAP';
+        } else {
+            require PlugAuth::Plugin::FlatFiles;
+            $plugin = 'PlugAuth::Plugin::FlatFiles';
+        }
+        push @refresh_plugins, $plugin;
+        $plugin->config($self->config);
+        $auth_plugin  //= $plugin;
+        $authz_plugin //= $plugin;
+        $admin_plugin //= $authz_plugin eq 'PlugAuth::Plugin::FlatFiles' ? $authz_plugin : do {
+          require PlugAuth::Plugin::Unimplemented;
+          'PlugAuth::Plugin::Unimplemented';
+        };
     }
 
-    $self->helper(data => sub { $data_instance });
+    $self->helper(data    => sub { $auth_plugin                        });
+    $self->helper(auth    => sub { $auth_plugin                        });
+    $self->helper(authz   => sub { $authz_plugin                       });
+    $self->helper(admin   => sub { $admin_plugin                       });
+    $self->helper(refresh => sub { $_->refresh for @refresh_plugins; 1 });
 }
 
 # Silence warnings; this is only used for for session
