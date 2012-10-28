@@ -49,16 +49,8 @@ my %plugin_configs;
 sub plugin_config
 {
   my($self, $new_value) = @_;
-  if(ref($self))
-  {
-    $self->{plugin_config} = $new_value if defined $new_value;
-    return $self->{plugin_config};
-  }
-  else
-  {
-    $plugin_configs{$self} = $new_value if defined $new_value;
-    return $plugin_configs{$self};
-  }
+  $self->{plugin_config} = $new_value if defined $new_value;
+  $self->{plugin_config};
 }
 
 sub new

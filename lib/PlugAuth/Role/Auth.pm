@@ -67,16 +67,8 @@ my %next_auths;
 sub next_auth
 {
   my($self, $new_value) = @_;
-  if(ref($self))
-  {
-    $self->{next_auth} = $new_value if defined $new_value;
-    return $self->{next_auth};
-  }
-  else
-  {
-    $next_auths{$self} = $new_value if defined $new_value;
-    return $next_auths{$self};
-  }
+  $self->{next_auth} = $new_value if defined $new_value;
+  $self->{next_auth};
 }
 
 =head2 $plugin-E<gt>deligate_check_credentials( $user, $pass )
