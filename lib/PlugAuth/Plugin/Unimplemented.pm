@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Role::Tiny::With;
 
+with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Auth';
 with 'PlugAuth::Role::Authz';
 with 'PlugAuth::Role::Admin';

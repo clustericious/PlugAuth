@@ -14,7 +14,6 @@ use Role::Tiny;
  use Role::Tiny::With;
  
  with 'PlugAuth::Role::Plugin';
- with 'PlugAuth::Role::Instance';
  with 'PlugAuth::Role::Auth';
  
  # accept user = larry and pass = wall only.

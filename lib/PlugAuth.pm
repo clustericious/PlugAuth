@@ -318,15 +318,7 @@ sub startup {
         Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
             || LOGDIE "$plugin_class is not a PlugAuth plugin";
         
-        my $plugin;
-        if($plugin_class->does('PlugAuth::Role::Instance'))
-        {
-            $plugin = $plugin_class->new($self->config);
-        }
-        else
-        {
-            $plugin = $plugin_class;
-        }
+        my $plugin = $plugin_class->new;
 
         if($plugin->does('PlugAuth::Role::Auth'))
         {
@@ -345,17 +337,18 @@ sub startup {
         my $plugin;
         if($self->config->ldap(default => '')) {
             require PlugAuth::Plugin::LDAP;
-            $plugin = 'PlugAuth::Plugin::LDAP';
-            $plugin->next_auth('PlugAuth::Plugin::FlatFiles');
+            $plugin = PlugAuth::Plugin::LDAP->new;
+            $plugin->next_auth(PlugAuth::Plugin::FlatFiles->new);
+            push @refresh_plugins, $plugin->next_auth;
         } else {
-            $plugin = 'PlugAuth::Plugin::FlatFiles';
+            $plugin = PlugAuth::Plugin::FlatFiles->new;
+            push @refresh_plugins, $plugin;
         }
-        push @refresh_plugins, 'PlugAuth::Plugin::FlatFiles';
         $auth_plugin  //= $plugin;
         $authz_plugin //= $plugin;
-        $admin_plugin //= $authz_plugin eq 'PlugAuth::Plugin::FlatFiles' ? $authz_plugin : do {
+        $admin_plugin //= ref($authz_plugin) eq 'PlugAuth::Plugin::FlatFiles' ? $authz_plugin : do {
           require PlugAuth::Plugin::Unimplemented;
-          'PlugAuth::Plugin::Unimplemented';
+          PlugAuth::Plugin::Unimplemented->new;
         };
     }
 
