@@ -70,7 +70,7 @@ sub refresh {
         for my $k (keys %data) {
             my %users;
             for my $v (keys %{ $data{$k} }) {
-               my @matches = match_glob( $v, keys %Userpw );
+               my @matches = match_glob( $v, __PACKAGE__->app->auth->all_users);
                next unless @matches;
                @users{ @matches } = (1) x @matches;
             }
@@ -87,7 +87,7 @@ sub refresh {
             if($resource =~ /#u/) {
                 my $value = delete $resourceActionGroup{$resource};
 
-                foreach my $user (__PACKAGE__->all_users) {
+                foreach my $user (__PACKAGE__->app->auth->all_users) {
                     my $new_resource = $resource;
                     my $new_value = clone $value;
 
@@ -153,7 +153,7 @@ sub check_credentials {
     {
       return 1 if grep { _validate_pw($pw, $_) } @{ $Userpw{$user} };
     }
-    return 0;
+    return $class->deligate_check_credentials($user, $pw);
 }
 
 =head2 PlugAuth::Plugin::FlatFiles-E<gt>can_user_action_resource( $user, $action, $resource )

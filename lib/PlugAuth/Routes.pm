@@ -24,6 +24,7 @@ use IO::File;
 use List::MoreUtils qw/mesh/;
 use Clustericious::RouteBuilder;
 use Clustericious::Config;
+use List::MoreUtils qw( uniq );
 
 get '/' => sub { shift->render_text("welcome to plug auth") } => "index" ;
 
@@ -107,7 +108,7 @@ get '/host/#host/:tag' => sub {
 
 get '/user' => sub {
     my $c = shift;
-    $c->render_json([ $c->authz->users ]);
+    $c->render_json([ uniq sort $c->auth->all_users ]);
 };
 
 get '/group' => sub {

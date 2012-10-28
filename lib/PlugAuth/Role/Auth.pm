@@ -24,7 +24,7 @@ use Role::Tiny;
  }
  
  # only one user, larry
- sub users { qw( larry ) }
+ sub all_users { qw( larry ) }
 
 =head1 DESCRIPTION
 
@@ -49,14 +49,14 @@ requires qw( check_credentials );
 
 These methods may be implemented by your class.
 
-=head2 $plugin-E<gt>users
+=head2 $plugin-E<gt>all_users
 
 Returns the list of all users known to your plugin.  If
 this cannot be determined, then return an empty list.
 
 =cut
 
-sub users { () }
+sub all_users { () }
 
 =head2 $plugin-E<gt>create_user( $user, $password )
 
@@ -65,7 +65,12 @@ on success, return 0 on failure.
 
 =cut
 
-sub create_user { 0 }
+sub create_user
+{
+  my $next_auth = shift->next_auth;
+  return 0 unless defined $next_auth;
+  $next_auth->create_user(@_);
+}
 
 =head2 $plugin-E<gt>change_password( $user, $password )
 
@@ -74,7 +79,12 @@ success, return 0 on failure.
 
 =cut
 
-sub change_password { 0 }
+sub change_password
+{
+  my $next_auth = shift->next_auth;
+  return 0 unless defined $next_auth;
+  $next_auth->change_password(@_);
+}
 
 =head2 $plugin-E<gt>delete_user( $user )
 
@@ -82,7 +92,12 @@ Delete the given user.  Return 1 on success, return 0 on failure.
 
 =cut
 
-sub delete_user { 0 }
+sub delete_user
+{
+  my $next_auth = shift->next_auth;
+  return 0 unless defined $next_auth;
+  $next_auth->delete_user(@_);
+}
 
 =head1 METHODS
 
@@ -114,5 +129,12 @@ sub deligate_check_credentials
   return 0 unless defined $next_auth;
   return $next_auth->check_credentials($user, $pass);
 }
+
+around all_users => sub {
+  my($orig, $self) = @_;
+  my $next_auth = $self->next_auth;
+  return $orig->($self) unless defined $next_auth;
+  return ($orig->($self), $next_auth->all_users);
+};
 
 1;

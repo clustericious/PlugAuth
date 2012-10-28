@@ -3,10 +3,11 @@ use warnings;
 use File::HomeDir::Test;
 use File::HomeDir;
 use File::Spec;
-use Test::More tests => 25;
+use Test::More tests => 27;
 use PlugAuth;
 use Clustericious::Config;
 use YAML ();
+use Test::Differences;
 
 my $config_filename = File::Spec->catfile(File::HomeDir->my_home, qw( etc PlugAuth.conf ));
 mkdir(File::Spec->catdir(File::HomeDir->my_home, 'etc'));
@@ -26,7 +27,6 @@ eval q{
   with 'PlugAuth::Role::Plugin';
   with 'PlugAuth::Role::Auth';
   sub check_credentials {}
-  sub all_users {}
   $INC{'PlugAuth/Plugin/LDAP.pm'} = __FILE__;
 };
 die $@ if $@;
@@ -70,7 +70,6 @@ eval q{
   with 'PlugAuth::Role::Auth';
   $INC{'JustAuth.pm'} = __FILE__;
   sub check_credentials {}
-  sub all_users {}
 };
 die $@ if $@;
 
@@ -147,4 +146,37 @@ do {
   eval { $app->refresh };
   diag $@ if $@;
   is(JustRefresh->get_refresh_count, 1, "refresh count = 1");
+};
+
+
+eval q{
+  package
+    List1;
+  use Role::Tiny::With;
+  with 'PlugAuth::Role::Plugin';
+  with 'PlugAuth::Role::Auth';
+  sub check_credentials { 0 }
+  sub all_users { qw( foo bar ) }
+  $INC{'List1.pm'} = __FILE__;
+};
+die $@ if $@;
+
+eval q{
+  package
+    List2;
+  use Role::Tiny::With;
+  with 'PlugAuth::Role::Plugin';
+  with 'PlugAuth::Role::Auth';
+  sub check_credentials { 0 }
+  sub all_users { qw( baz ) }
+  $INC{'List2.pm'} = __FILE__;
+};
+die $@ if $@;
+
+do {
+  YAML::DumpFile($config_filename, { plugins => [ 'List1', 'List2' ] });
+  my $app = PlugAuth->new;
+  isa_ok $app, 'PlugAuth';
+  $app->startup;
+  eq_or_diff [sort $app->auth->all_users], [sort qw( foo bar baz )], "all_users = foo bar baz";
 };
