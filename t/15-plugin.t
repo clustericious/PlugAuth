@@ -105,9 +105,9 @@ eval q{
   sub match_resources {} 
   sub host_has_tag {} 
   sub actions {} 
-  sub groups {} 
+  sub groups_for_user {} 
   sub all_groups {} 
-  sub users {}
+  sub users_in_group {}
 };
 die $@ if $@;
 

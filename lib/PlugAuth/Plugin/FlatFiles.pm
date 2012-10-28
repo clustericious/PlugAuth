@@ -292,13 +292,13 @@ sub actions {
     return sort keys %actions;
 }
 
-=head2 PlugAuth::Plugin::FlatFiles-E<gt>groups( $user )
+=head2 PlugAuth::Plugin::FlatFiles-E<gt>groups_for_user( $user )
 
 Returns the groups the given user belongs to.
 
 =cut
 
-sub groups {
+sub groups_for_user {
     my $class = shift;
     my $user = shift or return ();
     $user = lc $user;
@@ -326,7 +326,7 @@ sub all_groups {
     return sort keys %groupUser;
 }
 
-=head2 PlugAuth::Plugin::FlatFiles-E<gt>users( $group )
+=head2 PlugAuth::Plugin::FlatFiles-E<gt>users_in_group( $group )
 
 Return the list of users that belong to the given group.
 Each user belongs to a special group that is the same
@@ -335,7 +335,7 @@ this will be included in the list.
 
 =cut
 
-sub users {
+sub users_in_group {
     my $class = shift;
     my $group = shift or return ();
     return () unless defined $groupUser{$group};

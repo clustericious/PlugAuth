@@ -24,7 +24,7 @@ use Role::Tiny;
  }
  
  # only one user, larry
- sub all_users { qw( larry ) }
+ sub users { qw( larry ) }
 
 =head1 DESCRIPTION
 
@@ -49,14 +49,14 @@ requires qw( check_credentials );
 
 These methods may be implemented by your class.
 
-=head2 $plugin-E<gt>all_users
+=head2 $plugin-E<gt>users
 
 Returns the list of all users known to your plugin.  If
 this cannot be determined, then return an empty list.
 
 =cut
 
-sub all_users { () }
+sub users { () }
 
 =head2 $plugin-E<gt>create_user( $user, $password )
 

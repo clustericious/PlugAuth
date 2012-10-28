@@ -89,7 +89,7 @@ get '/actions' => sub {
 # All the groups for a user :
 get '/groups/#user' => sub {
     my $c = shift;
-    $c->render_json([ $c->authz->groups($c->stash('user')) ]);
+    $c->render_json([ $c->authz->groups_for_user($c->stash('user')) ]);
 };
 
 # Given a host and a tag (e.g. "trusted") return true if that host has
@@ -107,7 +107,7 @@ get '/host/#host/:tag' => sub {
 
 get '/user' => sub {
     my $c = shift;
-    $c->render_json([ $c->authz->all_users ]);
+    $c->render_json([ $c->authz->users ]);
 };
 
 get '/group' => sub {
@@ -117,7 +117,7 @@ get '/group' => sub {
 
 get '/users/:group' => sub {
     my $c = shift;
-    $c->render_json([ $c->authz->users($c->stash('group')) ]);
+    $c->render_json([ $c->authz->users_in_group($c->stash('group')) ]);
 };
 
 authenticate;

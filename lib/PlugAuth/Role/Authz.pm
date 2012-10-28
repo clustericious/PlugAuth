@@ -20,9 +20,9 @@ requires qw(
   match_resources
   host_has_tag
   actions
-  groups
+  groups_for_user
   all_groups
-  users
+  users_in_group
 );
 
 =head1 OPTIONAL ABSTRACT METHODS
