@@ -55,7 +55,7 @@ sub refresh {
         # if the user file has changed, then that may mean the
         # group file has to be reloaded, for example, for groups
         # with wildcards * need to be updated.
-        delete $PlugAuth::MTimes{ $config->group_file };
+        mark_changed($config->group_file);
     }
 }
 
@@ -152,7 +152,7 @@ sub create_user
             # as it is modified, then refresh might
             # not pick up the change, unless we delete
             # the timestatmp.
-            delete $PlugAuth::MTimes{$filename};
+            mark_changed($filename);
         };
 
         if($@) {
@@ -226,7 +226,7 @@ sub change_password
         # as it is modified, then refresh might
         # not pick up the change, unless we delete
         # the timestatmp.
-        delete $PlugAuth::MTimes{$filename};
+        mark_changed($filename);
     }
 
     return 1;
@@ -280,7 +280,7 @@ sub delete_user
         # as it is modified, then refresh might
         # not pick up the change, unless we delete
         # the timestatmp.
-        delete $PlugAuth::MTimes{$filename};
+        mark_changed($filename);
     }
 
     return 1;

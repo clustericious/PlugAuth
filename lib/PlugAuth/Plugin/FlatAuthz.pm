@@ -262,7 +262,7 @@ sub create_group
     };
 
     ERROR "modifying file $filename: $@" if $@;
-    delete $PlugAuth::MTimes{$filename};
+    mark_changed($filename);
     return 1;
 }
 
@@ -307,7 +307,7 @@ sub delete_group
     };
 
     ERROR "modifying file $filename: $@" if $@;
-    delete $PlugAuth::MTimes{$filename};
+    mark_changed($filename);
     return 1;
 }
 
@@ -356,7 +356,7 @@ sub update_group
     };
 
     ERROR "modifying file $filename: $@" if $@;
-    delete $PlugAuth::MTimes{$filename};
+    mark_changed($filename);
     return 1;
 }
 
@@ -402,7 +402,7 @@ sub grant
     };
 
     ERROR "modifying file $filename: $@" if $@;
-    delete $PlugAuth::MTimes{$filename};
+    mark_changed($filename);
     return 1;
 }
 

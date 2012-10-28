@@ -14,13 +14,19 @@ use Role::Tiny;
 
 # VERSION
 
+my %MTimes;
+
 sub has_changed {
     my $filename = shift;
     -e $filename or LOGDIE "File $filename does not exist";
     my $mtime = stat($filename)->mtime;
-    return 0 if $PlugAuth::MTimes{$filename} && $PlugAuth::MTimes{$filename}==$mtime;
-    $PlugAuth::MTimes{$filename} = $mtime;
+    return 0 if $MTimes{$filename} && $MTimes{$filename}==$mtime;
+    $MTimes{$filename} = $mtime;
     return 1;
+}
+
+sub mark_changed {
+    delete $MTimes{$_} for @_;
 }
 
 sub read_file { # TODO: cache w/ mtime
