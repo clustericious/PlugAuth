@@ -93,8 +93,6 @@ there is no next authentication plugin.
 
 =cut
 
-my %next_auths;
-
 sub next_auth
 {
   my($self, $new_value) = @_;

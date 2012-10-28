@@ -299,8 +299,6 @@ sub startup {
     $self->SUPER::startup(@_);
     $self->plugin('Subdispatch');
 
-    PlugAuth::Role::Plugin->global_config($self->config);
-
     my @plugins_config = eval {
         my $plugins = $self->config->plugins(default => []);
         ref($plugins) ? @$plugins : ($plugins);
@@ -317,7 +315,7 @@ sub startup {
         Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
             || LOGDIE "$plugin_class is not a PlugAuth plugin";
         
-        my $plugin = $plugin_class->new;
+        my $plugin = $plugin_class->new($self->config, {}, $self);
 
         if($plugin->does('PlugAuth::Role::Auth'))
         {
@@ -335,11 +333,11 @@ sub startup {
         my $plugin;
         if($self->config->ldap(default => '')) {
             require PlugAuth::Plugin::LDAP;
-            $plugin = PlugAuth::Plugin::LDAP->new;
-            $plugin->next_auth(PlugAuth::Plugin::FlatFiles->new);
+            $plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
+            $plugin->next_auth(PlugAuth::Plugin::FlatFiles->new($self->config, {}, $self));
             push @refresh_plugins, $plugin->next_auth;
         } else {
-            $plugin = PlugAuth::Plugin::FlatFiles->new;
+            $plugin = PlugAuth::Plugin::FlatFiles->new($self->config, {}, $self);
             push @refresh_plugins, $plugin;
         }
         $auth_plugin  //= $plugin;

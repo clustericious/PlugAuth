@@ -14,27 +14,19 @@ Use this role when writing PlugAuth plugins.
 
 =head1 METHODS
 
-=head2 PlugAuth::Role::Plugin-E<gt>global_config
-
 =head2 $plugin-E<gt>global_config
 
 Get the global PlugAuth configuration (an instance of
 L<Clustericious::Config>).
 
-This method may be called as either an instance
-or class method.
-
 =cut
+
+my $config;
 
 sub global_config
 {
-  my($class, $new_value) = @_;
-  state $config;
-  $config = $new_value if defined $new_value;
   $config;
 }
-
-=head2 PlugAuth::Role::Plugin->plugin_config
 
 =head2 $plugin-E<gt>plugin_config
 
@@ -44,19 +36,32 @@ class method.
 
 =cut
 
-my %plugin_configs;
-
 sub plugin_config
 {
-  my($self, $new_value) = @_;
-  $self->{plugin_config} = $new_value if defined $new_value;
-  $self->{plugin_config};
+  shift->{plugin_config};
+}
+
+=head2 $plugin-E<gt>app
+
+Returns the L<PlugAuth> instance for the running PlugAuth server.
+
+=cut
+
+my $app;
+
+sub app
+{
+  $app;
 }
 
 sub new
 {
-  my($class) = @_;
-  bless {}, $class;
+  my($class, $global_config, $plugin_config, $theapp) = @_;
+  $app = $theapp;
+  $config = $global_config;
+  bless {
+    plugin_config => $plugin_config,
+  }, $class;
 }
 
 1;
