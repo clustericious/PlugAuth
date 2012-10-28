@@ -127,14 +127,14 @@ post '/user' => sub {
     my $c = shift;
     my $user = $c->req->json->{user};
     my $password = $c->req->json->{password} || '';
-    $c->admin->create_user($user, $password)
+    $c->auth->create_user($user, $password)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => "not ok", status => 403);
 };
 
 del '/user/#user' => sub {
     my $c = shift;
-    $c->admin->delete_user($c->param('user') )
+    $c->auth->delete_user($c->param('user') )
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
 };
@@ -143,14 +143,14 @@ post '/group' => sub {
     my $c = shift;
     my $group = $c->req->json->{group};
     my $users = $c->req->json->{users};
-    $c->admin->create_group($group, $users)
+    $c->authz->create_group($group, $users)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => "not ok", status => 403);
 };
 
 del '/group/:group' => sub {
     my $c = shift;
-    $c->admin->delete_group($c->param('group') )
+    $c->authz->delete_group($c->param('group') )
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
 };
@@ -158,7 +158,7 @@ del '/group/:group' => sub {
 post '/group/:group' => sub {
     my $c = shift;
     my $users = $c->req->json->{users};
-    $c->admin->update_group($c->param('group'), $users)
+    $c->authz->update_group($c->param('group'), $users)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
 };
@@ -166,7 +166,7 @@ post '/group/:group' => sub {
 post '/grant/#group/:action1/(*resource)' => sub {
     my $c = shift;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
-    $c->admin->grant($group, $action, $resource)
+    $c->authz->grant($group, $action, $resource)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
 };
@@ -178,7 +178,7 @@ post '/user/#user' => sub {
     my($c) = @_;
     my $user = $c->param('user');
     my $password = eval { $c->req->json->{password} } || '';
-    $c->admin->change_password($user, $password)
+    $c->auth->change_password($user, $password)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 403);
 };

@@ -3,7 +3,7 @@ use warnings;
 use File::HomeDir::Test;
 use File::HomeDir;
 use File::Spec;
-use Test::More tests => 33;
+use Test::More tests => 25;
 use PlugAuth;
 use Clustericious::Config;
 use YAML ();
@@ -82,7 +82,6 @@ do {
   is ref $app->data,  'JustAuth',                    '[JustAuth@] data  = JustAuth';
   is ref $app->auth,  'JustAuth',                    '[JustAuth@] auth  = JustAuth';
   is ref $app->authz, 'PlugAuth::Plugin::FlatFiles', '[JustAuth@] authz = FlatFiles';
-  is ref $app->admin, 'PlugAuth::Plugin::FlatFiles', '[JustAuth@] admin = FlatFiles';
 };
 
 do {
@@ -93,7 +92,6 @@ do {
   is ref $app->data,  'JustAuth',                    '[JustAuth$] data  = JustAuth';
   is ref $app->auth,  'JustAuth',                    '[JustAuth$] auth  = JustAuth';
   is ref $app->authz, 'PlugAuth::Plugin::FlatFiles', '[JustAuth$] authz = FlatFiles';
-  is ref $app->admin, 'PlugAuth::Plugin::FlatFiles', '[JustAuth$] admin = FlatFiles';
 };
   
 eval q{
@@ -121,34 +119,6 @@ do {
   is ref $app->data,  'PlugAuth::Plugin::FlatFiles',     '[JustAuthz@] data  = FlatFiles';
   is ref $app->auth,  'PlugAuth::Plugin::FlatFiles',     '[JustAuthz@] auth  = FlatFiles';
   is ref $app->authz, 'JustAuthz',                       '[JustAuthz@] authz = JustAuthz';
-  is ref $app->admin, 'PlugAuth::Plugin::Unimplemented', '[JustAuthz@] admin = Unimplemented';
-};
-
-eval q{
-  package
-    JustAdmin;
-  use Role::Tiny::With;
-  with 'PlugAuth::Role::Plugin';
-  with 'PlugAuth::Role::Admin';
-  $INC{'JustAdmin.pm'} = __FILE__;
-  sub create_user {} 
-  sub change_password {} 
-  sub delete_user {} 
-  sub create_group {} 
-  sub delete_group {} 
-  sub grant {}
-};
-die $@ if $@;
-
-do {
-  YAML::DumpFile($config_filename, { plugins => [ 'JustAdmin' ] });
-  my $app = PlugAuth->new;
-  isa_ok $app, 'PlugAuth';
-  $app->startup;
-  is ref $app->data,  'PlugAuth::Plugin::FlatFiles',     '[JustAdmin@] data  = FlatFiles';
-  is ref $app->auth,  'PlugAuth::Plugin::FlatFiles',     '[JustAdmin@] auth  = FlatFiles';
-  is ref $app->authz, 'PlugAuth::Plugin::FlatFiles',     '[JustAdmin@] authz = FLatFiles';
-  is ref $app->admin, 'JustAdmin',                       '[JustAdmin@] admin = JustAdmin';
 };
 
 eval q{
@@ -169,7 +139,7 @@ ok(JustRefresh->does('PlugAuth::Role::Refresh'), "JustRefresh does Refresh");
 
 do {
   is(JustRefresh->get_refresh_count, 0, "refresh count = 0");
-  YAML::DumpFile($config_filename, { plugins => [ qw( JustRefresh JustAuth JustAuthz JustAdmin ) ] });
+  YAML::DumpFile($config_filename, { plugins => [ qw( JustRefresh JustAuth JustAuthz ) ] });
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
   $app->startup;

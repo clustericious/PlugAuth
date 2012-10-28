@@ -25,5 +25,44 @@ requires qw(
   users
 );
 
+=head1 OPTIONAL ABSTRACT METHODS
+
+These methods may be implemented by your class.
+
+=head2 $plugin-E<gt>create_group( $group, $users )
+
+Create a new group with the given users.  $users is a
+comma separated list of user names.
+
+=cut
+
+sub create_group { 0 }
+
+=head2 $plugin-E<gt>delete_group( $group )
+
+Delete the given group.
+
+=cut
+
+sub delete_group { 0 }
+
+=head2 $plugin-E<gt>grant( $group, $action, $resource )
+
+Grant the given group or user the authorization to perform the given
+$action on the given $resource.
+
+=cut
+
+sub grant { 0 }
+
+=head2 $plugin-E<gt>update_group( $group, $users )
+
+Update the given group, setting the set of users that belong to that
+group.  The existing group membership will be replaced with the new one.
+$users is a comma separated list of user names.
+
+=cut
+
+sub update_group { 0 }
 
 1;

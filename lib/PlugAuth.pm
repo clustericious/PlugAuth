@@ -308,7 +308,6 @@ sub startup {
 
     my $auth_plugin;
     my $authz_plugin;
-    my $admin_plugin;
     my @refresh_plugins;
     
     foreach my $plugin_class (reverse @plugins_config)
@@ -327,11 +326,10 @@ sub startup {
         }
 
         $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
-        $admin_plugin = $plugin if $plugin->does('PlugAuth::Role::Admin');
         push @refresh_plugins, $plugin if $plugin->does('PlugAuth::Role::Refresh')
     }
 
-    unless(all { defined $_ } ($auth_plugin,$authz_plugin,$admin_plugin))
+    unless(all { defined $_ } ($auth_plugin,$authz_plugin))
     {
         require PlugAuth::Plugin::FlatFiles;
         my $plugin;
@@ -346,16 +344,11 @@ sub startup {
         }
         $auth_plugin  //= $plugin;
         $authz_plugin //= $plugin;
-        $admin_plugin //= ref($authz_plugin) eq 'PlugAuth::Plugin::FlatFiles' ? $authz_plugin : do {
-          require PlugAuth::Plugin::Unimplemented;
-          PlugAuth::Plugin::Unimplemented->new;
-        };
     }
 
     $self->helper(data    => sub { $auth_plugin                        });
     $self->helper(auth    => sub { $auth_plugin                        });
     $self->helper(authz   => sub { $authz_plugin                       });
-    $self->helper(admin   => sub { $admin_plugin                       });
     $self->helper(refresh => sub { $_->refresh for @refresh_plugins; 1 });
 }
 

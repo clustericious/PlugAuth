@@ -31,14 +31,7 @@ use Role::Tiny;
 Use this role when writing PlugAuth plugins that manage 
 authentication (ie. determine the identify of the user).
 
-=cut
-
-requires qw( 
-  check_credentials
-  all_users
-);
-
-=head1 ABSTRACT METHODS
+=head1 REQUIRED ABSTRACT METHODS
 
 These methods must be implemented by your class.
 
@@ -48,10 +41,48 @@ Return 1 if the password is correct for the given user.
 
 Return 0 otherwise.
 
+=cut
+
+requires qw( check_credentials );
+
+=head1 OPTIONAL ABSTRACT METHODS
+
+These methods may be implemented by your class.
+
 =head2 $plugin-E<gt>all_users
 
 Returns the list of all users known to your plugin.  If
 this cannot be determined, then return an empty list.
+
+=cut
+
+sub all_users { () }
+
+=head2 $plugin-E<gt>create_user( $user, $password )
+
+Create the given user with the given password.  Return 1
+on success, return 0 on failure.
+
+=cut
+
+sub create_user { 0 }
+
+=head2 $plugin-E<gt>change_password( $user, $password )
+
+Change the password of the given user.  Return 1 on
+success, return 0 on failure.
+
+=cut
+
+sub change_password { 0 }
+
+=head2 $plugin-E<gt>delete_user( $user )
+
+Delete the given user.  Return 1 on success, return 0 on failure.
+
+=cut
+
+sub delete_user { 0 }
 
 =head1 METHODS
 

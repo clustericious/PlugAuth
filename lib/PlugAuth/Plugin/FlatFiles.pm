@@ -27,7 +27,6 @@ use Role::Tiny::With;
 with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Auth';
 with 'PlugAuth::Role::Authz';
-with 'PlugAuth::Role::Admin';
 with 'PlugAuth::Role::Refresh';
 
 our %Userpw;              # Keys are usernames, values are lists of crypted passwords.
