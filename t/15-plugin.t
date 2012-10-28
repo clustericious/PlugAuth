@@ -17,7 +17,7 @@ do {
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
   $app->startup;
-  is ref($app->data), 'PlugAuth::Plugin::FlatFiles', 'data = FlatFiles by default';
+  is ref($app->data), 'PlugAuth::Plugin::FlatAuth', 'data = FlatAuth by default';
 };
 
 eval q{
@@ -80,7 +80,7 @@ do {
   $app->startup;
   is ref $app->data,  'JustAuth',                    '[JustAuth@] data  = JustAuth';
   is ref $app->auth,  'JustAuth',                    '[JustAuth@] auth  = JustAuth';
-  is ref $app->authz, 'PlugAuth::Plugin::FlatFiles', '[JustAuth@] authz = FlatFiles';
+  is ref $app->authz, 'PlugAuth::Plugin::FlatAuthz', '[JustAuth@] authz = FlatAuthz';
 };
 
 do {
@@ -90,7 +90,7 @@ do {
   $app->startup;
   is ref $app->data,  'JustAuth',                    '[JustAuth$] data  = JustAuth';
   is ref $app->auth,  'JustAuth',                    '[JustAuth$] auth  = JustAuth';
-  is ref $app->authz, 'PlugAuth::Plugin::FlatFiles', '[JustAuth$] authz = FlatFiles';
+  is ref $app->authz, 'PlugAuth::Plugin::FlatAuthz', '[JustAuth$] authz = FlatAuthz';
 };
   
 eval q{
@@ -115,8 +115,8 @@ do {
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
   $app->startup;
-  is ref $app->data,  'PlugAuth::Plugin::FlatFiles',     '[JustAuthz@] data  = FlatFiles';
-  is ref $app->auth,  'PlugAuth::Plugin::FlatFiles',     '[JustAuthz@] auth  = FlatFiles';
+  is ref $app->data,  'PlugAuth::Plugin::FlatAuth',      '[JustAuthz@] data  = FlatAuth';
+  is ref $app->auth,  'PlugAuth::Plugin::FlatAuth',      '[JustAuthz@] auth  = FlatAuth';
   is ref $app->authz, 'JustAuthz',                       '[JustAuthz@] authz = JustAuthz';
 };
 

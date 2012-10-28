@@ -291,7 +291,6 @@ use base 'Clustericious::App';
 use PlugAuth::Routes;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
-use List::MoreUtils qw( all );
 use PlugAuth::Role::Plugin;
 
 sub startup {
@@ -306,10 +305,9 @@ sub startup {
 
     my $auth_plugin;
     my $authz_plugin;
-    my @refresh_plugins;
+    my @refresh;
     
-    foreach my $plugin_class (reverse @plugins_config)
-    {
+    foreach my $plugin_class (reverse @plugins_config) {
         eval qq{ require $plugin_class };
         LOGDIE $@ if $@;
         Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
@@ -317,37 +315,44 @@ sub startup {
         
         my $plugin = $plugin_class->new($self->config, {}, $self);
 
-        if($plugin->does('PlugAuth::Role::Auth'))
-        {
+        if($plugin->does('PlugAuth::Role::Auth')) {
           $plugin->next_auth($auth_plugin);
           $auth_plugin = $plugin;
         }
 
         $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
-        push @refresh_plugins, $plugin if $plugin->does('PlugAuth::Role::Refresh')
+        push @refresh, $plugin if $plugin->does('PlugAuth::Role::Refresh')
     }
 
-    unless(all { defined $_ } ($auth_plugin,$authz_plugin))
-    {
-        require PlugAuth::Plugin::FlatFiles;
-        my $plugin;
+    unless(defined $auth_plugin) {
+        require PlugAuth::Plugin::FlatAuth;
         if($self->config->ldap(default => '')) {
             require PlugAuth::Plugin::LDAP;
-            $plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
-            $plugin->next_auth(PlugAuth::Plugin::FlatFiles->new($self->config, {}, $self));
-            push @refresh_plugins, $plugin->next_auth;
+            $auth_plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
+            $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, {}, $self));
+            push @refresh, $auth_plugin->next_auth;
+            
         } else {
-            $plugin = PlugAuth::Plugin::FlatFiles->new($self->config, {}, $self);
-            push @refresh_plugins, $plugin;
+            $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, {}, $self);
+            push @refresh, $auth_plugin;
         }
-        $auth_plugin  //= $plugin;
-        $authz_plugin //= $plugin;
+    }
+    
+    unless(defined $authz_plugin) {
+        require PlugAuth::Plugin::FlatAuthz;
+        $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, {}, $self);
+        push @refresh, $authz_plugin;
     }
 
-    $self->helper(data    => sub { $auth_plugin                        });
-    $self->helper(auth    => sub { $auth_plugin                        });
-    $self->helper(authz   => sub { $authz_plugin                       });
-    $self->helper(refresh => sub { $_->refresh for @refresh_plugins; 1 });
+    $self->helper(data  => sub { $auth_plugin  });
+    $self->helper(auth  => sub { $auth_plugin  });
+    $self->helper(authz => sub { $authz_plugin });
+    
+    if(@refresh > 0 ) {
+        $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
+    } else {
+        $self->helper(refresh => sub { 1 });
+    }
 }
 
 # Silence warnings; this is only used for for session

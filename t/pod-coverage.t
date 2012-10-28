@@ -15,7 +15,7 @@ eval "use Pod::Coverage $min_pc";
 plan skip_all => "Pod::Coverage $min_pc required for testing POD coverage"
     if $@;
 
-my @modules = grep !/^PlugAuth::Plugin::Unimplemented/, all_modules();
+my @modules = grep !/^PlugAuth::Role::Flat$/, all_modules();
 
 plan tests => scalar @modules;
 
