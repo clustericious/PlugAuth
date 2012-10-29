@@ -22,6 +22,7 @@ use Fcntl qw/ :flock /;
 use Clone qw( clone );
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
+use File::Touch;
 
 with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Authz';
@@ -97,6 +98,23 @@ sub refresh {
         %hostTag = __PACKAGE__->read_file( $h, nest => 1 );
     }
     1;
+}
+
+sub init
+{
+    # When the user list has changed, the group files need to be reloaded, because
+    # each user has his/her own group, so we touch the group file
+
+    my($self) = @_;
+    my $touch = File::Touch->new(
+        mtime_only => 1,
+        no_create => 1,
+    );
+    my @list = ($self->app->config->group_file(default => []));
+    
+    $self->app->on(user_list_changed => sub {
+        $touch->touch(@list);
+    });
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>can_user_action_resource( $user, $action, $resource )

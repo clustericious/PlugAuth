@@ -19,5 +19,5 @@ my @modules = grep !/^PlugAuth::Role::Flat$/, all_modules();
 
 plan tests => scalar @modules;
 
-pod_coverage_ok( $_, { also_private => [ qr/^(register(|_plugin)|startup|new)$/ ] })
+pod_coverage_ok( $_, { also_private => [ qr/^(register(|_plugin)|startup|new|init)$/ ] })
   for @modules;
