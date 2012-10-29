@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 74;
+use Test::More tests => 82;
 use Test::Mojo;
 use Mojo::JSON;
 
@@ -14,6 +14,9 @@ my $port = $t->ua->app_url->port;
 
 $t->app->config->simple_auth->{url} = "http://localhost:$port";
 
+my $event_triggered = 0;
+$t->app->on(user_list_changed =>  sub { $event_triggered = 1 });
+
 sub json($) {
     ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
 }
@@ -23,15 +26,24 @@ $t->post_ok("http://localhost:$port/user", json { user => 'donald', password => 
     ->status_is(401)
     ->content_is("auth required", "attempt to create a user without credentials");
 
+is $event_triggered, 0, 'event NOT triggered';
+$event_triggered = 0;
+
 # creating a user with bogus credentials should return 403
 $t->post_ok("http://bogus:passs\@localhost:$port/user", json { user => 'donald', password => 'duck' } )
     ->status_is(401)
     ->content_is("authentication failure", "attempt to create with bogus credentials");
 
+is $event_triggered, 0, 'event NOT triggered';
+$event_triggered = 0;
+
 # creating a user without credentials or with bogus credentials (above) should not change the
 # password file
 $t->get_ok("http://localhost:$port/user");
 is grep(/^donald$/, @{ $t->tx->res->json }), 0, "donald was not created";
+
+is $event_triggered, 0, 'event NOT triggered';
+$event_triggered = 0;
 
 $t->get_ok("http://donald:duck\@localhost:$port/auth")
     ->status_is(403)
@@ -49,9 +61,15 @@ $t->post_ok("http://elmer:fudd\@localhost:$port/user", json { password => 'newpa
     ->status_is(403)
     ->content_is('not ok', 'cannot create user without a user');
 
+is $event_triggered, 0, 'event NOT triggered';
+$event_triggered = 0;
+
 $t->post_ok("http://elmer:fudd\@localhost:$port/user", json { user => 'newuser', password => 'newpassword' })
     ->status_is(200)
     ->content_is("ok", "created newuser");
+
+is $event_triggered, 1, 'event triggered!';
+$event_triggered = 0;
 
 $t->get_ok("http://newuser:newpassword\@localhost:$port/auth")
     ->status_is(200)
@@ -68,9 +86,15 @@ $t->delete_ok("http://localhost:$port/user/thor")
     ->status_is(401)
     ->content_is("auth required", "cannot delete user without credentials");
 
+is $event_triggered, 0, 'event NOT triggered';
+$event_triggered = 0;
+
 $t->delete_ok("http://baduser:badpassword\@localhost:$port/user/thor")
     ->status_is(401)
     ->content_is("authentication failure", "cannot delete user with bad credentials");
+
+is $event_triggered, 0, 'event NOT triggered';
+$event_triggered = 0;
 
 $t->get_ok("http://localhost:$port/user");
 is grep(/^thor$/, @{ $t->tx->res->json }), 1, "thor is not deleted in failed delete";
@@ -88,6 +112,9 @@ is grep(/^charliebrown$/, @{ $t->tx->res->json }), 1, "charlie brown not deleted
 $t->delete_ok("http://elmer:fudd\@localhost:$port/user/charliebrown")
     ->status_is(200)
     ->content_is("ok", "delete user");
+
+is $event_triggered, 1, 'event triggered!';
+$event_triggered = 0;
 
 $t->get_ok("http://charliebrown:snoopy\@localhost:$port/auth")
     ->status_is(403)

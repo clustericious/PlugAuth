@@ -128,16 +128,22 @@ post '/user' => sub {
     my $c = shift;
     my $user = $c->req->json->{user};
     my $password = $c->req->json->{password} || '';
-    $c->auth->create_user($user, $password)
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => "not ok", status => 403);
+    if($c->auth->create_user($user, $password)) {
+        $c->render(text => 'ok', status => 200);
+        $c->app->emit('user_list_changed');
+    } else {
+        $c->render(text => "not ok", status => 403);
+    }
 };
 
 del '/user/#user' => sub {
     my $c = shift;
-    $c->auth->delete_user($c->param('user') )
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    if($c->auth->delete_user($c->param('user'))) {
+        $c->render(text => 'ok', status => 200);
+        $c->app->emit('user_list_changed');
+    } else {
+        $c->render(text => 'not ok', status => 404);
+    }
 };
 
 post '/group' => sub {

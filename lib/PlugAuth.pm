@@ -270,6 +270,12 @@ The host file /etc/pluginauth/host.txt looks like this :
 The IP addresses on the right represent hosts from which
 authorization should succeed.
 
+=head1 EVENTS
+
+=head2 user_list_changed
+
+Emitted when a user is created or deleted.
+
 =head1 TODO
 
 Test the LDAP support.
@@ -293,6 +299,7 @@ use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use PlugAuth::Role::Plugin;
 use Clustericious::Config;
+use Mojo::Base 'Mojo::EventEmitter';
 
 sub startup {
     my $self = shift;
@@ -313,6 +320,7 @@ sub startup {
         my $plugin_config;
         if(ref $plugin_class) {
             ($plugin_config) = values %$plugin_class;
+            $plugin_config = Clustericious::Config->new($plugin_config);
             ($plugin_class)  = keys %$plugin_class;
         } else {
             $plugin_config = Clustericious::Config->new({});
