@@ -292,6 +292,7 @@ use PlugAuth::Routes;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use PlugAuth::Role::Plugin;
+use Clustericious::Config;
 
 sub startup {
     my $self = shift;
@@ -308,12 +309,21 @@ sub startup {
     my @refresh;
     
     foreach my $plugin_class (reverse @plugins_config) {
+
+        my $plugin_config;
+        if(ref $plugin_class) {
+            ($plugin_config) = values %$plugin_class;
+            ($plugin_class)  = keys %$plugin_class;
+        } else {
+            $plugin_config = Clustericious::Config->new({});
+        }
+        
         eval qq{ require $plugin_class };
         LOGDIE $@ if $@;
         Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
             || LOGDIE "$plugin_class is not a PlugAuth plugin";
         
-        my $plugin = $plugin_class->new($self->config, {}, $self);
+        my $plugin = $plugin_class->new($self->config, $plugin_config, $self);
 
         if($plugin->does('PlugAuth::Role::Auth')) {
           $plugin->next_auth($auth_plugin);
@@ -329,18 +339,18 @@ sub startup {
         if($self->config->ldap(default => '')) {
             require PlugAuth::Plugin::LDAP;
             $auth_plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
-            $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, {}, $self));
+            $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self));
             push @refresh, $auth_plugin->next_auth;
             
         } else {
-            $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, {}, $self);
+            $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self);
             push @refresh, $auth_plugin;
         }
     }
     
     unless(defined $authz_plugin) {
         require PlugAuth::Plugin::FlatAuthz;
-        $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, {}, $self);
+        $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, Clustericious::Config->new({}), $self);
         push @refresh, $authz_plugin;
     }
 

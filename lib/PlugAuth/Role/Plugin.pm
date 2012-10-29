@@ -12,6 +12,18 @@ use Role::Tiny;
 
 Use this role when writing PlugAuth plugins.
 
+=head1 OPTIONAL ABSTRACT METHODS
+
+You may define these methods in your plugin.
+
+=head2 $plugin-E<gt>init
+
+This method is called after the object is created.
+
+=cut
+
+sub init { }
+
 =head1 METHODS
 
 =head2 $plugin-E<gt>global_config
@@ -59,9 +71,11 @@ sub new
   my($class, $global_config, $plugin_config, $theapp) = @_;
   $app = $theapp;
   $config = $global_config;
-  bless {
+  my $self = bless {
     plugin_config => $plugin_config,
   }, $class;
+  $self->init;
+  $self;
 }
 
 1;
