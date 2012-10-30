@@ -2,6 +2,12 @@
 # VERSION
 # PODNAME: PlugAuth::Guide::ServerQuickstart
 
+=begin stopwords
+
+auth
+
+=end stopwords
+
 =head1 DESCRIPTION
 
 This document provides a quickstart guide for setting up a PlugAuth server using
@@ -51,7 +57,7 @@ out with they only need to be empty files:
 
 =item * run server
 
-RUn the PlugAuth server using the built in L<Mojolicious> web server.  Note that the
+Run the PlugAuth server using the built in L<Mojolicious> web server.  Note that the
 server will be running I<without> authentication or authorization running so be sure
 it is listening only to localhost:
 
@@ -136,7 +142,7 @@ htpasswd command and a simple text editor.
 
 =item * create configuration
 
-Do as above, but create your configuration initally with I<simple_auth> set in your 
+Do as above, but create your configuration initially with I<simple_auth> set in your 
 PlugAuth.conf file:
 
  ---

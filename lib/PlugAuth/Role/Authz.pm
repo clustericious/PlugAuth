@@ -56,7 +56,7 @@ Given a regex, return all resources that match that regex.
 
 =head2 $plugin-E<gt>host_has_tag( $host, $tag )
 
-Returns true iof the given host has the given tag.
+Returns true if the given host has the given tag.
 
 =head2 $plugin-E<gt>actions
 

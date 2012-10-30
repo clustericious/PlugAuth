@@ -1,0 +1,32 @@
+---
+pod_spelling_system:
+  stopwords:
+    - PlugAuth
+    - plugins
+    - ie
+    - Ctrl-C
+    - user.txt
+    - resource.txt
+    - quickstart
+    - ldap
+    - PlugAuth.conf
+    - IP
+    - alice
+    - bob
+    - plugin's
+    - pluggable
+    - nginx
+    - lighttpd
+    - hostname
+    - hypnotoad
+    - RESTful
+    - API
+    - Clustericious
+    - Plack
+
+pod_coverage:
+  private:
+    - PlugAuth::Role::Flat
+    - PlugAuth::(Role|Plugin)::.*#new
+    - PlugAuth::(Rold|Plugin)::.*#init
+    - PlugAuth#startup

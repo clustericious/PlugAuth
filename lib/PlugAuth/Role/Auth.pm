@@ -119,7 +119,7 @@ sub next_auth
 
 =head2 $plugin-E<gt>deligate_check_credentials( $user, $pass )
 
-Deligate to the next auth plugin.  Call this method if your plugins
+Delegate to the next authentication plugin.  Call this method if your plugins
 authentication has failed if your plugin is not authoritative.
 
 =cut

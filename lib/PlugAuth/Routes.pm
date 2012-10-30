@@ -5,7 +5,7 @@ package PlugAuth::Routes;
 
 =head1 DESCRIPTION
 
-This module defins the routes provided by L<PlugAuth>.
+This module defines the HTTP URL routes provided by L<PlugAuth>.
 
 =head1 SEE ALSO
 
@@ -28,8 +28,6 @@ use List::MoreUtils qw( uniq );
 
 get '/' => sub { shift->render_text("welcome to plug auth") } => "index" ;
 
-# FIXME: ladder doesn't seem to work in authenticated/authorized resources
-# below.
 ladder sub { shift->refresh };
 
 # Check authentication for a user (http basic auth protocol).

@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Added documentation in PlugAuth::Guide::*
   - Added roles for plugins (see PlugAuth::Role::*)
   - use Apache MD5 password when creating/changing passwords
   - accept Apache or Unix MD5 encrypted passwords

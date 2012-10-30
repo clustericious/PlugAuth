@@ -12,7 +12,7 @@ against PlugAuth:
  simple_auth:
    url: http://localhost:1234
 
-and I<authenticate> and I<authorize> in your Clustericious app's Routes.pm:
+and I<authenticate> and I<authorize> in your Clustericious application's Routes.pm:
 
  authenticate;
  authorize;
@@ -60,11 +60,11 @@ by a RESTful service:
 
 =item 1.
 
-Client (web browser or other) sends an  HTTP reqeust to the service.
+Client (web browser or other) sends an  HTTP request to the service.
 
 =item 2
 
-The service sends an HTTP basic auth request to PlugAuth with the user's credentials
+The service sends an HTTP basic authentication request to PlugAuth with the user's credentials
 
 =item 3
 
@@ -107,7 +107,7 @@ If the REST service uses Clustericious, see L<Clustericious::Plugin::SimpleAuth>
 
 =head2 AUTHENTICATION
 
-Checking for authentication is done by sending a GET request to urls of the form
+Checking for authentication is done by sending a GET request to URLs of the form
 
  /auth
 
@@ -118,7 +118,7 @@ used.  The default is L<PlugAuth::Plugin::FlatAuth>.
 
 =head2 AUTHORIZATION
 
-Checking the authorization is done by sending GET requests to urls of the form
+Checking the authorization is done by sending GET requests to URLs of the form
 
  /authz/user/user/action/resource
 
@@ -175,7 +175,7 @@ where ".host" is a string representing a hostname, returns
 
 Server configuration is done in ~/etc/PlugAuth.conf which is a 
 Clustericious::Config style file.  The configuration depends on which plugins you 
-choose, consulte your plugin's documentation.  The default plugins are
+choose, consult your plugin's documentation.  The default plugins are
 L<PlugAuth::Plugin::FlatAuth>, L<PlugAuth::Plugin::FlatAuthz>.
 
 Once the authentication and authorization has been configured, PlugAuth
@@ -184,7 +184,7 @@ using the daemon command:
 
  % plugauth daemon
 
-This will use the built-in webserver.  To use another web server, additional
+This will use the built-in web server.  To use another web server, additional
 configuration is required.  For example, after adding this:
 
  start_mode: hypnotoad
@@ -194,7 +194,7 @@ configuration is required.  For example, after adding this:
      %# Automatically generated configuration file
      HYPNOTOAD_CONFIG : /var/run/pluginauth/pluginauth.hypnotoad.conf
 
-This start command can be used to start a hypnotoad webserver.
+This start command can be used to start a hypnotoad web server.
 
  % plugauth start
  
@@ -206,11 +206,6 @@ lighttpd, Plack or Apache.
 =head2 user_list_changed
 
 Emitted when a user is created or deleted.
-
-=head1 TODO
-
-Apply authorization to the pluginauth server itself: currently anyone
-can query about anyone else's authorization.
 
 =head1 SEE ALSO
 

@@ -41,7 +41,7 @@ both to which both  bob and alice belong:
 
  both: alice, bob
 
-Group members can be specified using a glob (see L<Text::Glob>) which matche against the set of all users:
+Group members can be specified using a glob (see L<Text::Glob>) which match against the set of all users:
 
  all: *
 
@@ -238,7 +238,7 @@ sub _prefixes {
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>host_has_tag( $host, $tag )
 
-Returns true iof the given host has the given tag.
+Returns true if the given host has the given tag.
 
 =cut
 
@@ -267,7 +267,6 @@ sub groups_for_user {
     my $class = shift;
     my $user = shift or return ();
     $user = lc $user;
-    # FIXME
     return () unless $all_users{$user};
     return sort ( $user, keys %{ $userGroups{ $user } || {} } );
 }
