@@ -25,41 +25,53 @@ Then create some users and groups
  % plugauthclient create_user --user alice --password secret
  % plugauthclient create_group --group both --users bob,alice
 
-L<PlugAuth::Client> for details.
-
 In the configuration file for the Clustericious app
 that will authenticate against PlugAuth:
 
  ---
- plug_auth:
+ simple_auth:
    url: http://localhost:1234
 
-L<Clustericious::Plugin::PlugAuth> for details.
+and I<authenticate> and I<authorize> in your Clustericious app's Routes.pm:
+
+ authenticate;
+ authorize;
+ 
+ get '/resource' => sub {
+   # resource that requires authentication
+   # and authorization
+ };
 
 =head1 DESCRIPTION
 
-The PlugAuth server provides an HTTP API
-for authentication and authorization.  The
-authentication API is HTTP Basic Authentication.
-The authorization API is based on users,
-groups, resources, and hosts.
+PlugAuth is a pluggable authentication and authorization server with a consistent
+RESTful API.  This allows clients to authenticate and query authorization from a
+PlugAuth server without worrying or caring whether the actual authentication happens
+against flat files, PAM, LDAP or passed on to another PlugAuth server.
 
-Credentials are verified against either flat
-files or an ldap server.  Authorization is
-done using flat files.
+The authentication API is HTTP Basic Authentication.  The authorization API is based
+on users, groups, resources and hosts.
 
-Here is how PlugAuth can be used with
-a REST service.
+The implementation for these can be swapped in and out depending on the plugins that
+you select in the configuration file.  The default plugins for authentication 
+(L<PlugAuth::Plugin::FlatAuth>) and authorization (L<PlugAuth::Plugin::FlatAuthz>) are
+implemented with ordinary flat files and advisory locks using flock.
+
+The are other plugins for ldap (L<PlugAuth::Plugin::LDAP>), L<DBI> 
+(L<PlugAuth::Plugin::DBI::Auth>), or you can write your own (L<PlugAuth::Plugin>).
+
+Here is a diagram that illustrates the most common use case for PlugAuth being used 
+by a RESTful service:
 
   client
     |
     | HTTP
     |
- /-----------\          /------------\
- |   REST    |   HTTP   |            | --> files
- |  service  |  ------> |  PlugAuth  |
- |           |          |            | --> ldap
- \-----------/          \------------/
+ +-----------+          +------------+     +--------------+
+ |   REST    |   HTTP   |            | --> | Auth Plugin  |  --> files
+ |  service  |  ------> |  PlugAuth  |     +--------------+  --> ldap
+ |           |          |            | --> | Authz Plugin |  --> ...
+ +-----------+          +------------+     +--------------+
 
 =over 4
 
@@ -69,117 +81,106 @@ Client (web browser or other) sends an  HTTP reqeust to the service.
 
 =item 2
 
-The service sends an HTTP basic auth
-request to PlugAuth with the user's
-credentials
+The service sends an HTTP basic auth request to PlugAuth with the user's credentials
 
 =item 3
 
-PlugAuth performs authentication (see AUTHENTICATION
-below) and returns the appropriate HTTP status code.
+PlugAuth performs authentication (see L</AUTHENTICATION>) and returns the appropriate 
+HTTP status code.
 
 =item 4
 
-The REST service sends the HTTP status code to
-the client if authentication has failed.
+The REST service sends the HTTP status code to the client if authentication has failed.
 
 =item 5
 
-The REST service may optionally check the client's
-host, and if it is "trusted", authorization succeeds.
+The REST service may optionally check the client's host, and if it is "trusted", 
+authorization succeeds (see L</AUTHORIZATION>).
 
 =item 6
 
-If not, the REST service sends an authorization
-request to PlugAuth, asking whether the client
-has permission to perform an "action" on a "resource".
-Both the action and resource are arbitrary strings, though
-one reasonable default is sending the HTTP method as
-the action, and the URL path as the resource.  (see
-AUTHORIZATION below).
+If not, the REST service sends an authorization request to PlugAuth, asking whether 
+the client has permission to perform an "action" on a "resource". Both the action and 
+resource are arbitrary strings, though one reasonable default is sending the HTTP 
+method as the action, and the URL path as the resource.  (see L</AUTHORIZATION> below).
 
 =item 7
 
-PlugAuth returns a response code to the REST service
-indicating whether or not authorization should succeed.
+PlugAuth returns a response code to the REST service indicating whether or not 
+authorization should succeed.
 
 =item 8
 
-The REST service returns the appropriate response to the
-client.
+The REST service returns the appropriate response to the client.
 
 =back
 
-If the REST service uses Apache, see L<SimpleAuthHandler> for
-Apache authorization/authentication handlers.
+If the REST service uses Apache, see L<SimpleAuthHandler> for Apache 
+authorization/authentication handlers.
 
-If the REST service is written in Perl, see L<SimpleAuth::Client>.
+If the REST service is written in Perl, see L<PlugAuth::Client>.
 
 If the REST service uses Clustericious, see L<Clustericious::Plugin::SimpleAuth>.
 
 =head2 AUTHENTICATION
 
-Authentication is performed using either a flat files in the same
-format as an apache htpasswd file or with an LDAP server.  The
-configuration file indicates the location of the file or ldap
-server.  See CONFIGURATION below.
+Checking for authentication is done by sending a GET request to urls of the form
+
+ /auth
+
+With the username and password specified as HTTP Basic credentials.  The actual 
+mechanism used to verify authentication will depend on the authentication plugin being 
+used.  The default is L<PlugAuth::Plugin::Auth>.
+
 
 =head2 AUTHORIZATION
 
-Checking the authorization is done by sending GET requests to
-urls of the form
+Checking the authorization is done by sending GET requests to urls of the form
 
- /authz/user/#user/#action/(*resource)
+ /authz/user/user/action/resource
 
-where I<#user> and I<#action> are strings (no slashes),
-and I<*resource> is a string which may have slashes.
-A response code of 200 indicates that access should
-be granted, 403 indicates that the resource is forbidden.
-A user is granted access to a resource if one of
-of the following conditions are met :
+where I<user> and I<action> are strings (no slashes), and I<resource> is a string 
+which may have slashes. A response code of 200 indicates that access should be 
+granted, 403 indicates that the resource is forbidden.  A user is granted access to a 
+resource if one of of the following conditions are met:
 
 =over 4
 
 =item
 
-the user is specifically granted access to that
-resource, i.e. a line of the form
+the user is specifically granted access to that resource, i.e. a line of the form
 
- /resource (action) username
+ /resource (action): username
 
-appears in the resources file (see CONFIGURATION).
-
-=item
-
-the user is a member of a group which is granted
-access to that resource.
+appears in the resources file (see L</CONFIGURATION>).
 
 =item
 
-the user or a group containing the user is granted
-access to a resource which is a prefix of the requested
-resource.  i.e.
-
- / (action) username
-
-would grant access to "username" to perform "action" on
-any resource.
+the user is a member of a group which is granted access to that resource.
 
 =item
 
-Additionally, given a user, an action, and a regular expression,
-it is possible to find _all_ of the resources matching that
-regular expression for which the user has access.  This
+the user or a group containing the user is granted access to a resource which is a 
+prefix of the requested resource.  i.e.
+
+ / (action): username
+
+would grant access to "username" to perform "action" on any resource.
+
+=item
+
+Additionally, given a user, an action, and a regular expression, it is possible to find 
+I<all> of the resources matching that regular expression for which the user has access.  This
 can be done by sending a GET request to
 
- /authz/resources/(.user)/(.action)/(*regex)
+ /authz/resources/user/action/regex
 
 =item
 
 Host-based authorization is also possible -- sending a get
 request to
 
-    /host/(.host)/trusted
+    /host/host/trusted
 
 where ".host" is a string representing a hostname, returns
 200 if the host-based authorization should succeed, and
@@ -189,33 +190,19 @@ where ".host" is a string representing a hostname, returns
 
 =head2 CONFIGURATION
 
-Server configuration is done in $HOME/etc/PlugAuth.conf
-which is a Clustericious::Config style file.  Here is an
-example :
+Server configuration is done in ~/etc/PlugAuth.conf which is a 
+Clustericious::Config style file.  The configuration depends on which plugins you 
+choose, consulte your plugin's documentation.  The default plugins are
+L<PlugAuth::Plugin::Auth>, L<PlugAuth::Plugin::Authz>.
 
- ---
- url           : http://localhost:1234
- user_file     : /etc/pluginauth/user.txt
- group_file    : /etc/plugauth/group.txt
- resource_file : /etc/plugauth/resource.txt
- host_file     : /etc/plugauth/host.txt
+Once the authentication and authorization has been configured, PlugAuth
+can be started (like any L<Mojolicious> or L<Clustericious> application)
+using the daemon command:
 
-It possible to have multiple user files with yaml list, e.g.
+ % plugauth daemon
 
- user_file :
-   - /etc/plugauth/user.txt
-   - /etc/plugauth/more_users.txt
-
-It is also possible to use LDAP for authentication, like so :
-
- ldap :
-   server : 198.118.255.141:389
-   path : /ou=people,dc=users,dc=eosdis,dc=nasa,dc=gov
-
-The above will allow PlugAuth to be started via "plugauth daemon"
-using the built-in webserver.  To use other webservers, additional
-configuration is required.  For instance, after adding this to the
-configuration file :
+This will use the built-in webserver.  To use another web server, additional
+configuration is required.  For example, after adding this:
 
  start_mode: hypnotoad
  hypnotoad :
@@ -224,51 +211,12 @@ configuration file :
      %# Automatically generated configuration file
      HYPNOTOAD_CONFIG : /var/run/pluginauth/pluginauth.hypnotoad.conf
 
-The command "pluginauth start" will start a hypnotoad webserver.
-See Clustericious::Config for more examples, including use with nginx,
+This start command can be used to start a hypnotoad webserver.
+
+ % plugauth start
+ 
+See L<Clustericious::Config> for more examples, including using with nginx,
 lighttpd, Plack or Apache.
-
-PlugAuth will
-detect when files have been changed on the next request so you do not
-need to restart PlugAuth.
-
-user.txt looks like apache's htpasswd files, and entries can be changed
-either by using htpasswd or L<SimpleAuth::Client>.
-
- alice:AR2NVnqrzOh2M
- bob:fucVibC2NzOtg
-
-group.txt looks like /etc/group.  Entries can be changed either by
-using your favorite text editor, or by using L<SimpleAuth::Client>.
-For each user there is also a group which contains just that user.
-In this example there are groups alice and bob which contain just the
-user alice and bob respectively.
-
- both : alice, bob
-
-Group members can also be specified using a glob which matches
-against the set of users:
-
- all : *
-
-(see Text::Glob for details about globs)
-
-Each line of resource.txt has a resource, an action (in parentheses),
-and then a list of users or groups.  The line grants permission for
-those groups to perform that action on that resource :
-
- /house/door (enter) : alice, bob
- /house/backdoor (enter) : both
- /house/window (break) : alice
- /house (GET) : bob
-
-The host file /etc/pluginauth/host.txt looks like this :
-
- 192.168.1.99:trusted
- 192.168.1.100:trusted
-
-The IP addresses on the right represent hosts from which
-authorization should succeed.
 
 =head1 EVENTS
 
@@ -278,15 +226,16 @@ Emitted when a user is created or deleted.
 
 =head1 TODO
 
-Test the LDAP support.
-
 Apply authorization to the pluginauth server itself: currently anyone
 can query about anyone else's authorization.
 
 =head1 SEE ALSO
 
 L<Clustericious::Plugin::SimpleAuth>,
-L<SimpleAuth::Client>
+L<PlugAuth::Client>,
+L<PlugAuth::Plugin::Auth>,
+L<PlugAuth::Plugin::Authz>,
+L<PlugAuth::Plugin>
 
 =cut
 

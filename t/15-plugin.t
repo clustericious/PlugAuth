@@ -1,3 +1,6 @@
+delete $ENV{HARNESS_ACTIVE};
+$ENV{LOG_LEVEL} = "ERROR";
+
 use strict;
 use warnings;
 use File::HomeDir::Test;

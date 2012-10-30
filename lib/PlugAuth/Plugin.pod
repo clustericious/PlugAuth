@@ -1,0 +1,11 @@
+# ABSTRACT: guide for writing PlugAuth plugins.
+# VERSION
+# PODNAME: PlugAuth::Plugin
+
+=head1 DESCRIPTION
+
+This document serves as a tutorial for creating plugins for L<PlugAuth>.
+
+=head1 SEE ALSO
+
+L<PlugAuth>, L<PlugAuth::Client>, L<PlugAuth::Role::Plugin>, L<PlugAuth::Role::Auth>, L<PlugAuth::Role::Authz>, L<PlugAuth::Role::Refresh>.

@@ -3,13 +3,56 @@ package PlugAuth::Plugin::FlatAuth;
 # ABSTRACT: Authentication using Flat Files for PlugAuth
 # VERSION
 
+=head1 SYNOPSIS
+
+In your PlugAuth.conf file:
+
+ ---
+ url: http://localhost:1234
+ user_file: /path/to/user.txt
+
+Touch the user file:
+
+ % touch /path/to/user.txt
+
+Add users using htpasswd (comes with Apache):
+
+ % htpasswd -m /path/to/user.txt newusername
+ New password: 
+ Re-type new password: 
+
+Start PlugAuth:
+
+ % plugauth start
+
 =head1 DESCRIPTION
 
-Manage the data for a simpleauth server.
+This is the default Authentication plugin for L<PlugAuth>.  It is designed to work closely
+with L<FlatAuthz> which is the default Authorization plugin.
 
-The interfce is primarily intended for use by
-L<PlugAuth::Routes> and is subject to change
-without notice, but is documented here.
+This plugin provides storage and password verification for users.  This plugin also provides 
+a mechanism for PlugAuth to change passwords, create and delete users.  Although the user 
+information is stored in flat files, the entire user database is kept in memory and the 
+files are only re-read when a change is detected, so this plugin is relatively fast.
+
+=head1 CONFIGURATION
+
+=head2 user_file
+
+The user file is 
+specified in the PlugAuth.conf file using the user_file field.  The format of the user
+is a simple user:password comma separated list, which is compatible with Apache password
+files.  Either the UNIX crypt, Apache MD5 or UNIX MD5 format may be used for the passwords.
+
+ foo:$apr1$F3VOmjio$O8dodh0VEljQvuzeruvsb0
+ bar:yOJEfNAE.gppk
+
+It is possible to have multiple user files if you specify a list:
+
+ ---
+ user_file:
+   - /path/to/user1.txt
+   - /path/to/user2.txt
 
 =cut
 
@@ -290,6 +333,6 @@ sub delete_user
 
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Routes>
+L<PlugAuth>, L<PlugAuth::Plugin::Authz>
 
 =cut

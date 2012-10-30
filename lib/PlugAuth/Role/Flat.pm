@@ -7,11 +7,7 @@ use File::stat qw/stat/;
 use Fcntl qw/ :flock /;
 use Role::Tiny;
 
-# private role for common methods between
-#   PlugAuth::Plugin::FlatAuth
-#      and
-#   PlugAuth::Plugin::FlatAuthz
-
+# ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
 # VERSION
 
 my %MTimes;

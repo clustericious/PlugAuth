@@ -3,13 +3,72 @@ package PlugAuth::Plugin::FlatAuthz;
 # ABSTRACT: Authorization using flat files for PlugAuth
 # VERSION
 
+=head1 SYNOPSIS
+
+In your /etc/PlugAuth.conf
+
+ ---
+ url: http://localhost:1234
+ group_file: /etc/plugauth/group.txt
+ resource_file: /etc/plugauth/resource.txt
+ host_file: /etc/plugauth/host.txt
+
+touch the storage files:
+
+ % touch /etc/plugauth/group.txt \
+         /etc/plugauth/resource.txt \
+         /etc/plugauth/host.txt
+
+Start PlugAuth:
+
+ % plugauth start
+
 =head1 DESCRIPTION
 
-Manage the data for a simpleauth server.
+This is the default Authorization plugin for L<PlugAuth>.  It is designed to work closely
+with L<FlatAuth> which is the default Authentication plugin.
 
-The interfce is primarily intended for use by
-L<PlugAuth::Routes> and is subject to change
-without notice, but is documented here.
+This plugin provides storage for groups, hosts and access control for PlugAuth.  In addition
+it provides a mechanism for PlugAuth to alter the group, host and access control databases.
+
+=head1 CONFIGURATION
+
+=head2 group_file
+
+The group file looks similar to a standard UNIX /etc/group file.  Entries can be changed using
+either your favorite editor, or by using L<PlugAuth::Client>.  In this example there is a group
+both to which both  bob and alice belong:
+
+ both: alice, bob
+
+Group members can be specified using a glob (see L<Text::Glob>) which matche against the set of all users:
+
+ all: *
+
+Each user automatically gets his own group, so if there is a users named bob and alice, this is 
+unnecessary:
+
+ alice: alice
+ bob: bob
+
+=head2 resource_file
+
+Each line of resource.txt has a resource, an action (in parentheses), and then a list of users or groups.  
+The line grants permission for those groups to perform that action on that resource :
+
+ /house/door (enter) : alice, bob
+ /house/backdoor (enter) : both
+ /house/window (break) : alice
+ /house (GET) : bob
+
+=head2 host_file
+
+The host file /etc/pluginauth/host.txt looks like this :
+
+ 192.168.1.99:trusted
+ 192.168.1.100:trusted
+
+The IP addresses on the right represent hosts from which authorization should succeed.
 
 =cut
 
@@ -428,6 +487,6 @@ sub grant
 
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Routes>
+L<PlugAuth>, L<PlugAuth::Plugin::Auth>
 
 =cut
