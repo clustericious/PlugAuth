@@ -333,6 +333,6 @@ sub delete_user
 
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Plugin::Authz>
+L<PlugAuth>, L<PlugAuth::Plugin::FlatAuthz>
 
 =cut

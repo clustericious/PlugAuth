@@ -25,6 +25,8 @@ use Role::Tiny;
  
  # only one user, larry
  sub all_users { qw( larry ) }
+ 
+ 1;
 
 =head1 DESCRIPTION
 

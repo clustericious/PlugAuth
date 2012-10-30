@@ -8,6 +8,22 @@ use Role::Tiny;
 # ABSTRACT: Role for PlugAuth plugins
 # VERSION
 
+=head1 SYNOPSIS
+
+ package PlugAuth::Plugin::MyPlugin;
+ 
+ use Role::Tiny::With;
+ 
+ with 'PlugAuth::Role::Plugin';
+ 
+ sub init {
+   my($self) = @_;
+   # called immediately after plugin is
+   # created.
+ }
+ 
+ 1;
+
 =head1 DESCRIPTION
 
 Use this role when writing PlugAuth plugins.

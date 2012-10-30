@@ -487,6 +487,6 @@ sub grant
 
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Plugin::Auth>
+L<PlugAuth>, L<PlugAuth::Plugin::FlatAuth>
 
 =cut

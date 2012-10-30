@@ -130,7 +130,7 @@ Checking for authentication is done by sending a GET request to urls of the form
 
 With the username and password specified as HTTP Basic credentials.  The actual 
 mechanism used to verify authentication will depend on the authentication plugin being 
-used.  The default is L<PlugAuth::Plugin::Auth>.
+used.  The default is L<PlugAuth::Plugin::FlatAuth>.
 
 
 =head2 AUTHORIZATION
@@ -193,7 +193,7 @@ where ".host" is a string representing a hostname, returns
 Server configuration is done in ~/etc/PlugAuth.conf which is a 
 Clustericious::Config style file.  The configuration depends on which plugins you 
 choose, consulte your plugin's documentation.  The default plugins are
-L<PlugAuth::Plugin::Auth>, L<PlugAuth::Plugin::Authz>.
+L<PlugAuth::Plugin::FlatAuth>, L<PlugAuth::Plugin::FlatAuthz>.
 
 Once the authentication and authorization has been configured, PlugAuth
 can be started (like any L<Mojolicious> or L<Clustericious> application)
@@ -233,8 +233,8 @@ can query about anyone else's authorization.
 
 L<Clustericious::Plugin::SimpleAuth>,
 L<PlugAuth::Client>,
-L<PlugAuth::Plugin::Auth>,
-L<PlugAuth::Plugin::Authz>,
+L<PlugAuth::Plugin::FlatAuth>,
+L<PlugAuth::Plugin::FlatAuthz>,
 L<PlugAuth::Plugin>
 
 =cut
