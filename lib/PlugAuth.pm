@@ -25,7 +25,7 @@ and I<authenticate> and I<authorize> in your Clustericious application's Routes.
 =head1 DESCRIPTION
 
 (For a quick start guide on how to setup a PlugAuth server, please see
-L<PlugAuth::Guide::ServerQuickstart>)
+L<PlugAuth::Guide::Server>)
 
 PlugAuth is a pluggable authentication and authorization server with a consistent
 RESTful API.  This allows clients to authenticate and query authorization from a

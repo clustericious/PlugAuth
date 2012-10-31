@@ -1,6 +1,6 @@
 # ABSTRACT: guide for writing PlugAuth plugins.
 # VERSION
-# PODNAME: PlugAuth::Guide::ServerQuickstart
+# PODNAME: PlugAuth::Guide::Server
 
 =begin stopwords
 
@@ -33,7 +33,8 @@ this guide, we will use the per-user configuration.
 
 =item * create configuration
 
-In your favorite text editor, create this configuration:
+Create the configuration file ~/etc/PlugAuth.conf using your favorite 
+editor.
 
  ---
  % use File::HomeDir;  my $home = File::HomeDir->my_home;
@@ -72,11 +73,7 @@ users, groups and permissions:
  --- ok
  % plugauthclient grant admin change_password /user
  --- ok
- % plugauthclient grant admin accounts /user
- --- ok
- % plugauthclient grant admin accounts /group
- --- ok
- % plugauthclient grant admin accounts /grant
+ % plugauthclient grant admin accounts /
  --- ok
 
 Make sure that the password is correct using the L<plugauthclient> auth command.
