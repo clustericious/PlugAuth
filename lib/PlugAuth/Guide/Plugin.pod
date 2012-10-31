@@ -1,4 +1,4 @@
-# ABSTRACT: guide for writing PlugAuth plugins.
+# ABSTRACT: Guide for writing PlugAuth plugins.
 # VERSION
 # PODNAME: PlugAuth::Guide::Plugin
 

@@ -1,4 +1,4 @@
-# ABSTRACT: guide for writing PlugAuth plugins.
+# ABSTRACT: Guide for setting up a PlugAuth server.
 # VERSION
 # PODNAME: PlugAuth::Guide::Server
 
