@@ -28,6 +28,8 @@ use List::MoreUtils qw( uniq );
 
 get '/' => sub { shift->render_text("welcome to plug auth") } => "index" ;
 
+# FIXME: ladder doesn't seem to work in authenticated/authorized resources
+# below.
 ladder sub { shift->refresh };
 
 # Check authentication for a user (http basic auth protocol).
@@ -126,6 +128,7 @@ authorize 'accounts';
 
 post '/user' => sub {
     my $c = shift;
+    $c->refresh;
     my $user = $c->req->json->{user};
     my $password = $c->req->json->{password} || '';
     if($c->auth->create_user($user, $password)) {
@@ -138,6 +141,7 @@ post '/user' => sub {
 
 del '/user/#user' => sub {
     my $c = shift;
+    $c->refresh;
     if($c->auth->delete_user($c->param('user'))) {
         $c->render(text => 'ok', status => 200);
         $c->app->emit('user_list_changed');
@@ -148,6 +152,7 @@ del '/user/#user' => sub {
 
 post '/group' => sub {
     my $c = shift;
+    $c->refresh;
     my $group = $c->req->json->{group};
     my $users = $c->req->json->{users};
     $c->authz->create_group($group, $users)
@@ -157,6 +162,7 @@ post '/group' => sub {
 
 del '/group/:group' => sub {
     my $c = shift;
+    $c->refresh;
     $c->authz->delete_group($c->param('group') )
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
@@ -164,6 +170,7 @@ del '/group/:group' => sub {
 
 post '/group/:group' => sub {
     my $c = shift;
+    $c->refresh;
     my $users = $c->req->json->{users};
     $c->authz->update_group($c->param('group'), $users)
     ? $c->render(text => 'ok', status => 200)
@@ -172,6 +179,7 @@ post '/group/:group' => sub {
 
 post '/grant/#group/:action1/(*resource)' => sub {
     my $c = shift;
+    $c->refresh;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->grant($group, $action, $resource)
     ? $c->render(text => 'ok', status => 200)
@@ -183,6 +191,7 @@ authorize 'change_password';
 
 post '/user/#user' => sub {
     my($c) = @_;
+    $c->refresh;
     my $user = $c->param('user');
     my $password = eval { $c->req->json->{password} } || '';
     $c->auth->change_password($user, $password)

@@ -5,28 +5,8 @@ package PlugAuth;
 
 =head1 SYNOPSIS
 
-In your /etc/PlugAuth.conf
-
- ---
- url: http://localhost:1234
- user_file: /etc/plugauth/user.txt
- group_file: /etc/plugauth/group.txt
- resource_file: /etc/plugauth/resource.txt
- host_file: /etc/plugauth/host.txt
-
-Then create some users and groups
-
- % touch /etc/plugauth/user.txt \
-         /etc/plugauth/group.txt \
-         /etc/plugauth/resource.txt \
-         /etc/plugauth/host.txt
- % plugauth start
- % plugauthclient create_user --user bob --password secret
- % plugauthclient create_user --user alice --password secret
- % plugauthclient create_group --group both --users bob,alice
-
-In the configuration file for the Clustericious app
-that will authenticate against PlugAuth:
+In the configuration file for the Clustericious app that will authenticate
+against PlugAuth:
 
  ---
  simple_auth:
@@ -44,6 +24,9 @@ and I<authenticate> and I<authorize> in your Clustericious app's Routes.pm:
 
 =head1 DESCRIPTION
 
+(For a quick start guide on how to setup a PlugAuth server, please see
+L<PlugAuth::Guide::ServerQuickstart>)
+
 PlugAuth is a pluggable authentication and authorization server with a consistent
 RESTful API.  This allows clients to authenticate and query authorization from a
 PlugAuth server without worrying or caring whether the actual authentication happens
@@ -58,7 +41,7 @@ you select in the configuration file.  The default plugins for authentication
 implemented with ordinary flat files and advisory locks using flock.
 
 The are other plugins for ldap (L<PlugAuth::Plugin::LDAP>), L<DBI> 
-(L<PlugAuth::Plugin::DBI::Auth>), or you can write your own (L<PlugAuth::Plugin>).
+(L<PlugAuth::Plugin::DBI::Auth>), or you can write your own (L<PlugAuth::Guide::Plugin>).
 
 Here is a diagram that illustrates the most common use case for PlugAuth being used 
 by a RESTful service:

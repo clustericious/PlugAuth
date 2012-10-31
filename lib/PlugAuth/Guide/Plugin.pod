@@ -1,10 +1,10 @@
 # ABSTRACT: guide for writing PlugAuth plugins.
 # VERSION
-# PODNAME: PlugAuth::Plugin
+# PODNAME: PlugAuth::Guide::Plugin
 
 =head1 DESCRIPTION
 
-This document serves as a tutorial for creating plugins for L<PlugAuth>.
+This document serves as a guide for creating plugins for L<PlugAuth>.
 
 =head1 SEE ALSO
 
