@@ -234,8 +234,8 @@ sub startup {
     $self->plugin('Subdispatch');
 
     my @plugins_config = eval {
-        my $plugins = $self->config->plugins(default => []);
-        ref($plugins) ? @$plugins : ($plugins);
+        my $plugins = $self->config->{plugins} // [];
+        ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
     };
 
     my $auth_plugin;
@@ -247,7 +247,8 @@ sub startup {
         my $plugin_config;
         if(ref $plugin_class) {
             ($plugin_config) = values %$plugin_class;
-            $plugin_config = Clustericious::Config->new($plugin_config);
+            $plugin_config = Clustericious::Config->new($plugin_config)
+              unless ref($plugin_config) eq 'ARRAY';
             ($plugin_class)  = keys %$plugin_class;
         } else {
             $plugin_config = Clustericious::Config->new({});
