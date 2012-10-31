@@ -108,7 +108,6 @@ sub refresh {
     my $config = $class->global_config;
     if ( has_changed( $config->group_file ) ) {
         %all_users = map { $_ => 1 } __PACKAGE__->app->auth->all_users;
-        $DB::single = 1;
         %groupUser = ();
         my %data = __PACKAGE__->read_file( $config->group_file, nest => 1 );
         for my $k (keys %data) {
@@ -185,7 +184,6 @@ the group and resource that permits this.  Otherwise, return false.
 
 sub can_user_action_resource {
     my ($class, $user,$action,$resource) = @_;
-    $DB::single = 1;
     $user = lc $user;
     my $found;
     GROUP:
