@@ -1,0 +1,11 @@
+#
+# Resources file
+#
+# The format of this is :
+# <resource> (<action>) : <group>, <group>, ...
+#
+# Note that every user is also in a group of their own
+# name, so the <group< can also be the name of a user.
+#
+
+/grant (accounts) : primus

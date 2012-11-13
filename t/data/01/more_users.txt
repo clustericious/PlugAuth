@@ -1,0 +1,9 @@
+#
+# A secondary users file.
+#
+# The format of this is
+# <username>:<crypted password>
+# Lines beginning with a # and blank
+# lines are ignored.
+
+elmer:glJPWDD1HWjcc

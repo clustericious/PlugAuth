@@ -1,0 +1,70 @@
+{
+   "abstract" : "Pluggable authentication and authorization server.",
+   "author" : [
+      "Graham Ollis <gollis@sesda2.com>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 4.300028, CPAN::Meta::Converter version 2.120921",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "PlugAuth",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Module::Build" : "0.3601"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.30",
+            "Module::Build" : "0.3601"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Clone" : "0",
+            "Clustericious" : "0.9906",
+            "Clustericious::App" : "0",
+            "Clustericious::Commands" : "0",
+            "Clustericious::Config" : "0",
+            "Clustericious::RouteBuilder" : "0",
+            "Crypt::PasswdMD5" : "0",
+            "Fcntl" : "0",
+            "File::Touch" : "0",
+            "File::stat" : "0",
+            "FindBin" : "0",
+            "IO::File" : "0",
+            "List::MoreUtils" : "0",
+            "Log::Log4perl" : "0",
+            "Mojo::Base" : "0",
+            "Mojo::ByteStream" : "0",
+            "Mojolicious::Plugin::Subdispatch" : "0",
+            "Role::Tiny" : "0",
+            "Role::Tiny::With" : "0",
+            "Text::Glob" : "0",
+            "autodie" : "0",
+            "perl" : "v5.10.0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "File::HomeDir" : "0",
+            "File::HomeDir::Test" : "0",
+            "File::Spec" : "0",
+            "Mojo::JSON" : "0",
+            "Test::Differences" : "0",
+            "Test::Mojo" : "0",
+            "Test::More" : "0",
+            "YAML" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "version" : "0.01"
+}
+

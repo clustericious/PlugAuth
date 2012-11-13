@@ -1,0 +1,11 @@
+Revision history for PlugAuth
+
+0.01      2012-11-13 16:30:06 America/New_York
+  - Added documentation in PlugAuth::Guide::*
+  - Added roles for plugins (see PlugAuth::Role::*)
+  - use Apache MD5 password when creating/changing passwords
+  - accept Apache or Unix MD5 encrypted passwords
+  - renamed PlugAuth from SimpleAuth
+  - /users/:group returns 404 for groups that don't exist
+  - POST /group/:group/:user to add a user to a group
+  - DELETE /group/:group/:user to remove a user from a group

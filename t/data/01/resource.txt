@@ -1,0 +1,21 @@
+#
+# Resources file
+#
+# The format of this is :
+# <resource> (<action>) : <group>, <group>, ...
+#
+# Note that every user is also in a group of their own
+# name, so the <group< can also be the name of a user.
+#
+
+/ (kick) : superuser
+/football (kick) : peanuts
+/football (miss) : charliebrown
+/baseball (hit) :
+/soccerball (kick) : charliebrown
+/esdt (view) : elmer
+/ (view) : superuser
+/ (search) : superuser
+/ (create) : superuser
+/methodpath (GET) : charliebrown
+/globtest (glob) : public

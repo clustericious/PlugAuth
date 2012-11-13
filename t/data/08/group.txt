@@ -1,0 +1,7 @@
+#
+# Group file.
+#
+# The format of this is --
+# <groupname> : user1,user2,...
+#
+public  : *
