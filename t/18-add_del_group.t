@@ -7,12 +7,6 @@ use Test::Mojo;
 use Mojo::JSON;
 use Test::Differences;
 
-# full1: foo,bar,baz
-# full2: *
-# part1: foo
-# part2: baz
-
-
 my $t = Test::Mojo->new('PlugAuth');
 
 $t->get_ok('/'); # creates $t->ua
@@ -39,13 +33,13 @@ $t->post_ok("http://primus:primus\@localhost:$port/group/part1/bar")
   ->content_is('ok');
 $t->get_ok("http://localhost:$port/users/part1")
   ->status_is(200);
-eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( foo bar) ], "at start part1 = foo";
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( foo bar) ], "at start part1 = foo bar";
 
 # next add to a non-existent group
 $t->post_ok("http://primus:primus\@localhost:$port/group/bogus/foo")
   ->status_is(404)
   ->content_is('not ok');
-$t->get_ok("http://localhost:$port/users/bogus1")
+$t->get_ok("http://localhost:$port/users/bogus")
   ->status_is(404)
   ->content_is('not ok');
 
