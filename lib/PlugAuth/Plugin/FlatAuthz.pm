@@ -283,18 +283,21 @@ sub all_groups {
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>users_in_group( $group )
 
-Return the list of users that belong to the given group.
-Each user belongs to a special group that is the same
-as their user name and just contains themselves, and
-this will be included in the list.
+Return the list of users (as an array ref) that belong 
+to the given group.  Each user belongs to a special 
+group that is the same as their user name and just 
+contains themselves, and this will be included in the 
+list.
+
+Returns undef if the group does not exist.
 
 =cut
 
 sub users_in_group {
     my $class = shift;
     my $group = shift or return ();
-    return () unless defined $groupUser{$group};
-    return sort keys %{ $groupUser{$group} };
+    return undef unless defined $groupUser{$group};
+    return [keys %{ $groupUser{$group} }];
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>create_group( $group, $users )

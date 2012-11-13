@@ -72,9 +72,11 @@ Returns a list of all groups.
 
 =head2 $plugin-E<gt>users_in_group( $group )
 
-Return the list of users that belong to the given group. Each user belongs
-to a special group that is the same as their user name and just contains 
-themselves, and this will be included in the list.
+Return the list of users (as an array ref) that belong to the given group.
+Each user belongs to a special group that is the same as their user name
+and just contains themselves, and this will be included in the list.
+
+Returns undef if there is no such group.
 
 =head1 OPTIONAL ABSTRACT METHODS
 

@@ -5,6 +5,7 @@ BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 96;
 use Test::Mojo;
 use Mojo::JSON;
+use Test::Differences;
 
 my $t = Test::Mojo->new('PlugAuth');
 
@@ -53,9 +54,10 @@ $t->post_ok("http://huffer:snoopy\@localhost:$port/group", json { group => 'grou
 $t->get_ok("http://localhost:$port/group");
 is grep(/^group4$/, @{ $t->tx->res->json }), 1, "group4 was created";
 
-$t->get_ok("http://localhost:$port/users/group4")
-    ->json_content_is([sort qw( optimus rodimus huffer grimlock )], "group4 is not empty");
+$t->get_ok("http://localhost:$port/users/group4");
 
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( optimus rodimus huffer grimlock )], 'group4 is not empty';
+    
 # remove a group
 $t->get_ok("http://localhost:$port/group");
 is grep(/^group5$/, @{ $t->tx->res->json }), 1, "group5 exists";
@@ -90,8 +92,9 @@ $t->get_ok("http://localhost:$port/group");
 is grep(/^group7/, @{ $t->tx->res->json }), 1, "group7 (still) exists";
 
 $t->get_ok("http://huffer:snoopy\@localhost:$port/users/group7")
-    ->status_is(200)
-    ->json_content_is([sort qw( grimlock rodimus )], 'group7 is [grimlock,rodimus]');
+    ->status_is(200);
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( grimlock rodimus )], 'group7 is [grimlock,rodimus]';
 
 # creating a group with a real user but bad password
 $t->post_ok("http://huffer:passs\@localhost:$port/group", json { group => 'group8' } )
@@ -102,19 +105,22 @@ $t->get_ok("http://localhost:$port/group");
 is grep(/^group8$/, @{ $t->tx->res->json }), 0, "group8 was not created";
 
 # change the user membership of an existing group
-$t->get_ok("http://localhost:$port/users/group9")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group9 is [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group9");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group9 is [ nightbeat,starscream,soundwave ]";
 
 $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group9", json { users => "optimus,rodimus,huffer,grimlock" })
     ->status_is(200)
     ->content_is("ok");
 
-$t->get_ok("http://localhost:$port/users/group9")
-    ->json_content_is([sort qw( optimus rodimus huffer grimlock )], "group9 is [ optimus,rodimus,huffer,grimlock ]");
+$t->get_ok("http://localhost:$port/users/group9");
 
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( optimus rodimus huffer grimlock )], 'group9 is [ optimus,rodimus,huffer,grimlock ]';
+    
 # remove all users from a group
-$t->get_ok("http://localhost:$port/users/group10")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group10 is [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group10");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group10 is [ nightbeat,starscream,soundwave ]";
 
 $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group10", json { users => '' })
     ->status_is(200)
@@ -124,8 +130,9 @@ $t->get_ok("http://localhost:$port/users/group10")
     ->json_content_is([], "group10 is empty");
 
 # change user membership of an existing group with an invalid username
-$t->get_ok("http://localhost:$port/users/group11")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group11 is [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group11");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group11 is [ nightbeat,starscream,soundwave ]";
 
 $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group11", json { users => "optimus,foo,bar,baz" })
     ->status_is(200)
@@ -146,25 +153,29 @@ $t->get_ok("http://localhost:$port/group");
 is grep(/^group12$/, @{ $t->tx->res->json }), 0, "(still) no group 12";
 
 # change user membership of an existing group with bad credentials
-$t->get_ok("http://localhost:$port/users/group14")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group14 is [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group14");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group14 is [ nightbeat,starscream,soundwave ]";
 
 $t->post_ok("http://huffer:bogus\@localhost:$port/group/group14", json { users => "optimus,rodimus,huffer,grimlock" })
     ->status_is(401)
     ->content_is("authentication failure");
 
-$t->get_ok("http://localhost:$port/users/group14")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group14 is (still) [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group14");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group14 is (still) [ nightbeat,starscream,soundwave ]";
 
 # update group without providing user field
-$t->get_ok("http://localhost:$port/users/group15")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group15 is [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group15");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group15 is [ nightbeat,starscream,soundwave ]";
 
 $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group15", json {})
     ->status_is(200)
     ->content_is("ok");
 
-$t->get_ok("http://localhost:$port/users/group15")
-    ->json_content_is([sort qw( nightbeat starscream soundwave )], "group15 is (still) [ nightbeat,starscream,soundwave ]");
+$t->get_ok("http://localhost:$port/users/group15");
+
+eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group15 is (still) [ nightbeat,starscream,soundwave ]";
 
 1;
