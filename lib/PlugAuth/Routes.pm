@@ -78,19 +78,19 @@ get '/authz/resources/#user/#action/(*resourceregex)' => sub  {
         TRACE "Checking resource $resource";
         push @resources, $resource if $c->authz->can_user_action_resource($user,$action,$resource);
     }
-    $c->render_json([sort @resources]);
+    $c->stash->{autodata} = [sort @resources];
 };
 
 # Return a list of all defined actions
 get '/actions' => sub {
     my($self) = @_;
-    $self->render_json([ $self->authz->actions ]);
+    $self->stash->{autodata} = [ $self->authz->actions ];
 };
 
 # All the groups for a user :
 get '/groups/#user' => sub {
     my $c = shift;
-    $c->render_json([ $c->authz->groups_for_user($c->stash('user')) ]);
+    $c->stash->{autodata} = [ $c->authz->groups_for_user($c->stash('user')) ];
 };
 
 # Given a host and a tag (e.g. "trusted") return true if that host has
@@ -108,19 +108,19 @@ get '/host/#host/:tag' => sub {
 
 get '/user' => sub {
     my $c = shift;
-    $c->render_json([ uniq sort $c->auth->all_users ]);
+    $c->stash->{autodata} = [ uniq sort $c->auth->all_users ];
 };
 
 get '/group' => sub {
     my $c = shift;
-    $c->render_json([ $c->authz->all_groups ]);
+    $c->stash->{autodata} = [ $c->authz->all_groups ];
 };
 
 get '/users/:group' => sub {
     my $c = shift;
     my $users = $c->authz->users_in_group($c->stash('group'));
     $c->render(text => 'not ok', status => 404) unless defined $users;
-    $c->render_json($users);
+    $c->stash->{autodata} = $users;
 };
 
 authenticate;
