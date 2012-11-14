@@ -129,8 +129,10 @@ authorize 'accounts';
 post '/user' => sub {
     my $c = shift;
     $c->refresh;
-    my $user = $c->req->json->{user};
-    my $password = $c->req->json->{password} || '';
+    $c->parse_autodata;
+    my $user = $c->stash->{autodata}->{user};
+    my $password = $c->stash->{autodata}->{password} || '';
+    delete $c->stash->{autodata};
     if($c->auth->create_user($user, $password)) {
         $c->render(text => 'ok', status => 200);
         $c->app->emit('user_list_changed');
@@ -153,8 +155,10 @@ del '/user/#user' => sub {
 post '/group' => sub {
     my $c = shift;
     $c->refresh;
-    my $group = $c->req->json->{group};
-    my $users = $c->req->json->{users};
+    $c->parse_autodata;
+    my $group = $c->stash->{autodata}->{group};
+    my $users = $c->stash->{autodata}->{users};
+    delete $c->stash->{autodata};
     $c->authz->create_group($group, $users)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => "not ok", status => 403);
@@ -171,7 +175,9 @@ del '/group/:group' => sub {
 post '/group/:group' => sub {
     my $c = shift;
     $c->refresh;
-    my $users = $c->req->json->{users};
+    $c->parse_autodata;
+    my $users = $c->stash->{autodata}->{users};
+    delete $c->stash->{autodata};
     $c->authz->update_group($c->param('group'), $users)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
@@ -216,8 +222,10 @@ authorize 'change_password';
 post '/user/#user' => sub {
     my($c) = @_;
     $c->refresh;
+    $c->parse_autodata;
     my $user = $c->param('user');
-    my $password = eval { $c->req->json->{password} } || '';
+    my $password = eval { $c->stash->{autodata}->{password} } || '';
+    delete $c->stash->{autodata};
     $c->auth->change_password($user, $password)
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 403);
