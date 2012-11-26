@@ -98,3 +98,9 @@ sub all_users
 }
 
 1;
+
+=head1 SEE ALSO
+
+L<PlugAuth>
+
+=cut

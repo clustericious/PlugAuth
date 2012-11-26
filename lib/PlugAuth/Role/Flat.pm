@@ -80,3 +80,12 @@ sub read_file { # TODO: cache w/ mtime
 }
 
 1;
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Plugin::FlatAuth>,
+L<PlugAuth::Plugin::FlatAuthz>,
+L<PlugAuth::Guide::Plugin>
+
+=cut

@@ -40,3 +40,11 @@ Called on every request.
 requires qw( refresh );
 
 1;
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>,
+L<Test::PlugAuth::Plugin::Refresh>
+
+=cut

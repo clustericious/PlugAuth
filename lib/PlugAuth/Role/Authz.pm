@@ -119,3 +119,10 @@ $users is a comma separated list of user names.
 sub update_group { 0 }
 
 1;
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>
+
+=cut

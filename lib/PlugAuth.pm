@@ -211,9 +211,9 @@ Emitted when a user is created or deleted.
 
 L<Clustericious::Plugin::SimpleAuth>,
 L<PlugAuth::Client>,
-L<PlugAuth::Plugin::FlatAuth>,
-L<PlugAuth::Plugin::FlatAuthz>,
-L<PlugAuth::Plugin>
+L<PlugAuth::Guide::Client>,
+L<PlugAuth::Guide::Plugin>,
+L<PlugAuth::Guide::Server>
 
 =cut
 

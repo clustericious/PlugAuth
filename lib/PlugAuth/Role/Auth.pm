@@ -140,3 +140,11 @@ around all_users => sub {
 };
 
 1;
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>,
+L<Test::PlugAuth::Plugin::Auth>
+
+=cut

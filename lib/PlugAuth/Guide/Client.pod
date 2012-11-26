@@ -9,6 +9,8 @@ that authenticate or authorize against a L<PlugAuth> server.
 
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Client>, L<Apache2::PlugAuth>, 
+L<PlugAuth>, 
+L<PlugAuth::Client>, 
 L<Authen::Simple::PlugAuth>
 
+=cut

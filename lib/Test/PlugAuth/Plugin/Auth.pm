@@ -137,3 +137,10 @@ sub run_tests
 }
 
 1;
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>
+
+=cut

@@ -8,4 +8,12 @@ This document serves as a guide for creating plugins for L<PlugAuth>.
 
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Role::Plugin>, L<PlugAuth::Role::Auth>, L<PlugAuth::Role::Authz>, L<PlugAuth::Role::Refresh>.
+L<PlugAuth>, 
+L<PlugAuth::Role::Plugin>, 
+L<PlugAuth::Role::Auth>, 
+L<PlugAuth::Role::Authz>, 
+L<PlugAuth::Role::Refresh>,
+L<Test::PlugAuth::Plugin::Refresh>,
+L<Test::PlugAuth::Plugin::Auth>
+
+=cut

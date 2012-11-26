@@ -8,10 +8,16 @@ use FindBin;
 # ABSTRACT: PlugAuth server
 # VERSION
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 plugauth is invoked like any other L<Mojolicious> or L<Clustericious>
-application.  More detailed documentation can be found in L<PlugAuth>.
+application.  More detailed documentation can be found in L<PlugAuth>
+and L<PlugAuth::Guide::Server>.
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Server>
 
 =cut
 
