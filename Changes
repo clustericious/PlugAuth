@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.01      2012-11-13 16:30:06 America/New_York
   - Added documentation in PlugAuth::Guide::*
   - Added roles for plugins (see PlugAuth::Role::*)
   - use Apache MD5 password when creating/changing passwords
