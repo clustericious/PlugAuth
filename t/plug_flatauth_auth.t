@@ -5,10 +5,7 @@ use File::Temp qw( tempdir );
 use File::Spec;
 use Test::More;
 use File::Touch qw( touch );
-BEGIN { 
-  eval q{ use Test::PlugAuth::Plugin::Auth; 1 }
-  || plan skip_all => 'test requires Test::PlugAuth::Plugin';
-}
+use Test::PlugAuth::Plugin::Auth;
 
 my $tempdir = tempdir( CLEANUP => 1);
 
