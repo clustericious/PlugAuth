@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 49;
+use Test::More tests => 48;
 use Test::Mojo;
 
 my $t = Test::Mojo->new("PlugAuth");
@@ -63,7 +63,7 @@ $t->get_ok('/groups/tHOr')->status_is(200)->json_content_is([qw/public superuser
 
 $t->get_ok('/groups/linus')->status_is(200)->json_content_is([qw/linus peanuts public/]);
 
-$t->get_ok('/groups/nobody')->status_is(200)->json_content_is([]);
+$t->get_ok('/groups/nobody')->status_is(404);
 
 1;
 

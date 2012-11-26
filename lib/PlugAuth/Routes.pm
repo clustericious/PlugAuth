@@ -150,12 +150,16 @@ get '/actions' => sub {
 
 Return a list of groups that the given user (#user) belongs to. 
 
+Returns 404 not ok if the user does not exist.
+
 =cut
 
 # All the groups for a user :
 get '/groups/#user' => sub {
     my $c = shift;
-    $c->stash->{autodata} = [ $c->authz->groups_for_user($c->stash('user')) ];
+    my $groups = $c->authz->groups_for_user($c->stash('user'));
+    $c->render(text => 'not ok', status => 404) unless defined $groups;
+    $c->stash->{autodata} = $groups;
 };
 
 =head3 GET /host/#host/:tag

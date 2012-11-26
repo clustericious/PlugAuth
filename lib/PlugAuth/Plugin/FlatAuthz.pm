@@ -259,7 +259,8 @@ sub actions {
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>groups_for_user( $user )
 
-Returns the groups the given user belongs to.
+Returns the groups the given user belongs to as a list ref.
+Returns undef if the user does not exist.
 
 =cut
 
@@ -267,8 +268,8 @@ sub groups_for_user {
     my $class = shift;
     my $user = shift or return ();
     $user = lc $user;
-    return () unless $all_users{$user};
-    return sort ( $user, keys %{ $userGroups{ $user } || {} } );
+    return unless $all_users{$user};
+    return [ sort $user, keys %{ $userGroups{ $user } || {} } ];
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>all_groups
@@ -296,7 +297,7 @@ Returns undef if the group does not exist.
 sub users_in_group {
     my $class = shift;
     my $group = shift or return ();
-    return undef unless defined $groupUser{$group};
+    return unless defined $groupUser{$group};
     return [keys %{ $groupUser{$group} }];
 }
 
