@@ -6,6 +6,8 @@
 
 This document serves as a guide for creating plugins for L<PlugAuth>.
 
+FIXME
+
 =head1 SEE ALSO
 
 L<PlugAuth>, 

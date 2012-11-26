@@ -10,6 +10,8 @@ use base qw( Exporter );
 
 our @EXPORT = qw( run_tests );
 
+# FIXME: finish this test
+
 # ABSTRACT: Test a PlugAuth Authz plugin for correctness
 # VERSION
 

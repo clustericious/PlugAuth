@@ -7,6 +7,8 @@
 This document serves as a guide for writing applications and web services
 that authenticate or authorize against a L<PlugAuth> server.
 
+FIXME
+
 =head1 SEE ALSO
 
 L<PlugAuth>, 
