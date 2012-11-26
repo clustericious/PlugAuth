@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Added specification tests for Plugins (Test::PlugAuth::Plugin::*)
+  - use autodata to support JSON, YAML, whatever, instead of just JSON
 
 0.01      2012-11-13 16:30:06 America/New_York
   - Added documentation in PlugAuth::Guide::*
