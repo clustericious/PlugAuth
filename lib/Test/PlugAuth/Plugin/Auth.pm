@@ -41,6 +41,8 @@ sub run_tests
   $global_config = Clustericious::Config->new($global_config)
     unless eval { $global_config->isa('Clustericious::Config') };
   $plugin_config //= {};
+  $plugin_config = Clustericious::Config->new($plugin_config)
+    unless eval { $plugin_config->isa('Clustericious::Config') };
   
   $Test->plan( tests => 14);
   
