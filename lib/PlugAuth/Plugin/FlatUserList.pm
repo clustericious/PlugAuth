@@ -8,8 +8,8 @@ package PlugAuth::Plugin::FlatUserList;
 In your PlugAuth.conf file:
 
  ---
- plugin:
-   - PlugAuth::Plugin::FlatUserList
+ plugins:
+   - PlugAuth::Plugin::FlatUserList:
        user_list_file: /path/to/user_list.txt
    - PlugAuth::Plugin::LDAP: {}
  ldap :
