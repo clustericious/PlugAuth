@@ -184,10 +184,15 @@ sub run_tests
   };
   
   # TODO: can_user_action_resource
-  # TODO: match_resources
-  # TODO: host_has_tag
   # TODO: actions
   # TODO: grant
+
+  # These two do not have a write RESTful API yet and cannot be
+  # tested.
+  # TODO: match_resources
+  # TODO: host_has_tag
+  
+  # This has to be implemented.
   # TODO: revoke
 }
 
