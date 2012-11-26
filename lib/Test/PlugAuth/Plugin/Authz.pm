@@ -12,8 +12,6 @@ use base qw( Exporter );
 
 our @EXPORT = qw( run_tests );
 
-# FIXME: finish this test
-
 # ABSTRACT: Test a PlugAuth Authz plugin for correctness
 # VERSION
 
@@ -41,7 +39,7 @@ sub run_tests
   eval qq{ use $class };
   die $@ if $@;
   
-  $Test->plan( tests => 26 );
+  $Test->plan( tests => 53 );
   
   $global_config //= {};
   
@@ -183,9 +181,115 @@ sub run_tests
     };
   };
   
-  # TODO: can_user_action_resource
-  # TODO: actions
-  # TODO: grant
+  do {
+    $Test->ok( !defined(eval { $object->can_user_action_resource('grimlock', 'be', '/bigbozo') }), "grimlock is not big bozo" );
+    $Test->diag($@) if $@;
+    
+    $Test->ok( eval { $object->grant('grimlock', 'be', '/bigbozo') } == 1, 'grant returns 1' );
+    $Test->diag($@) if $@;
+    $refresh->();
+    
+    $Test->ok( defined(eval { $object->can_user_action_resource('grimlock', 'be', '/bigbozo') }), "grimlock is a big bozo" );
+    $Test->diag($@) if $@;
+    
+    $Test->ok( !defined(eval { $object->can_user_action_resource('primus', 'be', '/bigbozo') }), "primus is not a big bozo" );
+    $Test->diag($@) if $@;
+    
+    my @actions = $object->actions;
+    
+    my $pass = $#actions == 0 && $actions[0] eq 'be';
+    $Test->ok( $pass, "actions = be" );
+    $Test->diag("actions is actually = ", join(', ', @actions))
+      unless $pass;
+  };
+
+  do {
+    
+    $object->create_group( 'public', '*' );
+    $refresh->();
+    my @public = sort @{ $object->users_in_group('public') };
+    
+    # grimlock megatron optimus primus  
+    
+    my $pass = $#public == 3 
+      && $public[0] eq 'grimlock'
+      && $public[1] eq 'megatron'
+      && $public[2] eq 'optimus'
+      && $public[3] eq 'primus';
+    $Test->ok($pass, "public = [ grimlock, megatron, optimus, primus ]");
+    $Test->diag("actual public = [ ", join(', ', @public), " ]")
+      unless $pass;
+  };
+
+  do {
+  
+    foreach my $username (qw( optimus primus megatron grimlock ))
+    {
+      $Test->ok( !defined(eval { $object->can_user_action_resource($username, 'dislike', '/gobots') }), "$username likes gobots");
+      $Test->diag($@) if $@;
+    }
+    
+    $Test->ok( eval { $object->grant('public', 'dislike', '/gobots') } == 1, 'grant returns 1' );
+    $Test->diag($@) if $@;
+    $refresh->();
+    
+    foreach my $username (qw( optimus primus megatron grimlock ))
+    {
+      $Test->ok( defined(eval { $object->can_user_action_resource($username, 'dislike', '/gobots') }), "$username dislikes gobots");
+      $Test->diag($@) if $@;
+    }
+    
+    my @actions = $object->actions;
+    
+    my $pass = $#actions == 1 && $actions[0] eq 'be' && $actions[1] eq 'dislike';
+    $Test->ok( $pass, "actions = be, dislike" );
+    $Test->diag("actions is actually = ", join(', ', @actions))
+      unless $pass;
+  
+  };
+  
+  do {
+    $object->create_group( 'group2', 'grimlock,primus' );
+    $refresh->();
+    my @group2 = sort @{ $object->users_in_group('group2') };
+    
+    my $pass = $#group2 == 1
+      && $group2[0] eq 'grimlock'
+      && $group2[1] eq 'primus';
+    $Test->ok($pass, "group2 = [ grimlock, primus ]");
+  };
+  
+  do {
+  
+    foreach my $username (qw( optimus primus megatron grimlock ))
+    {
+      $Test->ok( !defined(eval { $object->can_user_action_resource($username, 'have', '/bighead') }), "$username does not have a big head");
+      $Test->diag($@) if $@;
+    }
+    
+    $Test->ok( eval { $object->grant('group2', 'have', '/bighead') } == 1, 'grant returns 1' );
+    $Test->diag($@) if $@;
+    $refresh->();
+    
+    foreach my $username (qw( primus grimlock ))
+    {
+      $Test->ok( defined(eval { $object->can_user_action_resource($username, 'have', '/bighead') }), "$username does have a big head");
+      $Test->diag($@) if $@;
+    }
+    
+    foreach my $username (qw( megatron optimus ))
+    {
+      $Test->ok( !defined(eval { $object->can_user_action_resource($username, 'have', '/bighead') }), "$username does not have a big head");
+      $Test->diag($@) if $@;
+    }
+
+    my @actions = $object->actions;
+    
+    my $pass = $#actions == 2 && $actions[0] eq 'be' && $actions[1] eq 'dislike' && $actions[2] eq 'have';
+    $Test->ok( $pass, "actions = be, dislike, have" );
+    $Test->diag("actions is actually = ", join(', ', @actions))
+      unless $pass;
+  };
 
   # These two do not have a write RESTful API yet and cannot be
   # tested.
