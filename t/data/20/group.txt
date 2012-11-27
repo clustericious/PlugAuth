@@ -1,0 +1,4 @@
+autobot: optimus,grimlock,skylynks,swoop
+decepticon: starscream,megatron
+public: *
+god: primus,unicron

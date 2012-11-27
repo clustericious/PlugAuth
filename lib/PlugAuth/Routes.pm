@@ -392,12 +392,25 @@ post '/grant/#group/:action1/(*resource)' => sub {
     $c->refresh;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->grant($group, $action, $resource)
-    ? $c->render(text => 'ok', status => 200)
+    ? $c->render(text => 'ok',     status => 200)
     : $c->render(text => 'not ok', status => 404);
 };
 
-authenticate;
-authorize 'change_password';
+=head3 DELETE /grant/#group/:action1/(*resource)
+
+Revoke permission to the given group (#group) to perform the given action (:action1) on
+the given resource (*resource).  Returns 200 ok on success, 404 not ok on failure.
+
+=cut
+
+del '/grant/#group/:action1/(*resource)' => sub {
+    my($c) = @_;
+    $c->refresh;
+    my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+    $c->authz->revoke($group, $action, $resource)
+    ? $c->render(text => 'ok',     status => 200)
+    : $c->render(text => 'not ok', status => 404);
+};
 
 =head2 Change Password routes
 
@@ -427,6 +440,9 @@ an autodata argument (JSON, YAML, form data, etc.).  Returns 200 ok on success,
 403 not ok on failure.
 
 =cut
+
+authenticate;
+authorize 'change_password';
 
 post '/user/#user' => sub {
     my($c) = @_;
