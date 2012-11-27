@@ -164,6 +164,9 @@ sub init
     # each user has his/her own group, so we touch the group file
 
     my($self) = @_;
+    
+    $self->flat_init;
+    
     my $touch = File::Touch->new(
         mtime_only => 1,
         no_create => 1,

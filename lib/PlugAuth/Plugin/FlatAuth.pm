@@ -73,6 +73,10 @@ with 'PlugAuth::Role::Flat';
 
 our %Userpw;              # Keys are usernames, values are lists of crypted passwords.
 
+sub init {
+    shift->flat_init;
+}
+
 =head1 METHODS
 
 =head2 PlugAuth::Plugin::FlatAuth-E<gt>refresh
