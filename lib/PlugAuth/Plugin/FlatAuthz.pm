@@ -371,10 +371,11 @@ sub delete_group
         eval { flock $fh, LOCK_EX };
         WARN "cannot lock $filename - $@" if $@;
 
-        while(<$fh>) {
-            my($thisgroup, $password) = split /\s*:/;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            my($thisgroup, $password) = split /\s*:/, $line;
             next if $thisgroup eq $group;
-            $buffer .= $_;
+            $buffer .= $line;
         }
 
         seek $fh, 0, 0;
@@ -420,10 +421,11 @@ sub update_group
         eval { flock $fh, LOCK_EX };
         WARN "cannot lock $filename - $@" if $@;
 
-        while(<$fh>) {
-            my($thisgroup, $password) = split /\s*:/;
-            s{:.*$}{: $users} if $thisgroup eq $group;
-            $buffer .= $_;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            my($thisgroup, $password) = split /\s*:/, $line;
+            $line =~ s{:.*$}{: $users} if $thisgroup eq $group;
+            $buffer .= $line;
         }
 
         seek $fh, 0, 0;
@@ -440,8 +442,8 @@ sub update_group
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>grant( $group, $action, $resource )
 
-Grant the given group or user the authorization to perform the given
-$action on the given $resource.
+Grant the given group or user ($group) the authorization to perform the given
+action ($action) on the given resource ($resource).
 
 =cut
 
@@ -458,16 +460,14 @@ sub grant
 
     if($resourceActionGroup{$resource}->{$action}->{$group})
     {
-      WARN "grant already added $group $action $resource";
-      return 1;
+        WARN "grant already added $group $action $resource";
+        return 1;
     }
 
     my $filename = $class->global_config->resource_file;
 
     eval {
         use autodie;
-
-        my $buffer = '';
 
         open my $fh, '>>', $filename;
 
@@ -482,6 +482,69 @@ sub grant
     ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
     return 1;
+}
+
+=head2 PlugAuth::Plugin::FlatAuthz-E<gt>revoke( $group, $action, $resource )
+
+Revoke the given group or user ($group) the authorization to perform the given
+action ($action) on the given resource ($resource).
+
+=cut
+
+sub revoke
+{
+    my($class, $group, $action, $resource) = @_;
+
+    unless($group && (defined $groupUser{$group} || defined $all_users{$group})) {
+        WARN "Group (or user) $group does not exist";
+        return 0;
+    }
+
+    $resource = '/' . $resource unless $resource =~ /\//;
+
+    unless($resourceActionGroup{$resource}->{$action}->{$group})
+    {
+        WARN "not authorized to $group $action $resource";
+        return 0;
+    }
+    
+    my $filename = $class->global_config->resource_file;
+
+    eval {
+        use autodie;
+
+        my $buffer = '';
+        
+        open my $fh, '+<', $filename;
+        eval { flock $fh, LOCK_EX };
+        WARN "cannot lock $filename - $@" if $@;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            if($line =~ /^#/) {
+                $buffer .= $line;
+            } elsif($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$}
+                 && $1 eq $resource && $2 eq $action) {
+                my(@groups) = grep { $_ ne $group } split /,/, $3;
+                $buffer .= "$resource ($action) : " . join(',', @groups) . "\n"
+                    if @groups > 0;
+            } else {
+                $buffer .= $line;
+            }
+        }
+        
+        seek $fh, 0, 0;
+        truncate $fh, 0;
+        print $fh $buffer;
+        
+        close $fh;
+    
+    };
+    
+    ERROR "modifying file $filename: $@" if $@;
+    mark_changed($filename);
+
+    return 1;
+
 }
 
 1;

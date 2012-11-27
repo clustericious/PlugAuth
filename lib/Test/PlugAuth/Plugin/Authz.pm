@@ -39,7 +39,7 @@ sub run_tests
   eval qq{ use $class };
   die $@ if $@;
   
-  $Test->plan( tests => 53 );
+  $Test->plan( tests => 65 );
   
   $global_config //= {};
   
@@ -291,13 +291,41 @@ sub run_tests
       unless $pass;
   };
 
+  do {
+  
+    $Test->ok( eval { $object->revoke('group2', 'have', '/bighead') } == 1, 'revoke returns 1' );
+    $Test->diag($@) if $@;
+    $refresh->();
+  
+    foreach my $username (qw( optimus primus megatron grimlock ))
+    {
+      $Test->ok( !defined(eval { $object->can_user_action_resource($username, 'have', '/bighead') }), "$username does not have a big head");
+      $Test->diag($@) if $@;
+    }
+    
+    $Test->ok( eval { $object->revoke('public', 'dislike', '/gobots') } == 1, 'revoke returns 1' );
+    $Test->diag($@) if $@;
+    $refresh->();
+
+    foreach my $username (qw( optimus primus megatron grimlock ))
+    {
+      $Test->ok( !defined(eval { $object->can_user_action_resource($username, 'dislike', '/gobots') }), "$username likes gobots");
+      $Test->diag($@) if $@;
+    }
+    
+    $Test->ok( eval { $object->revoke('grimlock', 'be', '/bigbozo') } == 1, 'revoke returns 1' );
+    $Test->diag($@) if $@;
+    $refresh->();
+
+    $Test->ok( !defined(eval { $object->can_user_action_resource('grimlock', 'be', '/bigbozo') }), "grimlock is not big bozo" );
+    $Test->diag($@) if $@;
+
+  };
+
   # These two do not have a write RESTful API yet and cannot be
   # tested.
   # TODO: match_resources
   # TODO: host_has_tag
-  
-  # This has to be implemented.
-  # FIXME: revoke
 }
 
 1;

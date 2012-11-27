@@ -101,12 +101,21 @@ sub delete_group { 0 }
 
 =head2 $plugin-E<gt>grant( $group, $action, $resource )
 
-Grant the given group or user the authorization to perform the given
-$action on the given $resource.
+Grant the given group or user ($group) the authorization to perform the given
+action ($action) on the given resource ($resource).
 
 =cut
 
 sub grant { 0 }
+
+=head2 $plugin-E<gt>revoke( $group, $action, $resource )
+
+Revoke the given group or user ($group) the authorization to performa
+the given action ($action) on the given resource ($resource)
+
+=cut
+
+sub revoke { 0 }
 
 =head2 $plugin-E<gt>update_group( $group, $users )
 

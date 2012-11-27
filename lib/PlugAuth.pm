@@ -171,6 +171,8 @@ where ".host" is a string representing a hostname, returns
 
 =back
 
+For a complete list of the available routes and what they return see L<PlugAuth::Routes>.
+
 =head2 CONFIGURATION
 
 Server configuration is done in ~/etc/PlugAuth.conf which is a 
