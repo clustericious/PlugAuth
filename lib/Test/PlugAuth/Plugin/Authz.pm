@@ -297,7 +297,7 @@ sub run_tests
   # TODO: host_has_tag
   
   # This has to be implemented.
-  # TODO: revoke
+  # FIXME: revoke
 }
 
 1;
