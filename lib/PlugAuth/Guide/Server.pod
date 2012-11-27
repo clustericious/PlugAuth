@@ -208,7 +208,7 @@ be used as a list of users), and set it to 0 to use both user.txt and LDAP for a
 
 There are other plugins for details on how they work, see the plugin documentation.
 
-L<PlugAuth::Plugin::DBI::Auth>, L<PlugAuth::Plugin::AuthenSimple>
+L<PlugAuth::Plugin::DBIAuth>, L<PlugAuth::Plugin::AuthenSimple>
 
 =head1 SEE ALSO
 

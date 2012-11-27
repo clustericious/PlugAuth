@@ -41,7 +41,7 @@ you select in the configuration file.  The default plugins for authentication
 implemented with ordinary flat files and advisory locks using flock.
 
 The are other plugins for ldap (L<PlugAuth::Plugin::LDAP>), L<DBI> 
-(L<PlugAuth::Plugin::DBI::Auth>), or you can write your own (L<PlugAuth::Guide::Plugin>).
+(L<PlugAuth::Plugin::DBIAuth>), or you can write your own (L<PlugAuth::Guide::Plugin>).
 
 Here is a diagram that illustrates the most common use case for PlugAuth being used 
 by a RESTful service:
