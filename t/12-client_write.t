@@ -33,7 +33,7 @@ isa_ok $client, 'PlugAuth::Client';
 
 $client->login('primus', 'cybertron');
 eq_or_diff [grep /^thrust$/, @{ $client->user }], [], 'user thrust does not exist';
-ok $client->create_user({user => 'thrust', password => 'foo'}), 'client.create_user(user: thrust, password: foo)';
+ok $client->create_user(user => 'thrust', password => 'foo'), 'client.create_user(user: thrust, password: foo)';
 eq_or_diff [grep /^thrust$/, @{ $client->user }], ['thrust'], 'user thrust was created';
 
 eq_or_diff [grep /^wheelie$/, @{ $client->user }], ['wheelie'], 'user wheelie does exist';
@@ -41,7 +41,7 @@ ok $client->delete_user('wheelie'), 'client.delete_user(wheelie)';
 eq_or_diff [grep /^wheelie$/, @{ $client->user }], [], 'user wheelie has been deleted';
 
 eq_or_diff [grep /^seekers$/, @{ $client->group }], [], 'group seekers does not exist yet';
-ok $client->create_group({ group => 'seekers', users => 'starscream,thundercracker,skywarp,thrust,ramjet,dirge'}), 'client.create_group(group: seekers, ...)';
+ok $client->create_group(group => 'seekers', users => 'starscream,thundercracker,skywarp,thrust,ramjet,dirge'), 'client.create_group(group: seekers, ...)';
 eq_or_diff [grep /^seekers$/, @{ $client->group }], ['seekers'], 'group seekers has been created';
 eq_or_diff [sort @{ $client->users('seekers') }], [sort qw( starscream thundercracker skywarp thrust ramjet dirge )], 'check seeker membership';
 
