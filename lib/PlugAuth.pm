@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 use strict;
@@ -104,7 +104,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -144,7 +144,7 @@ you select in the configuration file.  The default plugins for authentication
 implemented with ordinary flat files and advisory locks using flock.
 
 The are other plugins for ldap (L<PlugAuth::Plugin::LDAP>), L<DBI> 
-(L<PlugAuth::Plugin::DBI::Auth>), or you can write your own (L<PlugAuth::Guide::Plugin>).
+(L<PlugAuth::Plugin::DBIAuth>), or you can write your own (L<PlugAuth::Guide::Plugin>).
 
 Here is a diagram that illustrates the most common use case for PlugAuth being used 
 by a RESTful service:
@@ -273,6 +273,8 @@ where ".host" is a string representing a hostname, returns
 
 =back
 
+For a complete list of the available routes and what they return see L<PlugAuth::Routes>.
+
 =head2 CONFIGURATION
 
 Server configuration is done in ~/etc/PlugAuth.conf which is a 
@@ -313,9 +315,9 @@ Emitted when a user is created or deleted.
 
 L<Clustericious::Plugin::SimpleAuth>,
 L<PlugAuth::Client>,
-L<PlugAuth::Plugin::FlatAuth>,
-L<PlugAuth::Plugin::FlatAuthz>,
-L<PlugAuth::Plugin>
+L<PlugAuth::Guide::Client>,
+L<PlugAuth::Guide::Plugin>,
+L<PlugAuth::Guide::Server>
 
 =head1 AUTHOR
 

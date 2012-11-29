@@ -6,7 +6,7 @@ use v5.10;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth plugins
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 sub init { }
@@ -47,6 +47,7 @@ sub new
 
 1;
 
+
 __END__
 =pod
 
@@ -56,7 +57,7 @@ PlugAuth::Role::Plugin - Role for PlugAuth plugins
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -102,6 +103,13 @@ class method.
 =head2 $plugin-E<gt>app
 
 Returns the L<PlugAuth> instance for the running PlugAuth server.
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>
+
+=cut
 
 =head1 AUTHOR
 

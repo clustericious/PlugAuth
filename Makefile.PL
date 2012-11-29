@@ -14,17 +14,13 @@ my %WriteMakefileArgs = (
   "BUILD_REQUIRES" => {
     "File::HomeDir" => 0,
     "File::HomeDir::Test" => 0,
-    "File::Spec" => 0,
-    "Module::Build" => "0.3601",
     "Mojo::JSON" => 0,
     "Test::Differences" => 0,
     "Test::Mojo" => 0,
-    "Test::More" => 0,
-    "YAML" => 0
+    "Test::More" => 0
   },
   "CONFIGURE_REQUIRES" => {
-    "ExtUtils::MakeMaker" => "6.30",
-    "Module::Build" => "0.3601"
+    "ExtUtils::MakeMaker" => "6.30"
   },
   "DISTNAME" => "PlugAuth",
   "EXE_FILES" => [
@@ -40,7 +36,10 @@ my %WriteMakefileArgs = (
     "Clustericious::Config" => 0,
     "Clustericious::RouteBuilder" => 0,
     "Crypt::PasswdMD5" => 0,
+    "Exporter" => 0,
     "Fcntl" => 0,
+    "File::Spec" => 0,
+    "File::Temp" => 0,
     "File::Touch" => 0,
     "File::stat" => 0,
     "FindBin" => 0,
@@ -52,10 +51,12 @@ my %WriteMakefileArgs = (
     "Mojolicious::Plugin::Subdispatch" => 0,
     "Role::Tiny" => 0,
     "Role::Tiny::With" => 0,
+    "Test::Builder" => 0,
     "Text::Glob" => 0,
+    "YAML" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.01",
+  "VERSION" => "0.02",
   "test" => {
     "TESTS" => "t/*.t"
   }

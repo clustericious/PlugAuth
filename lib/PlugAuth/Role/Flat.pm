@@ -2,13 +2,17 @@ package PlugAuth::Role::Flat;
 
 use strict;
 use warnings;
+use v5.10;
 use Log::Log4perl qw( :easy );
-use File::stat qw/stat/;
-use Fcntl qw/ :flock /;
+use File::stat qw( stat );
+use Fcntl qw( :flock );
 use Role::Tiny;
+use File::Temp ();
+use File::Spec;
+use File::Touch qw( touch );
 
 # ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 my %MTimes;
 
@@ -79,7 +83,33 @@ sub read_file { # TODO: cache w/ mtime
     return %h;
 }
 
+sub temp_dir
+{
+    state $dir;
+    unless(defined $dir) {
+        $dir = File::Temp::tempdir( CLEANUP => 1);
+    }
+    return $dir;
+}
+
+sub flat_init
+{
+    my($self) = @_;
+    my $config = $self->global_config;
+    
+    foreach my $file (qw( group_file resource_file user_file ))
+    {
+        $config->{$file} //= do {
+            my $fn = File::Spec->catfile($self->temp_dir, $file);
+            WARN "$file not defined in configuration, using temp $fn, modifiations will be lost on exit";
+            touch $fn;
+            $fn;
+        };
+    }
+}
+
 1;
+
 
 __END__
 =pod
@@ -90,7 +120,16 @@ PlugAuth::Role::Flat - private role used by L<FlatAuth|PlugAuth::Plugin::FlatAut
 
 =head1 VERSION
 
-version 0.01
+version 0.02
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Plugin::FlatAuth>,
+L<PlugAuth::Plugin::FlatAuthz>,
+L<PlugAuth::Guide::Plugin>
+
+=cut
 
 =head1 AUTHOR
 

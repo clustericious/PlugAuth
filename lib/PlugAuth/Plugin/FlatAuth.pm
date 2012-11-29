@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 use strict;
@@ -20,6 +20,10 @@ with 'PlugAuth::Role::Refresh';
 with 'PlugAuth::Role::Flat';
 
 our %Userpw;              # Keys are usernames, values are lists of crypted passwords.
+
+sub init {
+    shift->flat_init;
+}
 
 
 sub refresh {
@@ -166,12 +170,13 @@ sub change_password
             eval { flock $fh, LOCK_EX };
             WARN "cannot lock $filename - $@" if $@;
 
-            while(<$fh>) {
-                my($thisuser, $oldpassword) = split /:/;
+            while(! eof $fh) {
+                my $line = <$fh>;
+                my($thisuser, $oldpassword) = split /:/, $line;
                 if($thisuser eq $user) {
                     $buffer .= join(':', $user, $password) . "\n";
                 } else {
-                    $buffer .= $_;
+                    $buffer .= $line;
                 }
             }
 
@@ -218,10 +223,11 @@ sub delete_user
             eval { flock $fh, LOCK_EX };
             WARN "cannot lock $filename - $@" if $@;
 
-            while(<$fh>) {
-                my($thisuser, $password) = split /:/;
+            while(! eof $fh) {
+                my $line = <$fh>;
+                my($thisuser, $password) = split /:/, $line;
                 next if $thisuser eq $user;
-                $buffer .= $_;
+                $buffer .= $line;
             }
 
             seek $fh, 0, 0;
@@ -256,7 +262,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 

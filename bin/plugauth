@@ -6,7 +6,7 @@ use FindBin;
 
 # PODNAME: plugauth
 # ABSTRACT: PlugAuth server
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 use lib "$FindBin::Bin/../lib";
@@ -27,12 +27,18 @@ plugauth - PlugAuth server
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 plugauth is invoked like any other L<Mojolicious> or L<Clustericious>
-application.  More detailed documentation can be found in L<PlugAuth>.
+application.  More detailed documentation can be found in L<PlugAuth>
+and L<PlugAuth::Guide::Server>.
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Server>
 
 =head1 AUTHOR
 

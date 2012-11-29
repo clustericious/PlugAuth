@@ -12,16 +12,19 @@ PlugAuth::Guide::Client - Guide for authenticating and authorizing against a Plu
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 DESCRIPTION
 
 This document serves as a guide for writing applications and web services
 that authenticate or authorize against a L<PlugAuth> server.
 
+FIXME
+
 =head1 SEE ALSO
 
-L<PlugAuth>, L<PlugAuth::Client>, L<Apache2::PlugAuth>, 
+L<PlugAuth>, 
+L<PlugAuth::Client>, 
 L<Authen::Simple::PlugAuth>
 
 =head1 AUTHOR

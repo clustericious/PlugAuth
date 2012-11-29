@@ -12,7 +12,7 @@ PlugAuth::Guide::Server - Guide for setting up a PlugAuth server.
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 DESCRIPTION
 
@@ -214,9 +214,13 @@ be used as a list of users), and set it to 0 to use both user.txt and LDAP for a
 
 There are other plugins for details on how they work, see the plugin documentation.
 
-L<PlugAuth::Plugin::DBI::Auth>, L<PlugAuth::Plugin::AuthenSimple>
+L<PlugAuth::Plugin::DBIAuth>, L<PlugAuth::Plugin::AuthenSimple>. L<PlugAuth::Plugin::LDAP>
 
 =for stopwords auth
+
+=head1 SEE ALSO
+
+L<PlugAuth>
 
 =head1 AUTHOR
 

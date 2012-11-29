@@ -1,5 +1,12 @@
 Revision history for PlugAuth
 
+0.02      2012-11-29 15:13:48 America/New_York
+  - Added specification tests for Plugins (Test::PlugAuth::Plugin::*)
+  - use autodata to support JSON, YAML, whatever, instead of just JSON
+  - use temp storage by default if no files are specified in the config
+    warn on this sort of usage, as modifications will be lost.
+  - Added revoke route (DELETE /grant/...)
+
 0.01      2012-11-13 16:30:06 America/New_York
   - Added documentation in PlugAuth::Guide::*
   - Added roles for plugins (see PlugAuth::Role::*)

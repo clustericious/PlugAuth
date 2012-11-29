@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 use strict;
@@ -89,6 +89,9 @@ sub init
     # each user has his/her own group, so we touch the group file
 
     my($self) = @_;
+    
+    $self->flat_init;
+    
     my $touch = File::Touch->new(
         mtime_only => 1,
         no_create => 1,
@@ -166,8 +169,8 @@ sub groups_for_user {
     my $class = shift;
     my $user = shift or return ();
     $user = lc $user;
-    return () unless $all_users{$user};
-    return sort ( $user, keys %{ $userGroups{ $user } || {} } );
+    return unless $all_users{$user};
+    return [ sort $user, keys %{ $userGroups{ $user } || {} } ];
 }
 
 
@@ -179,7 +182,7 @@ sub all_groups {
 sub users_in_group {
     my $class = shift;
     my $group = shift or return ();
-    return undef unless defined $groupUser{$group};
+    return unless defined $groupUser{$group};
     return [keys %{ $groupUser{$group} }];
 }
 
@@ -242,10 +245,11 @@ sub delete_group
         eval { flock $fh, LOCK_EX };
         WARN "cannot lock $filename - $@" if $@;
 
-        while(<$fh>) {
-            my($thisgroup, $password) = split /\s*:/;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            my($thisgroup, $password) = split /\s*:/, $line;
             next if $thisgroup eq $group;
-            $buffer .= $_;
+            $buffer .= $line;
         }
 
         seek $fh, 0, 0;
@@ -284,10 +288,11 @@ sub update_group
         eval { flock $fh, LOCK_EX };
         WARN "cannot lock $filename - $@" if $@;
 
-        while(<$fh>) {
-            my($thisgroup, $password) = split /\s*:/;
-            s{:.*$}{: $users} if $thisgroup eq $group;
-            $buffer .= $_;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            my($thisgroup, $password) = split /\s*:/, $line;
+            $line =~ s{:.*$}{: $users} if $thisgroup eq $group;
+            $buffer .= $line;
         }
 
         seek $fh, 0, 0;
@@ -316,16 +321,14 @@ sub grant
 
     if($resourceActionGroup{$resource}->{$action}->{$group})
     {
-      WARN "grant already added $group $action $resource";
-      return 1;
+        WARN "grant already added $group $action $resource";
+        return 1;
     }
 
     my $filename = $class->global_config->resource_file;
 
     eval {
         use autodie;
-
-        my $buffer = '';
 
         open my $fh, '>>', $filename;
 
@@ -342,6 +345,63 @@ sub grant
     return 1;
 }
 
+
+sub revoke
+{
+    my($class, $group, $action, $resource) = @_;
+
+    unless($group && (defined $groupUser{$group} || defined $all_users{$group})) {
+        WARN "Group (or user) $group does not exist";
+        return 0;
+    }
+
+    $resource = '/' . $resource unless $resource =~ /\//;
+
+    unless($resourceActionGroup{$resource}->{$action}->{$group})
+    {
+        WARN "not authorized to $group $action $resource";
+        return 0;
+    }
+    
+    my $filename = $class->global_config->resource_file;
+
+    eval {
+        use autodie;
+
+        my $buffer = '';
+        
+        open my $fh, '+<', $filename;
+        eval { flock $fh, LOCK_EX };
+        WARN "cannot lock $filename - $@" if $@;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            if($line =~ /^#/) {
+                $buffer .= $line;
+            } elsif($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$}
+                 && $1 eq $resource && $2 eq $action) {
+                my(@groups) = grep { $_ ne $group } split /,/, $3;
+                $buffer .= "$resource ($action) : " . join(',', @groups) . "\n"
+                    if @groups > 0;
+            } else {
+                $buffer .= $line;
+            }
+        }
+        
+        seek $fh, 0, 0;
+        truncate $fh, 0;
+        print $fh $buffer;
+        
+        close $fh;
+    
+    };
+    
+    ERROR "modifying file $filename: $@" if $@;
+    mark_changed($filename);
+
+    return 1;
+
+}
+
 1;
 
 
@@ -354,7 +414,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -448,7 +508,8 @@ Returns a list of actions.
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>groups_for_user( $user )
 
-Returns the groups the given user belongs to.
+Returns the groups the given user belongs to as a list ref.
+Returns undef if the user does not exist.
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>all_groups
 
@@ -481,8 +542,13 @@ $users is a comma separated list of user names.
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>grant( $group, $action, $resource )
 
-Grant the given group or user the authorization to perform the given
-$action on the given $resource.
+Grant the given group or user ($group) the authorization to perform the given
+action ($action) on the given resource ($resource).
+
+=head2 PlugAuth::Plugin::FlatAuthz-E<gt>revoke( $group, $action, $resource )
+
+Revoke the given group or user ($group) the authorization to perform the given
+action ($action) on the given resource ($resource).
 
 =head1 SEE ALSO
 

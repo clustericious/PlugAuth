@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatUserList;
 
 # ABSTRACT: PlugAuth plugin that provides a user list without authentication.
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 use strict;
@@ -45,6 +45,7 @@ sub all_users
 
 1;
 
+
 __END__
 =pod
 
@@ -54,15 +55,15 @@ PlugAuth::Plugin::FlatUserList - PlugAuth plugin that provides a user list witho
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
 In your PlugAuth.conf file:
 
  ---
- plugin:
-   - PlugAuth::Plugin::FlatUserList
+ plugins:
+   - PlugAuth::Plugin::FlatUserList:
        user_list_file: /path/to/user_list.txt
    - PlugAuth::Plugin::LDAP: {}
  ldap :
@@ -106,6 +107,10 @@ password.
 =head2 $plugin-E<gt>all_users
 
 Returns the list of users in the user list file.
+
+=head1 SEE ALSO
+
+L<PlugAuth>
 
 =head1 AUTHOR
 

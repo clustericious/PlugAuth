@@ -5,12 +5,13 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth reload plugins
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 requires qw( refresh );
 
 1;
+
 
 __END__
 =pod
@@ -21,7 +22,7 @@ PlugAuth::Role::Refresh - Role for PlugAuth reload plugins
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -50,6 +51,14 @@ or both L<PlugAuth::Role::Auth> and L<PlugAuth::Role::Authz>.
 =head2 $plugin-E<gt>refresh
 
 Called on every request.
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>,
+L<Test::PlugAuth::Plugin::Refresh>
+
+=cut
 
 =head1 AUTHOR
 

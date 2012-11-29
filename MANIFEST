@@ -1,4 +1,3 @@
-Build.PL
 Changes
 LICENSE
 MANIFEST
@@ -25,6 +24,9 @@ lib/PlugAuth/Role/Flat.pm
 lib/PlugAuth/Role/Plugin.pm
 lib/PlugAuth/Role/Refresh.pm
 lib/PlugAuth/Routes.pm
+lib/Test/PlugAuth/Plugin/Auth.pm
+lib/Test/PlugAuth/Plugin/Authz.pm
+lib/Test/PlugAuth/Plugin/Refresh.pm
 t/01-auth.t
 t/02-authz.t
 t/03-user.t
@@ -42,6 +44,8 @@ t/16-plugin_user_list.t
 t/17-archive_set.t
 t/18-add_del_group.t
 t/19-client_add_del_group.t
+t/20-revoke.t
+t/21-client-revoke.t
 t/data/01/group.txt
 t/data/01/host.txt
 t/data/01/more_users.txt
@@ -96,8 +100,21 @@ t/data/19/group.txt
 t/data/19/host.txt
 t/data/19/resource.txt
 t/data/19/user.txt
+t/data/20/group.txt
+t/data/20/host.txt
+t/data/20/resource.txt
+t/data/20/user.txt
+t/data/21/group.txt
+t/data/21/host.txt
+t/data/21/resource.txt
+t/data/21/user.txt
 t/etc/PlugAuth.conf
 t/etc/setup.pl
+t/fixme.t
+t/plug_flatauth_auth.t
+t/plug_flatauth_refresh.t
+t/plug_flatauthz_authz.t
+t/plug_flatauthz_refresh.t
 t/pod-coverage.t
 t/use.t
 xt/release/release.yml

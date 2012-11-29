@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth authentication plugins
-our $VERSION = '0.01'; # VERSION
+our $VERSION = '0.02'; # VERSION
 
 
 requires qw( check_credentials );
@@ -63,6 +63,7 @@ around all_users => sub {
 
 1;
 
+
 __END__
 =pod
 
@@ -72,7 +73,7 @@ PlugAuth::Role::Auth - Role for PlugAuth authentication plugins
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -144,6 +145,14 @@ there is no next authentication plugin.
 
 Delegate to the next authentication plugin.  Call this method if your plugins
 authentication has failed if your plugin is not authoritative.
+
+=head1 SEE ALSO
+
+L<PlugAuth>,
+L<PlugAuth::Guide::Plugin>,
+L<Test::PlugAuth::Plugin::Auth>
+
+=cut
 
 =head1 AUTHOR
 
