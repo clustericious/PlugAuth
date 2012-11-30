@@ -2,6 +2,7 @@ package Test::PlugAuth::Plugin::Refresh;
 
 use strict;
 use warnings;
+use Test::PlugAuth::Plugin;
 use Test::Builder;
 use Role::Tiny ();
 use base qw( Exporter );

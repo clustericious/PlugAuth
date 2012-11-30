@@ -2,6 +2,7 @@ package Test::PlugAuth::Plugin::Authz;
 
 use strict;
 use warnings;
+use Test::PlugAuth::Plugin;
 use v5.10;
 use Test::Builder;
 use Role::Tiny ();
