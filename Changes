@@ -1,6 +1,10 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - wrote PlugAuth::Guide::Client (was a stub)
+  - added grant route (GET /grant)
+
+0.02      2012-11-29 15:13:48 America/New_York
   - Added specification tests for Plugins (Test::PlugAuth::Plugin::*)
   - use autodata to support JSON, YAML, whatever, instead of just JSON
   - use temp storage by default if no files are specified in the config
