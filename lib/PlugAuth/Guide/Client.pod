@@ -195,6 +195,8 @@ If you do not have L<PlugAuth::Client> installed and cannot install it, you can 
 or C<curl>.  Because L<PlugAuth> uses standard HTTP status codes, C<wget> will return non
 zero on failure and you can construct an if around it.
 
+ #!/bin/sh
+ 
  USER=$1
  PASS=$2
  WGET="wget -q -O /dev/null"

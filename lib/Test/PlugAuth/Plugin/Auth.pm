@@ -52,6 +52,12 @@ sub run_tests
   if(ref $object)
   {
     $Test->ok(1, "New returns a reference");
+    eval {
+      foreach my $user ($object->all_users)
+      {
+        $object->delete_user($user);
+      }
+    };
   }
   else
   {

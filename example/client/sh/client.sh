@@ -1,3 +1,5 @@
+#!/bin/sh
+
 USER=$1
 PASS=$2
 WGET="wget -q -O /dev/null"
