@@ -117,6 +117,14 @@ the given action ($action) on the given resource ($resource)
 
 sub revoke { 0 }
 
+=head2 $plugin-E<gt>granted
+
+Returns a list of granted permissions
+
+=cut
+
+sub granted { [] }
+
 =head2 $plugin-E<gt>update_group( $group, $users )
 
 Update the given group, setting the set of users that belong to that

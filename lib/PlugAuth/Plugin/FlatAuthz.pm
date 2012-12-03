@@ -75,9 +75,9 @@ The IP addresses on the right represent hosts from which authorization should su
 use strict;
 use warnings;
 use v5.10;
-use Log::Log4perl qw/:easy/;
-use Text::Glob qw/match_glob/;
-use Fcntl qw/ :flock /;
+use Log::Log4perl qw( :easy );
+use Text::Glob qw( match_glob );
+use Fcntl qw( :flock );
 use Clone qw( clone );
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
@@ -547,7 +547,42 @@ sub revoke
     mark_changed($filename);
 
     return 1;
+}
 
+=head2 $plugin-E<gt>granted
+
+Returns a list of granted permissions
+
+=cut
+
+sub granted
+{
+    my($class) = @_;
+    
+    my $filename = $class->global_config->resource_file;
+    
+    my @granted_list;
+    
+    eval {
+        use autodie;
+        
+        open my $fh, '<', $filename;
+        eval { flock $fh, LOCK_SH };
+        WARN "cannot lock $filename - $@" if $@;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            if($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$})
+            {
+                push @granted_list, "$1 ($2): $3";
+            }
+        }
+        
+        close $fh;
+    };
+    
+    ERROR "error reading $filename: $@" if $@;
+    
+    return \@granted_list;
 }
 
 1;

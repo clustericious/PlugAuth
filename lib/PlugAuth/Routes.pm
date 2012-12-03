@@ -412,6 +412,17 @@ del '/grant/#group/:action1/(*resource)' => sub {
     : $c->render(text => 'not ok', status => 404);
 };
 
+=head3 GET /grant
+
+Get the list of granted permissions.
+
+=cut
+
+get '/grant' => sub {
+    my($c) = @_;
+    $c->stash->{autodata} = $c->authz->granted;
+};
+
 =head2 Change Password routes
 
 These routes are available to users authenticates and authorized to perform
