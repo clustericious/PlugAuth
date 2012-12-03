@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -238,6 +238,12 @@ del '/grant/#group/:action1/(*resource)' => sub {
 };
 
 
+get '/grant' => sub {
+    my($c) = @_;
+    $c->stash->{autodata} = $c->authz->granted;
+};
+
+
 authenticate;
 authorize 'change_password';
 
@@ -265,7 +271,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 DESCRIPTION
 
@@ -422,6 +428,10 @@ on the given resource (*resource).  Returns 200 ok on success, 404 not ok on fai
 Revoke permission to the given group (#group) to perform the given action (:action1) on
 the given resource (*resource).  Returns 200 ok on success, 404 not ok on failure.
 
+=head3 GET /grant
+
+Get the list of granted permissions.
+
 =head2 Change Password routes
 
 These routes are available to users authenticates and authorized to perform
@@ -453,11 +463,9 @@ an autodata argument (JSON, YAML, form data, etc.).  Returns 200 ok on success,
 
 L<PlugAuth>
 
-=cut
-
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

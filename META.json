@@ -1,10 +1,10 @@
 {
    "abstract" : "Pluggable authentication and authorization server.",
    "author" : [
-      "Graham Ollis <gollis@sesda2.com>"
+      "Graham Ollis <gollis@sesda3.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300021, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Zilla version 4.300028, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -14,9 +14,15 @@
    },
    "name" : "PlugAuth",
    "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Module::Build" : "0.3601"
+         }
+      },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.30"
+            "ExtUtils::MakeMaker" : "6.30",
+            "Module::Build" : "0.3601"
          }
       },
       "runtime" : {
@@ -30,6 +36,7 @@
             "Crypt::PasswdMD5" : "0",
             "Exporter" : "0",
             "Fcntl" : "0",
+            "File::HomeDir::Test" : "0",
             "File::Spec" : "0",
             "File::Temp" : "0",
             "File::Touch" : "0",
@@ -53,7 +60,6 @@
       "test" : {
          "requires" : {
             "File::HomeDir" : "0",
-            "File::HomeDir::Test" : "0",
             "Mojo::JSON" : "0",
             "Test::Differences" : "0",
             "Test::Mojo" : "0",
@@ -62,6 +68,6 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.02"
+   "version" : "0.03"
 }
 

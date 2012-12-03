@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth reload plugins
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 requires qw( refresh );
@@ -22,7 +22,7 @@ PlugAuth::Role::Refresh - Role for PlugAuth reload plugins
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -62,7 +62,7 @@ L<Test::PlugAuth::Plugin::Refresh>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

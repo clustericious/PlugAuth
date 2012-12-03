@@ -12,7 +12,7 @@ use File::Spec;
 use File::Touch qw( touch );
 
 # ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 my %MTimes;
 
@@ -120,7 +120,7 @@ PlugAuth::Role::Flat - private role used by L<FlatAuth|PlugAuth::Plugin::FlatAut
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SEE ALSO
 
@@ -133,7 +133,7 @@ L<PlugAuth::Guide::Plugin>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

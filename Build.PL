@@ -2,16 +2,11 @@
 use strict;
 use warnings;
 
-use 5.010000;
-
-use ExtUtils::MakeMaker 6.30;
+use Module::Build 0.3601;
 
 
-
-my %WriteMakefileArgs = (
-  "ABSTRACT" => "Pluggable authentication and authorization server.",
-  "AUTHOR" => "Graham Ollis <gollis\@sesda3.com>",
-  "BUILD_REQUIRES" => {
+my %module_build_args = (
+  "build_requires" => {
     "File::HomeDir" => 0,
     "Module::Build" => "0.3601",
     "Mojo::JSON" => 0,
@@ -19,17 +14,21 @@ my %WriteMakefileArgs = (
     "Test::Mojo" => 0,
     "Test::More" => 0
   },
-  "CONFIGURE_REQUIRES" => {
+  "configure_requires" => {
     "ExtUtils::MakeMaker" => "6.30",
     "Module::Build" => "0.3601"
   },
-  "DISTNAME" => "PlugAuth",
-  "EXE_FILES" => [
-    "bin/plugauth"
+  "dist_abstract" => "Pluggable authentication and authorization server.",
+  "dist_author" => [
+    "Graham Ollis <gollis\@sesda3.com>"
   ],
-  "LICENSE" => "perl",
-  "NAME" => "PlugAuth",
-  "PREREQ_PM" => {
+  "dist_name" => "PlugAuth",
+  "dist_version" => "0.03",
+  "license" => "perl",
+  "module_name" => "PlugAuth",
+  "recommends" => {},
+  "recursive_test_files" => 1,
+  "requires" => {
     "Clone" => 0,
     "Clustericious" => "0.9906",
     "Clustericious::App" => 0,
@@ -56,32 +55,15 @@ my %WriteMakefileArgs = (
     "Test::Builder" => 0,
     "Text::Glob" => 0,
     "YAML" => 0,
-    "autodie" => 0
+    "autodie" => 0,
+    "perl" => "v5.10.0"
   },
-  "VERSION" => "0.03",
-  "test" => {
-    "TESTS" => "t/*.t"
-  }
+  "script_files" => [
+    "bin/plugauth"
+  ]
 );
 
 
-unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
-  my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};
-  my $pp = $WriteMakefileArgs{PREREQ_PM};
-  for my $mod ( keys %$br ) {
-    if ( exists $pp->{$mod} ) {
-      $pp->{$mod} = $br->{$mod} if $br->{$mod} > $pp->{$mod};
-    }
-    else {
-      $pp->{$mod} = $br->{$mod};
-    }
-  }
-}
+my $build = Module::Build->new(%module_build_args);
 
-delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
-  unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
-
-WriteMakefile(%WriteMakefileArgs);
-
-
-
+$build->create_build_script;

@@ -2,6 +2,7 @@ package Test::PlugAuth::Plugin::Auth;
 
 use strict;
 use warnings;
+use Test::PlugAuth::Plugin;
 use v5.10;
 use Test::Builder;
 use Role::Tiny ();
@@ -11,7 +12,7 @@ use base qw( Exporter );
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Auth plugin for correctness
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -136,7 +137,7 @@ Test::PlugAuth::Plugin::Auth - Test a PlugAuth Auth plugin for correctness
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -158,7 +159,7 @@ L<PlugAuth::Guide::Plugin>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

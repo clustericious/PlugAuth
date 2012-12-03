@@ -1,15 +1,15 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 use strict;
 use warnings;
 use v5.10;
-use Log::Log4perl qw/:easy/;
-use Text::Glob qw/match_glob/;
-use Fcntl qw/ :flock /;
+use Log::Log4perl qw( :easy );
+use Text::Glob qw( match_glob );
+use Fcntl qw( :flock );
 use Clone qw( clone );
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
@@ -399,7 +399,37 @@ sub revoke
     mark_changed($filename);
 
     return 1;
+}
 
+
+sub granted
+{
+    my($class) = @_;
+    
+    my $filename = $class->global_config->resource_file;
+    
+    my @granted_list;
+    
+    eval {
+        use autodie;
+        
+        open my $fh, '<', $filename;
+        eval { flock $fh, LOCK_SH };
+        WARN "cannot lock $filename - $@" if $@;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            if($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$})
+            {
+                push @granted_list, "$1 ($2): $3";
+            }
+        }
+        
+        close $fh;
+    };
+    
+    ERROR "error reading $filename: $@" if $@;
+    
+    return \@granted_list;
 }
 
 1;
@@ -414,7 +444,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -550,13 +580,17 @@ action ($action) on the given resource ($resource).
 Revoke the given group or user ($group) the authorization to perform the given
 action ($action) on the given resource ($resource).
 
+=head2 $plugin-E<gt>granted
+
+Returns a list of granted permissions
+
 =head1 SEE ALSO
 
 L<PlugAuth>, L<PlugAuth::Plugin::FlatAuth>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

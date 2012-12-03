@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatUserList;
 
 # ABSTRACT: PlugAuth plugin that provides a user list without authentication.
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 use strict;
@@ -55,7 +55,7 @@ PlugAuth::Plugin::FlatUserList - PlugAuth plugin that provides a user list witho
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -114,7 +114,7 @@ L<PlugAuth>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

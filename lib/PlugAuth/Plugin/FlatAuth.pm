@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 use strict;
@@ -262,7 +262,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -347,7 +347,7 @@ L<PlugAuth>, L<PlugAuth::Plugin::FlatAuthz>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

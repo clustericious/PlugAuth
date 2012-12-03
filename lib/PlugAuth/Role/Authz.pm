@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth authorization plugins
-our $VERSION = '0.02'; # VERSION
+our $VERSION = '0.03'; # VERSION
 
 
 requires qw( 
@@ -31,6 +31,9 @@ sub grant { 0 }
 sub revoke { 0 }
 
 
+sub granted { [] }
+
+
 sub update_group { 0 }
 
 1;
@@ -45,7 +48,7 @@ PlugAuth::Role::Authz - Role for PlugAuth authorization plugins
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -129,6 +132,10 @@ action ($action) on the given resource ($resource).
 Revoke the given group or user ($group) the authorization to performa
 the given action ($action) on the given resource ($resource)
 
+=head2 $plugin-E<gt>granted
+
+Returns a list of granted permissions
+
 =head2 $plugin-E<gt>update_group( $group, $users )
 
 Update the given group, setting the set of users that belong to that
@@ -142,7 +149,7 @@ L<PlugAuth::Guide::Plugin>
 
 =head1 AUTHOR
 
-Graham Ollis <gollis@sesda2.com>
+Graham Ollis <gollis@sesda3.com>
 
 =head1 COPYRIGHT AND LICENSE
 

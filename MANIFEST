@@ -1,3 +1,4 @@
+Build.PL
 Changes
 LICENSE
 MANIFEST
@@ -10,7 +11,14 @@ dist.ini
 etc/PlugAuth.conf
 etc/PlugAuth.conf.too
 etc/lighttpd.conf.sample
-example/basic.pl
+example/client/PlugAuth.conf
+example/client/README.txt
+example/client/clustericious/ExampleAppExample.conf
+example/client/clustericious/ExampleAppExample.pl
+example/client/commandline/client.txt
+example/client/commandline/passwd.txt
+example/client/perl/client.pl
+example/client/sh/client.sh
 lib/PlugAuth.pm
 lib/PlugAuth/Guide/Client.pod
 lib/PlugAuth/Guide/Plugin.pod
@@ -24,6 +32,7 @@ lib/PlugAuth/Role/Flat.pm
 lib/PlugAuth/Role/Plugin.pm
 lib/PlugAuth/Role/Refresh.pm
 lib/PlugAuth/Routes.pm
+lib/Test/PlugAuth/Plugin.pm
 lib/Test/PlugAuth/Plugin/Auth.pm
 lib/Test/PlugAuth/Plugin/Authz.pm
 lib/Test/PlugAuth/Plugin/Refresh.pm
