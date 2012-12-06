@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fixed /group/:group/#user route for users with @
   - added welcome role (PlugAuth::Role::Welcome)
   - wrote PlugAuth::Guide::Plugin (was a stub)
 

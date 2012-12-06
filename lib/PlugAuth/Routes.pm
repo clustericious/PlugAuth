@@ -345,14 +345,14 @@ post '/group/:group' => sub {
     : $c->render(text => 'not ok', status => 404);
 };
 
-=head3 POST /group/:group/:user
+=head3 POST /group/:group/#user
 
-Add the given user (:user) to the given group (:group).
+Add the given user (#user) to the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
 =cut
 
-post '/group/:group/:user' => sub {
+post '/group/:group/#user' => sub {
     my($c) = @_;
     $c->refresh;
     my $users = $c->authz->users_in_group($c->stash('group'));
@@ -364,14 +364,14 @@ post '/group/:group/:user' => sub {
     : $c->render(text => 'not ok', status => 404);
 };
 
-=head3 DELETE /group/:group/:user
+=head3 DELETE /group/:group/#user
 
-Remove the given user (:user) from the given group (:group).
+Remove the given user (#user) from the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
 =cut
 
-del '/group/:group/:user' => sub {
+del '/group/:group/#user' => sub {
     my($c) = @_;
     $c->refresh;
     my $users = $c->authz->users_in_group($c->stash('group'));
