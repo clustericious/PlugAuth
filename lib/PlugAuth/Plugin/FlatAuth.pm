@@ -59,10 +59,8 @@ It is possible to have multiple user files if you specify a list:
 use strict;
 use warnings;
 use v5.10;
-use Log::Log4perl qw/:easy/;
-use Text::Glob qw/match_glob/;
-use Fcntl qw/ :flock /;
-use Clone qw( clone );
+use Log::Log4perl qw( :easy );
+use Fcntl qw( :flock );
 # TODO: maybe optionally use Crypt::Passwd::XS instead
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
