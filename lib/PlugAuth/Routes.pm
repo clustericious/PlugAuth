@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -18,7 +18,10 @@ use Clustericious::Config;
 use List::MoreUtils qw( uniq );
 
 
-get '/' => sub { shift->render_text("welcome to plug auth") } => "index" ;
+get '/' => sub {
+    my($c) = @_;
+    $c->welcome($c);
+} => 'index';
 
 ladder sub { shift->refresh };
 
@@ -192,7 +195,7 @@ post '/group/:group' => sub {
 };
 
 
-post '/group/:group/:user' => sub {
+post '/group/:group/#user' => sub {
     my($c) = @_;
     $c->refresh;
     my $users = $c->authz->users_in_group($c->stash('group'));
@@ -205,7 +208,7 @@ post '/group/:group/:user' => sub {
 };
 
 
-del '/group/:group/:user' => sub {
+del '/group/:group/#user' => sub {
     my($c) = @_;
     $c->refresh;
     my $users = $c->authz->users_in_group($c->stash('group'));
@@ -271,7 +274,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 DESCRIPTION
 
@@ -408,14 +411,14 @@ Update the list of users belonging to the given group (:group).  The list
 of C<users> is provided as an autodata argument (JSON, YAML, form data etc.).
 Returns 200 ok on success, 404 not ok on failure.
 
-=head3 POST /group/:group/:user
+=head3 POST /group/:group/#user
 
-Add the given user (:user) to the given group (:group).
+Add the given user (#user) to the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
-=head3 DELETE /group/:group/:user
+=head3 DELETE /group/:group/#user
 
-Remove the given user (:user) from the given group (:group).
+Remove the given user (#user) from the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
 =head3 POST /grant/#group/:action1/(*resource)

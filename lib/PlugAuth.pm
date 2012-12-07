@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 
 use strict;
@@ -27,6 +27,7 @@ sub startup {
 
     my $auth_plugin;
     my $authz_plugin;
+    my $welcome_plugin;
     my @refresh;
     
     foreach my $plugin_class (reverse @plugins_config) {
@@ -49,8 +50,12 @@ sub startup {
         my $plugin = $plugin_class->new($self->config, $plugin_config, $self);
 
         if($plugin->does('PlugAuth::Role::Auth')) {
-          $plugin->next_auth($auth_plugin);
-          $auth_plugin = $plugin;
+            $plugin->next_auth($auth_plugin);
+            $auth_plugin = $plugin;
+        }
+        
+        if($plugin->does('PlugAuth::Role::Welcome')) {
+            $welcome_plugin = $plugin;
         }
 
         $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
@@ -86,6 +91,15 @@ sub startup {
     } else {
         $self->helper(refresh => sub { 1 });
     }
+    
+    $self->helper(welcome => sub {
+        my($self, $c) = @_;
+        if($welcome_plugin) {
+            $welcome_plugin->welcome($c);
+        } else {
+            $c->render_text("welcome to plug auth");
+        }
+    });
 }
 
 # Silence warnings; this is only used for for session
@@ -104,7 +118,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 

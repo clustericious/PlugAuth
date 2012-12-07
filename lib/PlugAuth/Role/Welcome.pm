@@ -1,4 +1,4 @@
-package PlugAuth::Role::Refresh;
+package PlugAuth::Role::Welcome;
 
 use strict;
 use warnings;
@@ -8,7 +8,7 @@ use Role::Tiny;
 our $VERSION = '0.04'; # VERSION
 
 
-requires qw( refresh );
+requires qw( welcome );
 
 1;
 
@@ -18,7 +18,7 @@ __END__
 
 =head1 NAME
 
-PlugAuth::Role::Refresh - Role for PlugAuth reload plugins
+PlugAuth::Role::Welcome - Role for PlugAuth reload plugins
 
 =head1 VERSION
 
@@ -31,32 +31,30 @@ version 0.04
  use Role::Tiny::With;
  
  with 'PlugAuth::Role::Plugin';
- with 'PlugAuth::Role::Refresh';
+ with 'PlugAuth::Role::Welcome';
  
- sub refresh {
-   my ($self) = @_;
-   # called on every request
+ sub welcome {
+   my ($self, $c) = @_;
+   # called on GET / requests
  }
  
  1;
 
 =head1 DESCRIPTION
 
-Use this role for PlugAuth plugins which need to be refreshed
-on every call.  You will likely want to mix this role in with either
-or both L<PlugAuth::Role::Auth> and L<PlugAuth::Role::Authz>.
+Use this role for PlugAuth plugins which provide alternate functionality
+for the default GET / route.
 
 =head1 REQUIRED ABSTRACT METHODS
 
-=head2 $plugin-E<gt>refresh
+=head2 $plugin-E<gt>welcome( $controller )
 
-Called on every request.
+Called on GET / routes
 
 =head1 SEE ALSO
 
 L<PlugAuth>,
 L<PlugAuth::Guide::Plugin>,
-L<Test::PlugAuth::Plugin::Refresh>
 
 =cut
 

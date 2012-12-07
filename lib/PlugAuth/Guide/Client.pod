@@ -12,7 +12,7 @@ PlugAuth::Guide::Client - Guide for authenticating and authorizing against a Plu
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 DESCRIPTION
 
@@ -207,6 +207,8 @@ If you do not have L<PlugAuth::Client> installed and cannot install it, you can 
 or C<curl>.  Because L<PlugAuth> uses standard HTTP status codes, C<wget> will return non
 zero on failure and you can construct an if around it.
 
+ #!/bin/sh
+ 
  USER=$1
  PASS=$2
  WGET="wget -q -O /dev/null"

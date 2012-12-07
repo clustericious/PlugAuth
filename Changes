@@ -1,5 +1,10 @@
 Revision history for PlugAuth
 
+0.04      2012-12-07 15:41:56 America/New_York
+  - fixed /group/:group/#user route for users with @
+  - added welcome role (PlugAuth::Role::Welcome)
+  - wrote PlugAuth::Guide::Plugin (was a stub)
+
 0.03      2012-12-03 10:43:56 America/New_York
   - wrote PlugAuth::Guide::Client (was a stub)
   - added grant route (GET /grant)

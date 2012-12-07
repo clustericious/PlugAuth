@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 
 use strict;
@@ -11,7 +11,6 @@ use Log::Log4perl qw( :easy );
 use Text::Glob qw( match_glob );
 use Fcntl qw( :flock );
 use Clone qw( clone );
-use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
 use File::Touch;
 
@@ -359,7 +358,7 @@ sub revoke
 
     unless($resourceActionGroup{$resource}->{$action}->{$group})
     {
-        WARN "not authorized to $group $action $resource";
+        WARN "Group (or user) $group not authorized to $action on $resource";
         return 0;
     }
     
@@ -444,7 +443,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 

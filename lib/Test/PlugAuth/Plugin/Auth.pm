@@ -12,7 +12,7 @@ use base qw( Exporter );
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Auth plugin for correctness
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -38,6 +38,12 @@ sub run_tests
   if(ref $object)
   {
     $Test->ok(1, "New returns a reference");
+    eval {
+      foreach my $user ($object->all_users)
+      {
+        $object->delete_user($user);
+      }
+    };
   }
   else
   {
@@ -137,7 +143,7 @@ Test::PlugAuth::Plugin::Auth - Test a PlugAuth Auth plugin for correctness
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 

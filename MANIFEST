@@ -19,6 +19,10 @@ example/client/commandline/client.txt
 example/client/commandline/passwd.txt
 example/client/perl/client.pl
 example/client/sh/client.sh
+example/plugin/lib/PlugAuth/Plugin/ExampleAuth.pm
+example/plugin/lib/PlugAuth/Plugin/ExampleRoute.pm
+example/plugin/t/plug_exampleauth_auth.t
+example/plugin/t/plug_exampleroute.t
 lib/PlugAuth.pm
 lib/PlugAuth/Guide/Client.pod
 lib/PlugAuth/Guide/Plugin.pod
@@ -31,6 +35,7 @@ lib/PlugAuth/Role/Authz.pm
 lib/PlugAuth/Role/Flat.pm
 lib/PlugAuth/Role/Plugin.pm
 lib/PlugAuth/Role/Refresh.pm
+lib/PlugAuth/Role/Welcome.pm
 lib/PlugAuth/Routes.pm
 lib/Test/PlugAuth/Plugin.pm
 lib/Test/PlugAuth/Plugin/Auth.pm

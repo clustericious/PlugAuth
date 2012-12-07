@@ -1,16 +1,15 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.03'; # VERSION
+our $VERSION = '0.04'; # VERSION
 
 
 use strict;
 use warnings;
 use v5.10;
-use Log::Log4perl qw/:easy/;
-use Text::Glob qw/match_glob/;
-use Fcntl qw/ :flock /;
-use Clone qw( clone );
+use Log::Log4perl qw( :easy );
+use Fcntl qw( :flock );
+# TODO: maybe optionally use Crypt::Passwd::XS instead
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
 
@@ -262,7 +261,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
