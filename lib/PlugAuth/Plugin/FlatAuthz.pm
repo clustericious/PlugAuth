@@ -556,6 +556,7 @@ Returns a list of granted permissions
 
 sub granted
 {
+    # FIXME: doesn't correctly handle commented out lines
     my($class) = @_;
     
     my $filename = $class->global_config->resource_file;
