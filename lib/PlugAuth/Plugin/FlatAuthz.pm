@@ -79,7 +79,6 @@ use Log::Log4perl qw( :easy );
 use Text::Glob qw( match_glob );
 use Fcntl qw( :flock );
 use Clone qw( clone );
-use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
 use File::Touch;
 
@@ -507,7 +506,7 @@ sub revoke
 
     unless($resourceActionGroup{$resource}->{$action}->{$group})
     {
-        WARN "not authorized to $group $action $resource";
+        WARN "Group (or user) $group not authorized to $action on $resource";
         return 0;
     }
     
