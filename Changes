@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - handle comments correctly for 'GET /grant'
 
 0.04      2012-12-07 15:41:56 America/New_York
   - fixed /group/:group/#user route for users with @
