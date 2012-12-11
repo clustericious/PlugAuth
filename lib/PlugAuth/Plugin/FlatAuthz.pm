@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.04'; # VERSION
+our $VERSION = '0.05'; # VERSION
 
 
 use strict;
@@ -403,6 +403,7 @@ sub revoke
 
 sub granted
 {
+    # FIXME: doesn't correctly handle commented out lines
     my($class) = @_;
     
     my $filename = $class->global_config->resource_file;
@@ -417,6 +418,7 @@ sub granted
         WARN "cannot lock $filename - $@" if $@;
         while(! eof $fh) {
             my $line = <$fh>;
+            next if $line =~ /^#/;
             if($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$})
             {
                 push @granted_list, "$1 ($2): $3";
@@ -443,7 +445,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 

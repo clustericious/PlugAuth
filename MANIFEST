@@ -60,6 +60,7 @@ t/18-add_del_group.t
 t/19-client_add_del_group.t
 t/20-revoke.t
 t/21-client-revoke.t
+t/22-granted.t
 t/data/01/group.txt
 t/data/01/host.txt
 t/data/01/more_users.txt
@@ -122,6 +123,10 @@ t/data/21/group.txt
 t/data/21/host.txt
 t/data/21/resource.txt
 t/data/21/user.txt
+t/data/22/group.txt
+t/data/22/host.txt
+t/data/22/resource.txt
+t/data/22/user.txt
 t/etc/PlugAuth.conf
 t/etc/setup.pl
 t/fixme.t

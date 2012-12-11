@@ -58,7 +58,7 @@ my %WriteMakefileArgs = (
     "YAML" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.04",
+  "VERSION" => "0.05",
   "test" => {
     "TESTS" => "t/*.t"
   }
