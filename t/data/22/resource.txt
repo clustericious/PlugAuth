@@ -1,0 +1,7 @@
+/user/#u (change_password): #u
+/torpedo/photon (fire): kirk
+# /torpedo/proton (fire): luke
+#/torpedo/quantum (fire): worf
+ #/xyz (pdq): grimlock
+
+/grant (accounts): primus

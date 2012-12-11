@@ -571,6 +571,7 @@ sub granted
         WARN "cannot lock $filename - $@" if $@;
         while(! eof $fh) {
             my $line = <$fh>;
+            next if $line =~ /^#/;
             if($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$})
             {
                 push @granted_list, "$1 ($2): $3";
