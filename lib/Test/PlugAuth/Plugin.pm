@@ -17,6 +17,7 @@ L<Test::PlugAuth::Plugin::Refresh>
 
 BEGIN {
   delete $ENV{HARNESS_ACTIVE};
+  delete $ENV{CLUSTERICIOUS_CONF_DIR};
 
   unless($INC{'File/HomeDir/Test.pm'}) 
   {
