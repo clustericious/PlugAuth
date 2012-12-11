@@ -18,6 +18,7 @@ L<Test::PlugAuth::Plugin::Refresh>
 BEGIN {
   delete $ENV{HARNESS_ACTIVE};
   delete $ENV{CLUSTERICIOUS_CONF_DIR};
+  $ENV{LOG_LEVEL} = "ERROR";
 
   unless($INC{'File/HomeDir/Test.pm'}) 
   {

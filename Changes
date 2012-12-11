@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Created PlugAuth::Plugin::Test
 
 0.05      2012-12-11 13:56:53 America/New_York
   - handle comments correctly for 'GET /grant'
