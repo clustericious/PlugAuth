@@ -54,11 +54,14 @@ sub real_auth
   
   unless(defined $self->{real_auth})
   {
-    $self->{real_auth} = new PlugAuth::Plugin::FlatAuth(
+    my $auth = $self->{real_auth} = new PlugAuth::Plugin::FlatAuth(
       Clustericious::Config->new({}),
       Clustericious::Config->new({}),
       $self->app
     );
+    $auth->create_user('primus', 'spark');
+    $auth->create_user('optimus', 'matrix');
+    $auth->refresh;
   }
   
   return $self->{real_auth};
@@ -70,11 +73,16 @@ sub real_authz
   
   unless(defined $self->{real_authz})
   {
-    $self->{real_authz} = new PlugAuth::Plugin::FlatAuthz(
+    my $auth = $self->real_auth;
+    my $authz = $self->{real_authz} = new PlugAuth::Plugin::FlatAuthz(
       Clustericious::Config->new({}),
       Clustericious::Config->new({}),
       $self->app
     );
+    $authz->create_group('admin', 'primus');
+    $authz->refresh;
+    $authz->grant('admin', 'accounts', '/');
+    $authz->grant('primus', 'accounts', '/');
   }
   
   return $self->{real_authz};
