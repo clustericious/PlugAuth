@@ -315,11 +315,11 @@ sub startup {
             $c->render_text("welcome to plug auth");
         }
     });
+    
+    # Silence warnings; this is only used for for session
+    # cookies, which we don't use.
+    $self->secret(rand);
 }
-
-# Silence warnings; this is only used for for session
-# cookies, which we don't use.
-__PACKAGE__->secret(rand);
 
 1;
 
