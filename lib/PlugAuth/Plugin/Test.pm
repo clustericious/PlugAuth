@@ -8,6 +8,8 @@ use warnings;
 use PlugAuth::Plugin::FlatAuth;
 use PlugAuth::Plugin::FlatAuthz;
 use Role::Tiny::With;
+use Log::Log4perl qw( :easy );
+use Fcntl qw( :flock );
 
 with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Refresh';
@@ -18,8 +20,21 @@ sub init
 {
   my($self) = @_;
   $self->app->routes->route('/test/setup/reset')->post(sub {
-    delete $self->{real_auth};
-    delete $self->{real_authz};
+  
+    foreach my $filename (map { $self->global_config->{$_} } qw( group_file resource_file user_file ))
+    {
+      open my $fh, '+<', $filename;
+      eval { flock $fh, LOCK_EX };
+      WARN "cannot lock $filename - $@" if $@;
+      seek $fh, 0, 0;
+      truncate $fh, 0;
+      close $fh;
+      PlugAuth::Role::Flat->mark_changed($filename);
+    }
+    
+    $self->real_auth->refresh;
+    $self->real_authz->refresh;
+
     shift->render_text('ok');
   });
   $self->app->routes->route('/test/setup/basic')->post(sub {
