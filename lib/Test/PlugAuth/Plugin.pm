@@ -4,11 +4,13 @@ use strict;
 use warnings;
 
 # ABSTRACT: Private package for Test::PlugAUth::Plugin::* modules
-our $VERSION = '0.05'; # VERSION
+our $VERSION = '0.06'; # VERSION
 
 
 BEGIN {
   delete $ENV{HARNESS_ACTIVE};
+  delete $ENV{CLUSTERICIOUS_CONF_DIR};
+  $ENV{LOG_LEVEL} = "ERROR";
 
   unless($INC{'File/HomeDir/Test.pm'}) 
   {
@@ -28,7 +30,7 @@ Test::PlugAuth::Plugin - Private package for Test::PlugAUth::Plugin::* modules
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 SEE ALSO
 

@@ -1,4 +1,5 @@
 delete $ENV{HARNESS_ACTIVE};
+delete $ENV{CLUSTERICIOUS_CONF_DIR};
 $ENV{LOG_LEVEL} = "ERROR";
 
 use strict;

@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.05'; # VERSION
+our $VERSION = '0.06'; # VERSION
 
 
 use strict;
@@ -110,12 +110,16 @@ sub can_user_action_resource {
     GROUP:
     for my $group ( $user, keys %{ $userGroups{$user} } ) {
         # check exact match on the resource so / will match
-        if($resourceActionGroup{$resource}{$action}{$group}) {
+        if($resourceActionGroup{$resource} 
+        && $resourceActionGroup{$resource}{$action} 
+        && $resourceActionGroup{$resource}{$action}{$group}) {
             $found = "group: $group resource: $resource";
             last GROUP;
         }
         for my $subresource (__PACKAGE__->_prefixes($resource)) {
-            next unless $resourceActionGroup{$subresource}{$action}{$group};
+            next unless $resourceActionGroup{$subresource}
+            &&          $resourceActionGroup{$subresource}{$action}
+            &&          $resourceActionGroup{$subresource}{$action}{$group};
             $found = "group: $group resource: $subresource";
             last GROUP;
         }
@@ -316,7 +320,7 @@ sub grant
         return 0;
     }
 
-    $resource = '/' . $resource unless $resource =~ /\//;
+    $resource =~ s{^/?}{/};
 
     if($resourceActionGroup{$resource}->{$action}->{$group})
     {
@@ -403,7 +407,6 @@ sub revoke
 
 sub granted
 {
-    # FIXME: doesn't correctly handle commented out lines
     my($class) = @_;
     
     my $filename = $class->global_config->resource_file;
@@ -445,7 +448,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 SYNOPSIS
 

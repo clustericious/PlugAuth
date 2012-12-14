@@ -2,6 +2,8 @@ package Test::PlugAuth::Plugin::Refresh;
 
 use strict;
 use warnings;
+use PlugAuth;
+use Clustericious::Config;
 use Test::PlugAuth::Plugin;
 use Test::Builder;
 use Role::Tiny ();
@@ -10,7 +12,7 @@ use base qw( Exporter );
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Refresh plugin for correctness
-our $VERSION = '0.05'; # VERSION
+our $VERSION = '0.06'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -24,7 +26,7 @@ sub run_tests
   
   $Test->plan( tests => 4);
   
-  my $object = eval { $class->new };
+  my $object = eval { $class->new(Clustericious::Config->new({}), Clustericious::Config->new({}), PlugAuth->new) };
   my $error = $@;
   if(ref $object)
   {
@@ -53,7 +55,7 @@ Test::PlugAuth::Plugin::Refresh - Test a PlugAuth Refresh plugin for correctness
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 SYNOPSIS
 

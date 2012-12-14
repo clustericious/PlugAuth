@@ -30,6 +30,7 @@ lib/PlugAuth/Guide/Server.pod
 lib/PlugAuth/Plugin/FlatAuth.pm
 lib/PlugAuth/Plugin/FlatAuthz.pm
 lib/PlugAuth/Plugin/FlatUserList.pm
+lib/PlugAuth/Plugin/Test.pm
 lib/PlugAuth/Role/Auth.pm
 lib/PlugAuth/Role/Authz.pm
 lib/PlugAuth/Role/Flat.pm
@@ -61,6 +62,8 @@ t/19-client_add_del_group.t
 t/20-revoke.t
 t/21-client-revoke.t
 t/22-granted.t
+t/23-test_plugin.t
+t/24-authz_no_autovivification.t
 t/data/01/group.txt
 t/data/01/host.txt
 t/data/01/more_users.txt
@@ -127,6 +130,8 @@ t/data/22/group.txt
 t/data/22/host.txt
 t/data/22/resource.txt
 t/data/22/user.txt
+t/data/23/PlugAuth.conf
+t/data/24/PlugAuth.conf
 t/etc/PlugAuth.conf
 t/etc/setup.pl
 t/fixme.t
@@ -134,6 +139,9 @@ t/plug_flatauth_auth.t
 t/plug_flatauth_refresh.t
 t/plug_flatauthz_authz.t
 t/plug_flatauthz_refresh.t
+t/plug_test_auth.t
+t/plug_test_authz.t
+t/plug_test_refresh.t
 t/pod-coverage.t
 t/use.t
 xt/release/release.yml
