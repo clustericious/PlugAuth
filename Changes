@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Avoid creating extra resources when using /authz/user/... routes
   - Created PlugAuth::Plugin::Test
 
 0.05      2012-12-11 13:56:53 America/New_York

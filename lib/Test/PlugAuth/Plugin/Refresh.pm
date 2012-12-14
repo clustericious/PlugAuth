@@ -2,6 +2,8 @@ package Test::PlugAuth::Plugin::Refresh;
 
 use strict;
 use warnings;
+use PlugAuth;
+use Clustericious::Config;
 use Test::PlugAuth::Plugin;
 use Test::Builder;
 use Role::Tiny ();
@@ -36,7 +38,7 @@ sub run_tests
   
   $Test->plan( tests => 4);
   
-  my $object = eval { $class->new };
+  my $object = eval { $class->new(Clustericious::Config->new({}), Clustericious::Config->new({}), PlugAuth->new) };
   my $error = $@;
   if(ref $object)
   {

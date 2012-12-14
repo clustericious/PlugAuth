@@ -5,7 +5,7 @@ BEGIN {
   $ENV{PLUGAUTH_CONF_DIR} = "$FindBin::Bin/data/23";
   require "$FindBin::Bin/etc/setup.pl" 
 }
-use Test::More tests => 14;
+use Test::More tests => 20;
 use Test::Mojo;
 use Mojo::JSON;
 use Test::Differences;
@@ -14,6 +14,12 @@ use YAML qw( Dump );
 my $t = Test::Mojo->new('PlugAuth');
 $t->get_ok('/'); # creates $t->ua
 my $port = $t->ua->app_url->port;
+
+$t->get_ok("http://primus:spark\@localhost:$port/auth")
+  ->status_is(403);
+
+$t->post_ok('/test/setup/basic')
+  ->status_is(200);
 
 $t->get_ok("http://primus:spark\@localhost:$port/auth")
   ->status_is(200);
@@ -34,3 +40,8 @@ $t->get_ok("/authz/user/optimus/accounts/user")
 $t->get_ok("http://primus:spark\@localhost:$port/grant")
   ->status_is(200);
 
+$t->post_ok('/test/setup/reset')
+  ->status_is(200);
+
+#$t->get_ok("http://primus:spark\@localhost:$port/auth")
+#  ->status_is(403);

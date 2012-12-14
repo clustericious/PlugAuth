@@ -17,6 +17,25 @@ with 'PlugAuth::Role::Authz';
 sub init
 {
   my($self) = @_;
+  $self->app->routes->route('/test/setup/reset')->post(sub {
+    delete $self->{real_auth};
+    delete $self->{real_authz};
+    shift->render_text('ok');
+  });
+  $self->app->routes->route('/test/setup/basic')->post(sub {
+    my $auth = $self->real_auth;
+    $auth->create_user('primus', 'spark');
+    $auth->create_user('optimus', 'matrix');
+    $auth->refresh;
+  
+    my $authz = $self->real_authz;
+    $authz->create_group('admin', 'primus');
+    $authz->refresh;
+    $authz->grant('admin', 'accounts', '/');
+    $authz->grant('primus', 'accounts', '/');
+    
+    shift->render_text('ok');
+  });
 }
 
 sub refresh
@@ -52,16 +71,13 @@ sub real_auth
 {
   my($self) = @_;
   
-  unless(defined $self->{real_auth})
+  unless($self->{real_auth})
   {
     my $auth = $self->{real_auth} = new PlugAuth::Plugin::FlatAuth(
       Clustericious::Config->new({}),
       Clustericious::Config->new({}),
       $self->app
     );
-    $auth->create_user('primus', 'spark');
-    $auth->create_user('optimus', 'matrix');
-    $auth->refresh;
   }
   
   return $self->{real_auth};
@@ -71,7 +87,7 @@ sub real_authz
 {
   my($self) = @_;
   
-  unless(defined $self->{real_authz})
+  unless($self->{real_authz})
   {
     my $auth = $self->real_auth;
     my $authz = $self->{real_authz} = new PlugAuth::Plugin::FlatAuthz(
@@ -79,10 +95,6 @@ sub real_authz
       Clustericious::Config->new({}),
       $self->app
     );
-    $authz->create_group('admin', 'primus');
-    $authz->refresh;
-    $authz->grant('admin', 'accounts', '/');
-    $authz->grant('primus', 'accounts', '/');
   }
   
   return $self->{real_authz};

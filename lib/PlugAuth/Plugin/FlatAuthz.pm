@@ -191,12 +191,16 @@ sub can_user_action_resource {
     GROUP:
     for my $group ( $user, keys %{ $userGroups{$user} } ) {
         # check exact match on the resource so / will match
-        if($resourceActionGroup{$resource}{$action}{$group}) {
+        if($resourceActionGroup{$resource} 
+        && $resourceActionGroup{$resource}{$action} 
+        && $resourceActionGroup{$resource}{$action}{$group}) {
             $found = "group: $group resource: $resource";
             last GROUP;
         }
         for my $subresource (__PACKAGE__->_prefixes($resource)) {
-            next unless $resourceActionGroup{$subresource}{$action}{$group};
+            next unless $resourceActionGroup{$subresource}
+            &&          $resourceActionGroup{$subresource}{$action}
+            &&          $resourceActionGroup{$subresource}{$action}{$group};
             $found = "group: $group resource: $subresource";
             last GROUP;
         }
@@ -458,7 +462,7 @@ sub grant
         return 0;
     }
 
-    $resource = '/' . $resource unless $resource =~ /\//;
+    $resource =~ s{^/?}{/};
 
     if($resourceActionGroup{$resource}->{$action}->{$group})
     {
@@ -556,7 +560,6 @@ Returns a list of granted permissions
 
 sub granted
 {
-    # FIXME: doesn't correctly handle commented out lines
     my($class) = @_;
     
     my $filename = $class->global_config->resource_file;
