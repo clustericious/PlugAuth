@@ -377,7 +377,7 @@ del '/group/:group/#user' => sub {
     my $users = $c->authz->users_in_group($c->stash('group'));
     return $c->render(text => 'not ok', status => 404) unless defined $users;
     my $user = $c->stash('user');
-    @$users = grep { $_ ne $user } @$users;
+    @$users = grep { lc $_ ne lc $user } @$users;
     $c->authz->update_group($c->param('group'), join(',', @$users))
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);

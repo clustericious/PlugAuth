@@ -89,7 +89,7 @@ sub refresh {
     my $config = __PACKAGE__->global_config;
     my @user_files = $config->user_file;
     if ( grep has_changed($_), @user_files ) {
-        my @users = map +{ __PACKAGE__->read_file($_) }, @user_files;
+        my @users = map +{ __PACKAGE__->read_file($_, lc_keys => 1) }, @user_files;
         %Userpw = ();
         for my $list (@users) {
             for my $user (map { lc $_ } keys %$list) {
@@ -252,7 +252,7 @@ sub change_password
             while(! eof $fh) {
                 my $line = <$fh>;
                 my($thisuser, $oldpassword) = split /:/, $line;
-                if($thisuser eq $user) {
+                if(lc($thisuser) eq $user) {
                     $buffer .= join(':', $user, $password) . "\n";
                 } else {
                     $buffer .= $line;

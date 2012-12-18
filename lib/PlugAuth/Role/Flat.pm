@@ -30,9 +30,7 @@ sub mark_changed {
 }
 
 sub read_file { # TODO: cache w/ mtime
-    my $class = shift;
-    my $filename = shift;
-    my %args = @_;
+    my($class, $filename, %args) = @_;
     $args{nest} ||= 0;
     #
     # _read_file:
@@ -68,6 +66,8 @@ sub read_file { # TODO: cache w/ mtime
         my $p;
         TRACE "parsing $v";
         ($k,$p) = ( $k =~ m/^(.*)\(([^)]*)\)$/) if $args{nest}==2;
+        $k = lc $k if $args{lc_keys};
+        $v = lc $v if $args{lc_values};
         my %m = ( map { $_ => 1 } split /,/, $v ) if $args{nest};
         if ($args{nest}==0) {
             $h{$k} = $v;
