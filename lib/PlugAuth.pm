@@ -236,6 +236,8 @@ sub startup {
     $self->plugins(PlugAuth::SelfAuth->new);
     $self->SUPER::startup(@_);
 
+    #$self->renderer->default_format('txt');
+    
     my @plugins_config = eval {
         my $plugins = $self->config->{plugins} // [];
         ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
@@ -314,6 +316,22 @@ sub startup {
             $welcome_plugin->welcome($c);
         } else {
             $c->render_text("welcome to plug auth");
+        }
+    });
+    
+    # for historical reasons, some routes return text by default
+    # in older versions, even if a format (e.g. /auth.json) is specified.
+    # this is a simple helper to render using autodata if a format
+    # is explicitly specified, otherwise fallback on the original
+    # behavior.
+    $self->helper(render_message => sub {
+        my($self, $c, $message, $status) = @_;
+        DEBUG "ref = ", ref $self, " ref = ", ref $c;
+        $status //= 200;
+        if(defined $c->stash->{format}) {
+            $c->render(autodata => { message => $message, status => $status }, status => $status);
+        } else {
+            $c->render(text => $message, status => $status);
         }
     });
     

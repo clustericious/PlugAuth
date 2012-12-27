@@ -68,19 +68,19 @@ get '/auth' => sub {
     my $self = shift;
     my $auth = $self->req->headers->authorization or do {
         $self->res->headers->www_authenticate('Basic "ACPS"');
-        $self->res->code(401);
-        $self->render(text => "please authenticate");
+        $self->render_message($self, 'please authenticate', 401);
         return;
     };
     my ($method,$str) = split / /,$auth;
     my ($user,$pw) = split /:/, b($str)->b64_decode;
 
-    my $ok = $self->auth->check_credentials($user,$pw);
-    DEBUG "Authentication succeeded for user $user" if $ok;
-    return $self->render_text("ok") if $ok;
-    DEBUG "Authentication failed for user $user";
-    $self->res->code(403);
-    $self->render_text("not ok");
+    if($self->auth->check_credentials($user,$pw)) {
+        $self->render_message($self, 'ok');
+        DEBUG "Authentication succeeded for user $user";
+    } else {
+        $self->render_message($self, 'not ok', 403);
+        DEBUG "Authentication failed for user $user";
+    }
 };
 
 =head3 GET /authz/user/#user/#action/(*resource)
@@ -109,10 +109,10 @@ get '/authz/user/#user/#action/(*resource)' => { resource => '/' } => sub {
     my $found = $c->authz->can_user_action_resource($user,$action,$resource);
     if ($found) {
         TRACE "Authorization succeeded ($found)";
-        return $c->render(text => 'ok', status => 200);
+        return $c->render_message($c, 'ok');
     }
     TRACE "Authorization failed";
-    $c->render(text => "unauthorized : $user cannot $action $resource", status => 403);
+    $c->render_message($c, "unauthorized : $user cannot $action $resource", 403);
 };
 
 =head3 GET /authz/resources/#user/#action/(*resourceregex)
@@ -161,7 +161,7 @@ Returns 404 not ok if the user does not exist.
 get '/groups/#user' => sub {
     my $c = shift;
     my $groups = $c->authz->groups_for_user($c->stash('user'));
-    $c->render(text => 'not ok', status => 404) unless defined $groups;
+    $c->render_message($c, 'not ok', 404) unless defined $groups;
     $c->stash->{autodata} = $groups;
 };
 
@@ -188,10 +188,10 @@ get '/host/#host/:tag' => sub {
     my ($host,$tag) = map $c->stash($_), qw/host tag/;
     if ($c->authz->host_has_tag($host,$tag)) {
         TRACE "Host $host has tag $tag";
-        return $c->render(text => "ok", status => 200);
+        return $c->render_message($c, 'ok', 200);
     }
     TRACE "Host $host does not have tag $tag";
-    return $c->render(text => "not ok", status => 403);
+    return $c->render_message($c, 'not ok', 403);
 };
 
 =head3 GET /user
@@ -225,7 +225,7 @@ Returns the list of users that belong to the given group (:group)
 get '/users/:group' => sub {
     my $c = shift;
     my $users = $c->authz->users_in_group($c->stash('group'));
-    $c->render(text => 'not ok', status => 404) unless defined $users;
+    $c->render_message($c, 'not ok', 404) unless defined $users;
     $c->stash->{autodata} = $users;
 };
 
@@ -267,10 +267,10 @@ post '/user' => sub {
     my $password = $c->stash->{autodata}->{password} || '';
     delete $c->stash->{autodata};
     if($c->auth->create_user($user, $password)) {
-        $c->render(text => 'ok', status => 200);
+        $c->render_message($c, 'ok', 200);
         $c->app->emit('user_list_changed');
     } else {
-        $c->render(text => "not ok", status => 403);
+        $c->render_message($c, 'not ok', 403);
     }
 };
 
@@ -283,10 +283,10 @@ Delete the given user (#user).  Returns 200 ok on success, 404 not ok on failure
 del '/user/#user' => sub {
     my $c = shift;
     if($c->auth->delete_user($c->param('user'))) {
-        $c->render(text => 'ok', status => 200);
+        $c->render_message($c, 'ok', 200);
         $c->app->emit('user_list_changed');
     } else {
-        $c->render(text => 'not ok', status => 404);
+        $c->render_message($c, 'not ok', 404);
     }
 };
 
@@ -305,8 +305,8 @@ post '/group' => sub {
     my $users = $c->stash->{autodata}->{users};
     delete $c->stash->{autodata};
     $c->authz->create_group($group, $users)
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => "not ok", status => 403);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 403);
 };
 
 =head3 DELETE /group/:group
@@ -318,8 +318,8 @@ Delete the given group (:group).  Returns 200 ok on success, 403 not ok on failu
 del '/group/:group' => sub {
     my $c = shift;
     $c->authz->delete_group($c->param('group') )
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 404);
 };
 
 =head3 POST /group/:group
@@ -336,8 +336,8 @@ post '/group/:group' => sub {
     my $users = $c->stash->{autodata}->{users};
     delete $c->stash->{autodata};
     $c->authz->update_group($c->param('group'), $users)
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 404);
 };
 
 =head3 POST /group/:group/#user
@@ -350,12 +350,12 @@ Returns 200 ok on success, 404 not ok on failure.
 post '/group/:group/#user' => sub {
     my($c) = @_;
     my $users = $c->authz->users_in_group($c->stash('group'));
-    return $c->render(text => 'not ok', status => 404) unless defined $users;
+    return $c->render_message($c, 'not ok', 404) unless defined $users;
     push @$users, $c->stash('user');
     @$users = uniq @$users;
     $c->authz->update_group($c->param('group'), join(',', @$users))
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 404);
 };
 
 =head3 DELETE /group/:group/#user
@@ -368,12 +368,12 @@ Returns 200 ok on success, 404 not ok on failure.
 del '/group/:group/#user' => sub {
     my($c) = @_;
     my $users = $c->authz->users_in_group($c->stash('group'));
-    return $c->render(text => 'not ok', status => 404) unless defined $users;
+    return $c->render_message($c, 'not ok', 404) unless defined $users;
     my $user = $c->stash('user');
     @$users = grep { lc $_ ne lc $user } @$users;
     $c->authz->update_group($c->param('group'), join(',', @$users))
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 404);
 };
 
 =head3 POST /grant/#group/:action1/(*resource)
@@ -387,8 +387,8 @@ post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my $c = shift;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->grant($group, $action, $resource)
-    ? $c->render(text => 'ok',     status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 404);
 };
 
 =head3 DELETE /grant/#group/:action1/(*resource)
@@ -402,8 +402,8 @@ del '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my($c) = @_;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->revoke($group, $action, $resource)
-    ? $c->render(text => 'ok',     status => 200)
-    : $c->render(text => 'not ok', status => 404);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 404);
 };
 
 =head3 GET /grant
@@ -456,8 +456,8 @@ post '/user/#user' => sub {
     my $password = eval { $c->stash->{autodata}->{password} } || '';
     delete $c->stash->{autodata};
     $c->auth->change_password($user, $password)
-    ? $c->render(text => 'ok', status => 200)
-    : $c->render(text => 'not ok', status => 403);
+    ? $c->render_message($c, 'ok',     200)
+    : $c->render_message($c, 'not ok', 403);
 };
 
 1;
