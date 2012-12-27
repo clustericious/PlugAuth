@@ -13,7 +13,7 @@ $t->get_ok('/'); # creates $t->ua
 
 my $port = $t->ua->app_url->port;
 
-$t->app->config->simple_auth->{url} = "http://localhost:$port";
+$t->app->config->{plug_auth} = { url => "http://localhost:$port" };
 
 sub json($) {
     ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );

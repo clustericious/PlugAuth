@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.06'; # VERSION
+our $VERSION = '0.07'; # VERSION
 
 
 use strict;
@@ -30,7 +30,7 @@ sub refresh {
     my $config = __PACKAGE__->global_config;
     my @user_files = $config->user_file;
     if ( grep has_changed($_), @user_files ) {
-        my @users = map +{ __PACKAGE__->read_file($_) }, @user_files;
+        my @users = map +{ __PACKAGE__->read_file($_, lc_keys => 1) }, @user_files;
         %Userpw = ();
         for my $list (@users) {
             for my $user (map { lc $_ } keys %$list) {
@@ -172,7 +172,7 @@ sub change_password
             while(! eof $fh) {
                 my $line = <$fh>;
                 my($thisuser, $oldpassword) = split /:/, $line;
-                if($thisuser eq $user) {
+                if(lc($thisuser) eq $user) {
                     $buffer .= join(':', $user, $password) . "\n";
                 } else {
                     $buffer .= $line;
@@ -261,7 +261,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 
@@ -301,7 +301,7 @@ files are only re-read when a change is detected, so this plugin is relatively f
 
 The user file is 
 specified in the PlugAuth.conf file using the user_file field.  The format of the user
-is a simple user:password comma separated list, which is compatible with Apache password
+is a basic user:password comma separated list, which is compatible with Apache password
 files.  Either the UNIX crypt, Apache MD5 or UNIX MD5 format may be used for the passwords.
 
  foo:$apr1$F3VOmjio$O8dodh0VEljQvuzeruvsb0

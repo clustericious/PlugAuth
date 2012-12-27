@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.06'; # VERSION
+our $VERSION = '0.07'; # VERSION
 
 
 use strict;
@@ -9,6 +9,7 @@ use warnings;
 use v5.10;
 use base 'Clustericious::App';
 use PlugAuth::Routes;
+use PlugAuth::SelfAuth;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use PlugAuth::Role::Plugin;
@@ -17,9 +18,11 @@ use Mojo::Base 'Mojo::EventEmitter';
 
 sub startup {
     my $self = shift;
+    $self->plugins(PlugAuth::SelfAuth->new);
     $self->SUPER::startup(@_);
-    $self->plugin('Subdispatch');
 
+    #$self->renderer->default_format('txt');
+    
     my @plugins_config = eval {
         my $plugins = $self->config->{plugins} // [];
         ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
@@ -93,18 +96,34 @@ sub startup {
     }
     
     $self->helper(welcome => sub {
-        my($self, $c) = @_;
+        my($self) = @_;
         if($welcome_plugin) {
-            $welcome_plugin->welcome($c);
+            $welcome_plugin->welcome($self);
         } else {
-            $c->render_text("welcome to plug auth");
+            $self->render_message("welcome to plug auth");
         }
     });
+    
+    # for historical reasons, some routes return text by default
+    # in older versions, even if a format (e.g. /auth.json) is specified.
+    # this is a simple helper to render using autodata if a format
+    # is explicitly specified, otherwise fallback on the original
+    # behavior.
+    $self->helper(render_message => sub {
+        my($self, $message, $status) = @_;
+        $status //= 200;
+        my $format = $self->stash->{format} // 'txt';
+        if($format ne 'txt') {
+            $self->render(autodata => { message => $message, status => $status }, status => $status);
+        } else {
+            $self->render(text => $message, status => $status);
+        }
+    });
+    
+    # Silence warnings; this is only used for for session
+    # cookies, which we don't use.
+    $self->secret(rand);
 }
-
-# Silence warnings; this is only used for for session
-# cookies, which we don't use.
-__PACKAGE__->secret(rand);
 
 1;
 
@@ -118,7 +137,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 
@@ -126,7 +145,7 @@ In the configuration file for the Clustericious app that will authenticate
 against PlugAuth:
 
  ---
- simple_auth:
+ plug_auth:
    url: http://localhost:1234
 
 and I<authenticate> and I<authorize> in your Clustericious application's Routes.pm:
@@ -220,7 +239,7 @@ authorization/authentication handlers.
 
 If the REST service is written in Perl, see L<PlugAuth::Client>.
 
-If the REST service uses Clustericious, see L<Clustericious::Plugin::SimpleAuth>.
+If the REST service uses Clustericious, see L<Clustericious::Plugin::PlugAuth>.
 
 =head2 AUTHENTICATION
 
@@ -327,7 +346,7 @@ Emitted when a user is created or deleted.
 
 =head1 SEE ALSO
 
-L<Clustericious::Plugin::SimpleAuth>,
+L<Clustericious::Plugin::PlugAuth>,
 L<PlugAuth::Client>,
 L<PlugAuth::Guide::Client>,
 L<PlugAuth::Guide::Plugin>,

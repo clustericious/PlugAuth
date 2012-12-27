@@ -28,10 +28,11 @@
       "runtime" : {
          "requires" : {
             "Clone" : "0",
-            "Clustericious" : "0.9906",
+            "Clustericious" : "0.9909",
             "Clustericious::App" : "0",
             "Clustericious::Commands" : "0",
             "Clustericious::Config" : "0",
+            "Clustericious::Log" : "0",
             "Clustericious::RouteBuilder" : "0",
             "Crypt::PasswdMD5" : "0",
             "Exporter" : "0",
@@ -47,7 +48,7 @@
             "Log::Log4perl" : "0",
             "Mojo::Base" : "0",
             "Mojo::ByteStream" : "0",
-            "Mojolicious::Plugin::Subdispatch" : "0",
+            "Mojolicious::Plugins" : "0",
             "Role::Tiny" : "0",
             "Role::Tiny::With" : "0",
             "Test::Builder" : "0",
@@ -68,6 +69,6 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.06"
+   "version" : "0.07"
 }
 

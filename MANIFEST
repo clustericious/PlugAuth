@@ -38,6 +38,8 @@ lib/PlugAuth/Role/Plugin.pm
 lib/PlugAuth/Role/Refresh.pm
 lib/PlugAuth/Role/Welcome.pm
 lib/PlugAuth/Routes.pm
+lib/PlugAuth/SelfAuth.pm
+lib/PlugAuth/SelfAuth/PlugAuth.pm
 lib/Test/PlugAuth/Plugin.pm
 lib/Test/PlugAuth/Plugin/Auth.pm
 lib/Test/PlugAuth/Plugin/Authz.pm
@@ -64,6 +66,8 @@ t/21-client-revoke.t
 t/22-granted.t
 t/23-test_plugin.t
 t/24-authz_no_autovivification.t
+t/25-case_insensitive.t
+t/26-authz-slash.t
 t/data/01/group.txt
 t/data/01/host.txt
 t/data/01/more_users.txt
@@ -132,6 +136,14 @@ t/data/22/resource.txt
 t/data/22/user.txt
 t/data/23/PlugAuth.conf
 t/data/24/PlugAuth.conf
+t/data/25/group.txt
+t/data/25/host.txt
+t/data/25/resource.txt
+t/data/25/user.txt
+t/data/26/group.txt
+t/data/26/host.txt
+t/data/26/resource.txt
+t/data/26/user.txt
 t/etc/PlugAuth.conf
 t/etc/setup.pl
 t/fixme.t
@@ -142,6 +154,8 @@ t/plug_flatauthz_refresh.t
 t/plug_test_auth.t
 t/plug_test_authz.t
 t/plug_test_refresh.t
+t/plugins.t
 t/pod-coverage.t
+t/selfauth.t
 t/use.t
 xt/release/release.yml

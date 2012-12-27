@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.06'; # VERSION
+our $VERSION = '0.07'; # VERSION
 
 
 use strict;
@@ -33,7 +33,7 @@ sub refresh {
     if ( has_changed( $config->group_file ) ) {
         %all_users = map { $_ => 1 } __PACKAGE__->app->auth->all_users;
         %groupUser = ();
-        my %data = __PACKAGE__->read_file( $config->group_file, nest => 1 );
+        my %data = __PACKAGE__->read_file( $config->group_file, nest => 1, lc_values => 1, lc_keys => 1 );
         for my $k (keys %data) {
             my %users;
             for my $v (keys %{ $data{$k} }) {
@@ -47,7 +47,7 @@ sub refresh {
     }
     if ( has_changed( $config->resource_file ) ) {
         %all_users = map { $_ => 1 } __PACKAGE__->app->auth->all_users;
-        %resourceActionGroup = __PACKAGE__->read_file( $config->resource_file, nest => 2 );
+        %resourceActionGroup = __PACKAGE__->read_file( $config->resource_file, nest => 2, lc_values => 1 );
 
         foreach my $resource (keys %resourceActionGroup)
         {
@@ -183,8 +183,9 @@ sub all_groups {
 
 
 sub users_in_group {
-    my $class = shift;
-    my $group = shift or return ();
+    my($class, $group) = @_;
+    return unless defined $group;
+    $group = lc $group;
     return unless defined $groupUser{$group};
     return [keys %{ $groupUser{$group} }];
 }
@@ -230,6 +231,8 @@ sub create_group
 sub delete_group
 {
     my($class, $group) = @_;
+    
+    $group = lc $group;
 
     unless($group && defined $groupUser{$group}) {
         WARN "Group $group does not exist";
@@ -251,7 +254,7 @@ sub delete_group
         while(! eof $fh) {
             my $line = <$fh>;
             my($thisgroup, $password) = split /\s*:/, $line;
-            next if $thisgroup eq $group;
+            next if lc $thisgroup eq $group;
             $buffer .= $line;
         }
 
@@ -272,6 +275,8 @@ sub update_group
 {
     my($class, $group, $users) = @_;
 
+    $group = lc $group;
+    
     unless($group && defined $groupUser{$group}) {
         WARN "Group $group does not exist";
         return 0;
@@ -294,7 +299,7 @@ sub update_group
         while(! eof $fh) {
             my $line = <$fh>;
             my($thisgroup, $password) = split /\s*:/, $line;
-            $line =~ s{:.*$}{: $users} if $thisgroup eq $group;
+            $line =~ s{:.*$}{: $users} if lc($thisgroup) eq $group;
             $buffer .= $line;
         }
 
@@ -314,6 +319,8 @@ sub update_group
 sub grant
 {
     my($class, $group, $action, $resource) = @_;
+    
+    $group = lc $group;
 
     unless($group && (defined $groupUser{$group} || defined $all_users{$group})) {
         WARN "Group (or user) $group does not exist";
@@ -352,6 +359,8 @@ sub grant
 sub revoke
 {
     my($class, $group, $action, $resource) = @_;
+    
+    $group = lc $group;
 
     unless($group && (defined $groupUser{$group} || defined $all_users{$group})) {
         WARN "Group (or user) $group does not exist";
@@ -448,7 +457,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 
@@ -492,7 +501,7 @@ Group members can be specified using a glob (see L<Text::Glob>) which match agai
 
  all: *
 
-Each user automatically gets his own group, so if there is a users named bob and alice, this is 
+Each user automatically gets his own group, so if there are users named bob and alice, this is 
 unnecessary:
 
  alice: alice

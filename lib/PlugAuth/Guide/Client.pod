@@ -12,7 +12,7 @@ PlugAuth::Guide::Client - Guide for authenticating and authorizing against a Plu
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 DESCRIPTION
 
@@ -32,10 +32,10 @@ For details on setting up a PlugAuth server using the default plugins, see
 L<PlugAuth::Guide::Server>.  All of these examples are included with the 
 L<PlugAuth> distribution in example directory.
 
-=head2 From a L<Clustericious> service using L<Clustericious::Plugin::SimpleAuth>.
+=head2 From a L<Clustericious> service using L<Clustericious::Plugin::PlugAuth>.
 
 Any Clustericious service can be integrated with PlugAuth using the Clustericious
-L<SimpleAuth|Clustericious::Plugin::SimpleAuth> plugin.  Here is an example Routes
+L<PlugAuth|Clustericious::Plugin::PlugAuth> plugin.  Here is an example Routes
 module
 
  package ExampleAppExample::Routes;
@@ -53,7 +53,7 @@ And example configuration to go along with it.
 
  ---
  url: http://localhost:3001
- simple_auth:
+ plug_auth:
    url: http://localhost:3000
 
 This will configure the example application to listen on localhost port 3001 and
@@ -66,7 +66,7 @@ And test it by navigating your browser to http://localhost:3001/some/user/resour
 The web browser should prompt you for a username and password, and accept the 
 credentials for C<optimus>.
 
-For more details seee L<Clustericious::Plugin::SimpleAuth>.
+For more details seee L<Clustericious::Plugin::PlugAuth>.
 
 =head2 From Perl using L<PlugAuth::Client>
 
@@ -236,6 +236,40 @@ And here we pass it good credentials
  % sh client.sh optimus matrix
  optimus is authenticate
  optimus is authorized to GET /some/user/resource
+
+=head2 From PAM (Pluggable Authentication Module)
+
+There is a L<PAM module that will authenticate against a HTTP server 
+using HTTP Basic authentication on 
+git|https://github.com/beatgammit/pam-http>. It is licensed under the 
+MIT License and is based on work by Kragen Sitaker.  I had to install 
+C<libpam0g-dev> and C<libcurl4-openssl-dev> on my Debian system in order 
+for it to build for me.
+
+ % git clone git://github.com/beatgammit/pam-http.git
+ % cd pam-http
+ % make
+ % sudo cp mypam.so /lib/security
+
+Add these two lines to the top of your /etc/pam.d/common-auth (or other) config:
+
+ auth sufficient mypam.so url=http://localhost:3000/auth
+ account sufficient mypam.so
+
+C<sufficient> means that it will fallback on your existing passwd file or whatever
+authentication mechanism is configured already.  Change the C<url> argument
+to the URL for your L<PlugAuth> server.
+
+There are numerous caveats here.  PlugAuth usually runs as an unprivileged 
+user which means it binds to an unprivileged port, and if an unauthorized 
+user sets up their own PlugAuth service before the "correct" PlugAuth server 
+starts, authentication could be subverted.  Encryption, such as SSL should 
+be used if you are authenticating against a L<PlugAuth> server over the 
+network, but pam-http as written does not check the authenticity of the 
+PlugAuth server's SSL certificate.  Unix accounts require more information 
+than just authentication, which is not provided by L<PlugAuth>, so something 
+like LDAP may be more appropriate.  None of these things are insurmountable 
+if you take the time to fix them, but care needs to be taken.
 
 =head1 SEE ALSO
 

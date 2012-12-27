@@ -12,7 +12,7 @@ PlugAuth::Guide::Plugin - Guide for writing PlugAuth plugins.
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 DESCRIPTION
 
@@ -182,7 +182,7 @@ L<Test::PlugAuth::Plugin::Authz>.
 L<PlugAuth> plugins don't need to limit themselves to just authentication and
 authorization.  They have access to the PlugAuth app itself and can add routes
 from the C<init> method just like L<Mojolicious> plugins can to other Mojo apps.
-Here is a very simple example showing how to add a route:
+Here is a basic example showing how to add a route:
 
  package PlugAuth::Plugin::ExampleRoute;
  
@@ -205,7 +205,7 @@ Here is a very simple example showing how to add a route:
  1;
 
 This sort of plugin might be useful for adding a web UI for L<PlugAuth> for example.
-Here is a very simple test for this plugin:
+Here is a basic test for this plugin:
 
  use strict;
  use warnings;
@@ -240,7 +240,7 @@ If your plugin consumes the L<PlugAuth::Role::Refresh> role, then its refresh me
 will be called on every HTTP request made to the L<PlugAuth> server.  This is used
 by the L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>
 plugins to reload the authentiation and authorization database from flat files if
-they have changed.  There is also a simple test module L<Test::PlugAuth::Plugin::Refresh>
+they have changed.  There is also a basic test module L<Test::PlugAuth::Plugin::Refresh>
 which can be used to ensure that your plugin correctly implements this role.
 
 =head2 Other examples

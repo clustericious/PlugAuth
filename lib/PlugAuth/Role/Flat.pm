@@ -12,7 +12,7 @@ use File::Spec;
 use File::Touch qw( touch );
 
 # ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
-our $VERSION = '0.06'; # VERSION
+our $VERSION = '0.07'; # VERSION
 
 my %MTimes;
 
@@ -30,9 +30,7 @@ sub mark_changed {
 }
 
 sub read_file { # TODO: cache w/ mtime
-    my $class = shift;
-    my $filename = shift;
-    my %args = @_;
+    my($class, $filename, %args) = @_;
     $args{nest} ||= 0;
     #
     # _read_file:
@@ -68,6 +66,8 @@ sub read_file { # TODO: cache w/ mtime
         my $p;
         TRACE "parsing $v";
         ($k,$p) = ( $k =~ m/^(.*)\(([^)]*)\)$/) if $args{nest}==2;
+        $k = lc $k if $args{lc_keys};
+        $v = lc $v if $args{lc_values};
         my %m = ( map { $_ => 1 } split /,/, $v ) if $args{nest};
         if ($args{nest}==0) {
             $h{$k} = $v;
@@ -120,7 +120,7 @@ PlugAuth::Role::Flat - private role used by L<FlatAuth|PlugAuth::Plugin::FlatAut
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SEE ALSO
 
