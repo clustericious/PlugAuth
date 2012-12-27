@@ -12,7 +12,7 @@ $t->get_ok('/'); # creates $t->ua
 
 my $port = $t->ua->app_url->port;
 
-$t->app->config->simple_auth->{url} = "http://localhost:$port";
+$t->app->config->{plug_auth} = { url => "http://localhost:$port" };
 
 my $event_triggered = 0;
 $t->app->on(user_list_changed =>  sub { $event_triggered = 1 });

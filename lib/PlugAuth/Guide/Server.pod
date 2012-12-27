@@ -94,7 +94,7 @@ In the window you are running the PlugAuth daemon type Ctrl-C.
 =item * configure
 
 Make PlugAuth authenticate and authorize against itself using the 
-I<simple_auth> configuration.  Your PlugAuth.conf should look like this:
+I<plug_auth> configuration.  Your PlugAuth.conf should look like this:
 
  ---
  % use File::HomeDir;  my $home = File::HomeDir->my_home;
@@ -103,7 +103,7 @@ I<simple_auth> configuration.  Your PlugAuth.conf should look like this:
  group_file: <%= $home %>/etc/plugauth/group.txt
  resource_file: <%= $home %>/etc/plugauth/resource.txt
  host_file: <%= $home %>/etc/plugauth/host.txt
- simple_auth:
+ plug_auth:
    url: http://localhost:3000
 
 (the last two lines having been added).
@@ -133,13 +133,13 @@ Create a regular user.  This time PlugAuth should ask you for a username and pas
 =head2 More Secure
 
 Instead of creating the admin account using L<plugauthclient>, you can use the Apache
-htpasswd command and a simple text editor.  
+htpasswd command and a basic text editor.  
 
 =over 4
 
 =item * create configuration
 
-Do as above, but create your configuration initially with I<simple_auth> set in your 
+Do as above, but create your configuration initially with I<plug_auth> set in your 
 PlugAuth.conf file:
 
  ---
@@ -149,7 +149,7 @@ PlugAuth.conf file:
  group_file: <%= $home %>/etc/plugauth/group.txt
  resource_file: <%= $home %>/etc/plugauth/resource.txt
  host_file: <%= $home %>/etc/plugauth/host.txt
- simple_auth:
+ plug_auth:
    url: http://localhost:3000
 
 =item * create admin user
@@ -192,7 +192,7 @@ Just like the default configuration, but add a ldap stanza to the configuration.
  group_file: <%= $home %>/etc/plugauth/group.txt
  resource_file: <%= $home %>/etc/plugauth/resource.txt
  host_file: <%= $home %>/etc/plugauth/host.txt
- simple_auth:
+ plug_auth:
    url: http://localhost:3000
  ldap:
    server: ldap://1.2.3.4:389

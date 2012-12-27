@@ -41,7 +41,7 @@ files are only re-read when a change is detected, so this plugin is relatively f
 
 The user file is 
 specified in the PlugAuth.conf file using the user_file field.  The format of the user
-is a simple user:password comma separated list, which is compatible with Apache password
+is a basic user:password comma separated list, which is compatible with Apache password
 files.  Either the UNIX crypt, Apache MD5 or UNIX MD5 format may be used for the passwords.
 
  foo:$apr1$F3VOmjio$O8dodh0VEljQvuzeruvsb0

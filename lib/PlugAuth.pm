@@ -9,7 +9,7 @@ In the configuration file for the Clustericious app that will authenticate
 against PlugAuth:
 
  ---
- simple_auth:
+ plug_auth:
    url: http://localhost:1234
 
 and I<authenticate> and I<authorize> in your Clustericious application's Routes.pm:
@@ -103,7 +103,7 @@ authorization/authentication handlers.
 
 If the REST service is written in Perl, see L<PlugAuth::Client>.
 
-If the REST service uses Clustericious, see L<Clustericious::Plugin::SimpleAuth>.
+If the REST service uses Clustericious, see L<Clustericious::Plugin::PlugAuth>.
 
 =head2 AUTHENTICATION
 
@@ -211,7 +211,7 @@ Emitted when a user is created or deleted.
 
 =head1 SEE ALSO
 
-L<Clustericious::Plugin::SimpleAuth>,
+L<Clustericious::Plugin::PlugAuth>,
 L<PlugAuth::Client>,
 L<PlugAuth::Guide::Client>,
 L<PlugAuth::Guide::Plugin>,
