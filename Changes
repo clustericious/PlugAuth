@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - bug fix: /authz/user/username/action/ now returns 403 or 200 instead of always returning 404
   - self auth against $c->authz instead of using Clustericious::Plugin::PlugAuth
   - Better tests for case insensitive usernames
 

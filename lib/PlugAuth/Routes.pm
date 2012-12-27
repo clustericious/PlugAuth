@@ -100,11 +100,11 @@ Return 403 "unauthorized : $user cannot $action $resource"
 =cut
 
 # Check authorization for a user to perform $action on $resource.
-get '/authz/user/#user/#action/(*resource)' => sub {
+get '/authz/user/#user/#action/(*resource)' => { resource => '/' } => sub {
     my $c = shift;
     # Ok iff the user is in a group for which $action on $resource is allowed.
     my ($user,$resource,$action) = map $c->stash($_), qw/user resource action/;
-    $resource = "/$resource";
+    $resource =~ s{^/?}{/};
     TRACE "Checking authorization for $user to perform $action on $resource...";
     my $found = $c->authz->can_user_action_resource($user,$action,$resource);
     if ($found) {

@@ -1,0 +1,2 @@
+/ (accounts): primus
+/user (change_password): primus
