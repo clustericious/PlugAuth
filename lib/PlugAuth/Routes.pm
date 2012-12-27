@@ -383,7 +383,7 @@ on the given resource (*resource).  Returns 200 ok on success, 404 not ok on fai
 
 =cut
 
-post '/grant/#group/:action1/(*resource)' => sub {
+post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my $c = shift;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->grant($group, $action, $resource)
@@ -398,7 +398,7 @@ the given resource (*resource).  Returns 200 ok on success, 404 not ok on failur
 
 =cut
 
-del '/grant/#group/:action1/(*resource)' => sub {
+del '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my($c) = @_;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->revoke($group, $action, $resource)
