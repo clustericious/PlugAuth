@@ -30,3 +30,5 @@ pod_coverage:
     - PlugAuth::(Role|Plugin)::.*#new
     - PlugAuth::(Rold|Plugin)::.*#init
     - PlugAuth#startup
+    - PlugAuth::SelfAuth
+    - PlugAuth::SelfAuth::PlugAuth

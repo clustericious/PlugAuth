@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 16;
 
 use_ok 'PlugAuth';
 use_ok 'PlugAuth::Routes';
@@ -19,4 +19,5 @@ use_ok 'Test::PlugAuth::Plugin::Auth';
 use_ok 'Test::PlugAuth::Plugin::Authz';
 use_ok 'Test::PlugAuth::Plugin::Refresh';
 
-
+use_ok 'PlugAuth::SelfAuth';
+use_ok 'PlugAuth::SelfAuth::PlugAuth';

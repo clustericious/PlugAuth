@@ -227,10 +227,12 @@ And here we pass it good credentials
 
 =head2 From PAM (Pluggable Authentication Module)
 
-There is a L<PAM module that will authenticate against a HTTP server using 
-HTTP Basic authentication on git|https://github.com/beatgammit/pam-http>. It 
-is licensed under the MIT License and is based on work by Kragen Sitaker.  I
-had to install libpam0g-dev and libcurl4-openssl-dev in order for it to build.
+There is a L<PAM module that will authenticate against a HTTP server 
+using HTTP Basic authentication on 
+git|https://github.com/beatgammit/pam-http>. It is licensed under the 
+MIT License and is based on work by Kragen Sitaker.  I had to install 
+C<libpam0g-dev> and C<libcurl4-openssl-dev> on my Debian system in order 
+for it to build for me.
 
  % git clone git://github.com/beatgammit/pam-http.git
  % cd pam-http

@@ -262,7 +262,6 @@ Create a user.  The C<username> and C<password> are provided autodata arguments
 
 post '/user' => sub {
     my $c = shift;
-    $c->refresh;
     $c->parse_autodata;
     my $user = $c->stash->{autodata}->{user};
     my $password = $c->stash->{autodata}->{password} || '';
@@ -283,7 +282,6 @@ Delete the given user (#user).  Returns 200 ok on success, 404 not ok on failure
 
 del '/user/#user' => sub {
     my $c = shift;
-    $c->refresh;
     if($c->auth->delete_user($c->param('user'))) {
         $c->render(text => 'ok', status => 200);
         $c->app->emit('user_list_changed');
@@ -302,7 +300,6 @@ on failure.
 
 post '/group' => sub {
     my $c = shift;
-    $c->refresh;
     $c->parse_autodata;
     my $group = $c->stash->{autodata}->{group};
     my $users = $c->stash->{autodata}->{users};
@@ -320,7 +317,6 @@ Delete the given group (:group).  Returns 200 ok on success, 403 not ok on failu
 
 del '/group/:group' => sub {
     my $c = shift;
-    $c->refresh;
     $c->authz->delete_group($c->param('group') )
     ? $c->render(text => 'ok', status => 200)
     : $c->render(text => 'not ok', status => 404);
@@ -336,7 +332,6 @@ Returns 200 ok on success, 404 not ok on failure.
 
 post '/group/:group' => sub {
     my $c = shift;
-    $c->refresh;
     $c->parse_autodata;
     my $users = $c->stash->{autodata}->{users};
     delete $c->stash->{autodata};
@@ -354,7 +349,6 @@ Returns 200 ok on success, 404 not ok on failure.
 
 post '/group/:group/#user' => sub {
     my($c) = @_;
-    $c->refresh;
     my $users = $c->authz->users_in_group($c->stash('group'));
     return $c->render(text => 'not ok', status => 404) unless defined $users;
     push @$users, $c->stash('user');
@@ -373,7 +367,6 @@ Returns 200 ok on success, 404 not ok on failure.
 
 del '/group/:group/#user' => sub {
     my($c) = @_;
-    $c->refresh;
     my $users = $c->authz->users_in_group($c->stash('group'));
     return $c->render(text => 'not ok', status => 404) unless defined $users;
     my $user = $c->stash('user');
@@ -392,7 +385,6 @@ on the given resource (*resource).  Returns 200 ok on success, 404 not ok on fai
 
 post '/grant/#group/:action1/(*resource)' => sub {
     my $c = shift;
-    $c->refresh;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->grant($group, $action, $resource)
     ? $c->render(text => 'ok',     status => 200)
@@ -408,7 +400,6 @@ the given resource (*resource).  Returns 200 ok on success, 404 not ok on failur
 
 del '/grant/#group/:action1/(*resource)' => sub {
     my($c) = @_;
-    $c->refresh;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $c->authz->revoke($group, $action, $resource)
     ? $c->render(text => 'ok',     status => 200)
@@ -460,7 +451,6 @@ authorize 'change_password';
 
 post '/user/#user' => sub {
     my($c) = @_;
-    $c->refresh;
     $c->parse_autodata;
     my $user = $c->param('user');
     my $password = eval { $c->stash->{autodata}->{password} } || '';

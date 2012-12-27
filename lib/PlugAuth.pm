@@ -224,6 +224,7 @@ use warnings;
 use v5.10;
 use base 'Clustericious::App';
 use PlugAuth::Routes;
+use PlugAuth::SelfAuth;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use PlugAuth::Role::Plugin;
@@ -232,8 +233,8 @@ use Mojo::Base 'Mojo::EventEmitter';
 
 sub startup {
     my $self = shift;
+    $self->plugins(PlugAuth::SelfAuth->new);
     $self->SUPER::startup(@_);
-    $self->plugin('Subdispatch');
 
     my @plugins_config = eval {
         my $plugins = $self->config->{plugins} // [];
