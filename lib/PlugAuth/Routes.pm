@@ -36,10 +36,8 @@ Returns the string "welcome to plug auth"
 
 =cut
 
-get '/' => sub {
-    my($c) = @_;
-    $c->welcome($c);
-} => 'index';
+get '/'      => sub { shift->welcome } => 'index';
+get '/index' => sub { shift->welcome };
 
 ladder sub { shift->refresh };
 

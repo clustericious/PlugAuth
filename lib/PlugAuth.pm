@@ -311,11 +311,11 @@ sub startup {
     }
     
     $self->helper(welcome => sub {
-        my($self, $c) = @_;
+        my($self) = @_;
         if($welcome_plugin) {
-            $welcome_plugin->welcome($c);
+            $welcome_plugin->welcome($self);
         } else {
-            $c->render_text("welcome to plug auth");
+            $self->render_message("welcome to plug auth");
         }
     });
     
@@ -327,7 +327,8 @@ sub startup {
     $self->helper(render_message => sub {
         my($self, $message, $status) = @_;
         $status //= 200;
-        if(defined $self->stash->{format}) {
+        my $format = $self->stash->{format} // 'txt';
+        if($format ne 'txt') {
             $self->render(autodata => { message => $message, status => $status }, status => $status);
         } else {
             $self->render(text => $message, status => $status);
