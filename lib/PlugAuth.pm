@@ -325,13 +325,12 @@ sub startup {
     # is explicitly specified, otherwise fallback on the original
     # behavior.
     $self->helper(render_message => sub {
-        my($self, $c, $message, $status) = @_;
-        DEBUG "ref = ", ref $self, " ref = ", ref $c;
+        my($self, $message, $status) = @_;
         $status //= 200;
-        if(defined $c->stash->{format}) {
-            $c->render(autodata => { message => $message, status => $status }, status => $status);
+        if(defined $self->stash->{format}) {
+            $self->render(autodata => { message => $message, status => $status }, status => $status);
         } else {
-            $c->render(text => $message, status => $status);
+            $self->render(text => $message, status => $status);
         }
     });
     

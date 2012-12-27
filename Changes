@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - return json if format is JSON.
+  - return yml if format is YAML.
   - bug fix: /authz/user/username/action/ now returns 403 or 200 instead of always returning 404
   - feature: also allow /grant/user/username/action/
   - self auth against $c->authz instead of using Clustericious::Plugin::PlugAuth
