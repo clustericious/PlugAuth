@@ -384,6 +384,7 @@ on the given resource (*resource).  Returns 200 ok on success, 404 not ok on fai
 post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my $c = shift;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+    $resource =~ s/\.(json|yml)$//;
     $c->authz->grant($group, $action, $resource)
     ? $c->render_message('ok',     200)
     : $c->render_message('not ok', 404);
@@ -399,6 +400,7 @@ the given resource (*resource).  Returns 200 ok on success, 404 not ok on failur
 del '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my($c) = @_;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+    $resource =~ s/\.(json|yml)$//;
     $c->authz->revoke($group, $action, $resource)
     ? $c->render_message('ok',     200)
     : $c->render_message('not ok', 404);
