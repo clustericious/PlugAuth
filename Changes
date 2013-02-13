@@ -1,5 +1,9 @@
 Revision history for PlugAuth
 
+0.08      2013-02-13 12:50:03 America/New_York
+  - ensure the last line of the file has a new line in modificatons
+  - ensure if the last line of the file doesn't have a new line adds still work
+
 0.07      2012-12-27 18:05:54 America/New_York
   - return json if format is JSON.
   - return yml if format is YAML.

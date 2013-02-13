@@ -2,8 +2,8 @@
 # VERSION
 # PODNAME: PlugAuth::Guide::Client
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -12,7 +12,7 @@ PlugAuth::Guide::Client - Guide for authenticating and authorizing against a Plu
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 DESCRIPTION
 
@@ -289,4 +289,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

@@ -23,7 +23,7 @@ my %module_build_args = (
     "Graham Ollis <gollis\@sesda3.com>"
   ],
   "dist_name" => "PlugAuth",
-  "dist_version" => "0.07",
+  "dist_version" => "0.08",
   "license" => "perl",
   "module_name" => "PlugAuth",
   "recommends" => {},

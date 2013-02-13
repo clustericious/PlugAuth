@@ -68,6 +68,7 @@ t/23-test_plugin.t
 t/24-authz_no_autovivification.t
 t/25-case_insensitive.t
 t/26-authz-slash.t
+t/27-new_line.t
 t/data/01/group.txt
 t/data/01/host.txt
 t/data/01/more_users.txt
@@ -144,6 +145,10 @@ t/data/26/group.txt
 t/data/26/host.txt
 t/data/26/resource.txt
 t/data/26/user.txt
+t/data/27/group.txt
+t/data/27/host.txt
+t/data/27/resource.txt
+t/data/27/user.txt
 t/etc/PlugAuth.conf
 t/etc/setup.pl
 t/fixme.t

@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.07'; # VERSION
+our $VERSION = '0.08'; # VERSION
 
 
 use strict;
@@ -212,12 +212,22 @@ sub create_group
     eval {
         use autodie;
 
-        open my $fh, '>>', $filename;
+        open my $fh, '+<', $filename;
 
         eval { flock $fh, LOCK_EX };
         WARN "cannot lock $filename - $@" if $@;
 
-        print $fh "$group : $users\n";
+        my $buffer;
+        while(! eof $fh) {
+            my $line = <$fh>;
+            chomp $line;
+            $buffer .= "$line\n";
+        }
+        $buffer .= "$group : $users\n";
+
+        seek $fh, 0, 0;
+        truncate $fh, 0;
+        print $fh $buffer;
 
         close $fh;
     };
@@ -253,9 +263,10 @@ sub delete_group
 
         while(! eof $fh) {
             my $line = <$fh>;
+            chomp $line;
             my($thisgroup, $password) = split /\s*:/, $line;
             next if lc $thisgroup eq $group;
-            $buffer .= $line;
+            $buffer .= "$line\n";
         }
 
         seek $fh, 0, 0;
@@ -298,9 +309,10 @@ sub update_group
 
         while(! eof $fh) {
             my $line = <$fh>;
+            chomp $line;
             my($thisgroup, $password) = split /\s*:/, $line;
             $line =~ s{:.*$}{: $users} if lc($thisgroup) eq $group;
-            $buffer .= $line;
+            $buffer .= "$line\n";
         }
 
         seek $fh, 0, 0;
@@ -340,12 +352,22 @@ sub grant
     eval {
         use autodie;
 
-        open my $fh, '>>', $filename;
-
+        my $buffer = '';
+        
+        open my $fh, '+<', $filename;
         eval { flock $fh, LOCK_EX };
         WARN "cannot lock $filename - $@" if $@;
-
-        print $fh "$resource ($action) : $group\n";
+        
+        while(! eof $fh) {
+            my $line = <$fh>;
+            chomp $line;
+            $buffer .= "$line\n";
+        }
+        $buffer .= "$resource ($action) : $group\n";
+        
+        seek $fh, 0, 0;
+        truncate $fh, 0;
+        print $fh $buffer;
 
         close $fh;
     };
@@ -387,15 +409,16 @@ sub revoke
         WARN "cannot lock $filename - $@" if $@;
         while(! eof $fh) {
             my $line = <$fh>;
+            chomp $line;
             if($line =~ /^#/) {
-                $buffer .= $line;
+                $buffer .= "$line\n";
             } elsif($line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$}
                  && $1 eq $resource && $2 eq $action) {
                 my(@groups) = grep { $_ ne $group } split /,/, $3;
                 $buffer .= "$resource ($action) : " . join(',', @groups) . "\n"
                     if @groups > 0;
             } else {
-                $buffer .= $line;
+                $buffer .= "$line\n";
             }
         }
         
@@ -447,8 +470,8 @@ sub granted
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -457,7 +480,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -613,4 +636,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.07'; # VERSION
+our $VERSION = '0.08'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -215,6 +215,7 @@ del '/group/:group/#user' => sub {
 post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my $c = shift;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+    $resource =~ s/\.(json|yml)$//;
     $c->authz->grant($group, $action, $resource)
     ? $c->render_message('ok',     200)
     : $c->render_message('not ok', 404);
@@ -224,6 +225,7 @@ post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
 del '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my($c) = @_;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+    $resource =~ s/\.(json|yml)$//;
     $c->authz->revoke($group, $action, $resource)
     ? $c->render_message('ok',     200)
     : $c->render_message('not ok', 404);
@@ -252,8 +254,8 @@ post '/user/#user' => sub {
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -262,7 +264,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 DESCRIPTION
 
@@ -466,4 +468,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

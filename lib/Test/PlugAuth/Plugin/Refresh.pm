@@ -12,7 +12,7 @@ use base qw( Exporter );
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Refresh plugin for correctness
-our $VERSION = '0.07'; # VERSION
+our $VERSION = '0.08'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -45,8 +45,8 @@ sub run_tests
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -55,7 +55,7 @@ Test::PlugAuth::Plugin::Refresh - Test a PlugAuth Refresh plugin for correctness
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -85,4 +85,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
