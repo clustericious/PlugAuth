@@ -185,12 +185,22 @@ sub create_user
         eval {
             use autodie;
 
-            open my $fh, '>>', $filename;
+            open my $fh, '+<', $filename;
 
             eval { flock $fh, LOCK_EX };
             WARN "cannot lock $filename - $@" if $@;
 
-            print $fh join(':', $user, $password), "\n";
+            my $buffer;
+            while(! eof $fh) {
+                my $line = <$fh>;
+                chomp $line;
+                $buffer .= "$line\n";
+            }
+            $buffer .= join(':', $user, $password) . "\n";
+            
+            seek $fh, 0, 0;
+            truncate $fh, 0;
+            print $fh $buffer;
 
             close $fh;
 
@@ -251,11 +261,12 @@ sub change_password
 
             while(! eof $fh) {
                 my $line = <$fh>;
+                chomp $line;
                 my($thisuser, $oldpassword) = split /:/, $line;
                 if(lc($thisuser) eq $user) {
                     $buffer .= join(':', $user, $password) . "\n";
                 } else {
-                    $buffer .= $line;
+                    $buffer .= "$line\n";
                 }
             }
 
@@ -309,9 +320,10 @@ sub delete_user
 
             while(! eof $fh) {
                 my $line = <$fh>;
+                chomp $line;
                 my($thisuser, $password) = split /:/, $line;
-                next if $thisuser eq $user;
-                $buffer .= $line;
+                next if ($thisuser//'') eq $user;
+                $buffer .= "$line\n";
             }
 
             seek $fh, 0, 0;
