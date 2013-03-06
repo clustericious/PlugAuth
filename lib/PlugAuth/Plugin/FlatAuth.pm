@@ -28,7 +28,7 @@ Start PlugAuth:
 =head1 DESCRIPTION
 
 This is the default Authentication plugin for L<PlugAuth>.  It is designed to work closely
-with L<FlatAuthz> which is the default Authorization plugin.
+with L<PlugAuth::Plugin::FlatAuthz> which is the default Authorization plugin.
 
 This plugin provides storage and password verification for users.  This plugin also provides 
 a mechanism for PlugAuth to change passwords, create and delete users.  Although the user 
