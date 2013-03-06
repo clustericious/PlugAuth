@@ -98,9 +98,6 @@ The REST service returns the appropriate response to the client.
 
 =back
 
-If the REST service uses Apache, see L<SimpleAuthHandler> for Apache 
-authorization/authentication handlers.
-
 If the REST service is written in Perl, see L<PlugAuth::Client>.
 
 If the REST service uses Clustericious, see L<Clustericious::Plugin::PlugAuth>.
