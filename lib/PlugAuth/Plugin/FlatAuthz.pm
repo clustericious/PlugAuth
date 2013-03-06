@@ -26,7 +26,7 @@ Start PlugAuth:
 =head1 DESCRIPTION
 
 This is the default Authorization plugin for L<PlugAuth>.  It is designed to work closely
-with L<FlatAuth> which is the default Authentication plugin.
+with L<PlugAuth::Plugin::FlatAuth> which is the default Authentication plugin.
 
 This plugin provides storage for groups, hosts and access control for PlugAuth.  In addition
 it provides a mechanism for PlugAuth to alter the group, host and access control databases.
