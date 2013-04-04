@@ -64,7 +64,9 @@ sub read_file { # TODO: cache w/ mtime
         next if $line =~ /^#/ || !length($line);
         my ($k,$v) = split /:/, $line;
         my $p;
-        TRACE "parsing $v";
+        # commenting this out because it puts the password salt in
+        # the log file if TRACE is on
+        #TRACE "parsing $v";
         ($k,$p) = ( $k =~ m/^(.*)\(([^)]*)\)$/) if $args{nest}==2;
         $k = lc $k if $args{lc_keys};
         $v = lc $v if $args{lc_values};
