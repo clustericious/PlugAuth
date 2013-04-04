@@ -212,9 +212,10 @@ sub create_user
         };
 
         if($@) {
-            WARN "writing file $filename: $@";
+            ERROR "writing file $filename: $@";
             return 0;
         } else {
+            INFO "created user $user";
             return 1;
         }
     }
@@ -287,6 +288,7 @@ sub change_password
         mark_changed($filename);
     }
 
+    INFO "user password changed $user";
     return 1;
 }
 
@@ -343,6 +345,7 @@ sub delete_user
         mark_changed($filename);
     }
 
+    INFO "deleted user $user";
     return 1;
 }
 

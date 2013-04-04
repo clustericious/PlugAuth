@@ -355,10 +355,15 @@ sub create_group
 
         close $fh;
     };
-
-    ERROR "modifying file $filename: $@" if $@;
+    
     mark_changed($filename);
-    return 1;
+    if(my $error = $@) {
+        ERROR "modifying file $filename: $@";
+        return 0;
+    } else {
+        INFO "created group $group with members $users";
+        return 1;
+    }
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>delete_group( $group )
@@ -405,9 +410,17 @@ sub delete_group
         close $fh;
     };
 
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
-    return 1;
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $error";
+        return 0;
+    }
+    else
+    {
+        INFO "deleted group $group";
+        return 1;
+    }
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>update_group( $group, $users )
@@ -458,9 +471,17 @@ sub update_group
         close $fh;
     };
 
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
-    return 1;
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $error";
+        return 0;
+    }
+    else
+    {
+        INFO "update group $group set members to $users";
+        return 1;
+    }
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>grant( $group, $action, $resource )
@@ -514,9 +535,17 @@ sub grant
         close $fh;
     };
 
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
-    return 1;
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $error";
+        return 0;
+    }
+    else
+    {
+        INFO "grant $group $action $resource";
+        return 1;
+    }
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>revoke( $group, $action, $resource )
@@ -578,8 +607,17 @@ sub revoke
     
     };
     
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $@";
+        return 0;
+    }
+    else
+    {
+        INFO "revoke $group $action $resource";
+        return 1;
+    }
 
     return 1;
 }
