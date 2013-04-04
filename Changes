@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - audit log for create,change,remove users,groups and resources
   - fix t/selfauth.t to not use config in ~/etc
 
 0.08      2013-02-13 12:50:03 America/New_York
