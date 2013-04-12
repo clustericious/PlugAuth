@@ -18,6 +18,7 @@ for PlugAuth.
 
 sub register {
   my ($self, $app, $conf) = @_;
+  PlugAuth::Role::Plugin->_self_auth_plugin($self);
   $self;
 }
 

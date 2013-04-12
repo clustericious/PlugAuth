@@ -94,6 +94,18 @@ sub new
   $self;
 }
 
+# undocumented, may go away.
+sub _self_auth_plugin
+{
+  my($class, $new_value) = @_;
+  
+  state $plugin;
+  
+  $plugin = $new_value if defined $new_value;
+  
+  return $plugin;
+}
+
 1;
 
 =head1 SEE ALSO
