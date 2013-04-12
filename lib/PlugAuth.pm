@@ -202,9 +202,7 @@ lighttpd, Plack or Apache.
 
 =head1 EVENTS
 
-=head2 user_list_changed
-
-Emitted when a user is created or deleted.
+See L<PlugAuth::Routes>
 
 =head1 SEE ALSO
 

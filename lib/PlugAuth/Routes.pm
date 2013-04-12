@@ -256,6 +256,14 @@ If the PlugAuth server cannot reach itself or the deligated PlugAuth server.
 Create a user.  The C<username> and C<password> are provided autodata arguments
 (JSON, YAML, form data, etc).
 
+Emits event 'create_user' on success
+
+ $app->on(create_user => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who created the group
+   my $user     = $hash->{user};
+ });
+
 =cut
 
 post '/user' => sub {
@@ -266,7 +274,11 @@ post '/user' => sub {
   delete $c->stash->{autodata};
   if($c->auth->create_user($user, $password)) {
     $c->render_message('ok', 200);
-    $c->app->emit('user_list_changed');
+    $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
+    $c->app->emit(create_user => {
+      admin => $c->stash('user'),
+      user  => $user,
+    });
   } else {
     $c->render_message('not ok', 403);
   }
@@ -276,13 +288,26 @@ post '/user' => sub {
 
 Delete the given user (#user).  Returns 200 ok on success, 404 not ok on failure.
 
+Emits event 'delete_user' on success
+
+ $app->on(delete_user => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who created the group
+   my $user     = $hash->{user};
+ });
+
 =cut
 
-del '/user/#user' => sub {
+del '/user/#username' => sub {
   my $c = shift;
-  if($c->auth->delete_user($c->param('user'))) {
+  my $user = $c->param('username');
+  if($c->auth->delete_user($user)) {
     $c->render_message('ok', 200);
-    $c->app->emit('user_list_changed');
+    $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
+    $c->app->emit(delete_user => {
+      admin => $c->stash('user'),
+      user  => $user,
+    });
   } else {
     $c->render_message('not ok', 404);
   }
@@ -294,13 +319,13 @@ Create a group.  The C<group> name and list of C<users> are provided as autodata
 arguments (JSON, YAML, form data etc).  Returns 200 ok on success, 403 not ok
 on failure.
 
-Emits event 'update_group' on success
+Emits event 'create_group' on success
 
  $app->on(create_group => sub {
    my($event, $hash) = @_;
    my $admin    = $hash->{admin};  # user who created the group
    my $group    = $hash->{group};
-   my $users   = $hash->{users};
+   my $users    = $hash->{users};
  });
 
 =cut
@@ -369,7 +394,7 @@ Emits event 'update_group' on success
    my($event, $hash) = @_;
    my $admin    = $hash->{admin};  # user who updated the group
    my $group    = $hash->{group};
-   my $users   = $hash->{users};
+   my $users    = $hash->{users};
  });
 
 =cut
@@ -412,13 +437,13 @@ post '/group/:group/#user' => sub {
   push @$users, $c->stash('user');
   @$users = uniq @$users;
   my $group = $c->param('group');
-  if($c->authz->update_group($group, $users))
+  if($c->authz->update_group($group, join(',', @$users)))
   {
     $c->render_message('ok',     200);
     $c->app->emit(update_group => {
       admin => $c->stash('user'),
       group => $group,
-      users => $users,
+      users => join(',', @$users),
     });
   }
   else
@@ -444,13 +469,13 @@ del '/group/:group/#user' => sub {
   my $user = $c->stash('user');
   @$users = grep { lc $_ ne lc $user } @$users;
   my $group = $c->param('group');
-  if($c->authz->update_group($group, $users))
+  if($c->authz->update_group($group, join(',', @$users)))
   {
     $c->render_message('ok',     200);
     $c->app->emit(update_group => {
       admin => $c->stash('user'),
       group => $group,
-      users => $users,
+      users => join(',', @$users),
     });
   }
   else
