@@ -405,6 +405,12 @@ post '/group/:group' => sub {
   my $users = $c->stash->{autodata}->{users};
   delete $c->stash->{autodata};
   my $group = $c->param('group');
+  _update_group($c,$group,$users);
+};
+
+sub _update_group
+{
+  my($c,$group,$users) = @_;
   if($c->authz->update_group($group, $users))
   {
     $c->render_message('ok',     200);
@@ -418,7 +424,8 @@ post '/group/:group' => sub {
   {
     $c->render_message('not ok', 404);
   }
-};
+}
+
 
 =head3 POST /group/:group/#user
 
@@ -435,21 +442,8 @@ post '/group/:group/#user' => sub {
   my $users = $c->authz->users_in_group($c->stash('group'));
   return $c->render_message('not ok', 404) unless defined $users;
   push @$users, $c->stash('user');
-  @$users = uniq @$users;
   my $group = $c->param('group');
-  if($c->authz->update_group($group, join(',', @$users)))
-  {
-    $c->render_message('ok',     200);
-    $c->app->emit(update_group => {
-      admin => $c->stash('user'),
-      group => $group,
-      users => join(',', @$users),
-    });
-  }
-  else
-  {
-    $c->render_message('not ok', 404);
-  }
+  _update_group($c,$group,join(',', uniq @$users));
 };
 
 =head3 DELETE /group/:group/#user
@@ -469,19 +463,7 @@ del '/group/:group/#user' => sub {
   my $user = $c->stash('user');
   @$users = grep { lc $_ ne lc $user } @$users;
   my $group = $c->param('group');
-  if($c->authz->update_group($group, join(',', @$users)))
-  {
-    $c->render_message('ok',     200);
-    $c->app->emit(update_group => {
-      admin => $c->stash('user'),
-      group => $group,
-      users => join(',', @$users),
-    });
-  }
-  else
-  {
-    $c->render_message('not ok', 404);
-  }
+  _update_group($c,$group,join(',', @$users));
 };
 
 =head3 POST /grant/#group/:action1/(*resource)
