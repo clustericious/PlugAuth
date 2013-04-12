@@ -385,9 +385,20 @@ post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my $c = shift;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $resource =~ s/\.(json|yml)$//;
-    $c->authz->grant($group, $action, $resource)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+    if($c->authz->grant($group, $action, $resource))
+    {
+        $c->render_message('ok',     200);
+        $c->app->emit(grant => {
+            admin => $c->stash('user'),
+            group => $group,
+            action => $action,
+            resource => $resource,
+        });
+    }
+    else
+    {
+        $c->render_message('not ok', 404);
+    }
 };
 
 =head3 DELETE /grant/#group/:action1/(*resource)
@@ -401,9 +412,20 @@ del '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
     my($c) = @_;
     my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
     $resource =~ s/\.(json|yml)$//;
-    $c->authz->revoke($group, $action, $resource)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+    if($c->authz->revoke($group, $action, $resource))
+    {
+        $c->render_message('ok',     200);
+        $c->app->emit(revoke => {
+            admin => $c->stash('user'),
+            group => $group,
+            action => $action,
+            resource => $resource,
+        });
+    }
+    else
+    {
+        $c->render_message('not ok', 404);
+    }
 };
 
 =head3 GET /grant
@@ -444,20 +466,34 @@ Change the password of the given user (#user).  The C<password> is provided as
 an autodata argument (JSON, YAML, form data, etc.).  Returns 200 ok on success,
 403 not ok on failure.
 
+Emits event 'change_password' on success
+
+ $app->on(change_password => sub {
+   my($event, $hash) = @_;
+   my $admin = $hash->{admin};  # user who changed the password
+   my $user  = $hash->{user};   # user whos password is changed
+ });
+
 =cut
 
 authenticate;
 authorize 'change_password';
 
-post '/user/#user' => sub {
+post '/user/#username' => sub {
     my($c) = @_;
     $c->parse_autodata;
-    my $user = $c->param('user');
+    my $user = $c->param('username');
     my $password = eval { $c->stash->{autodata}->{password} } || '';
     delete $c->stash->{autodata};
-    $c->auth->change_password($user, $password)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 403);
+    if($c->auth->change_password($user, $password))
+    {
+        $c->render_message('ok',     200);
+        $c->app->emit(change_password => { admin => $c->stash('user'), user => $user });
+    }
+    else
+    {
+        $c->render_message('not ok', 403);
+    }
 };
 
 1;

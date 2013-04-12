@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 40;
+use Test::More tests => 44;
 use Test::Mojo;
 use Mojo::JSON;
 
@@ -27,9 +27,17 @@ $t->get_ok("http://localhost:$port/authz/user/rodimus/open/matrix")
     ->status_is(403)
     ->content_is("unauthorized : rodimus cannot open /matrix", "denied rodimus");
 
+my $args = {};
+$t->app->once(grant => sub { my $e = shift; $args = shift });
+
 $t->post_ok("http://primus:snoopy\@localhost:$port/grant/group1/open/matrix")
     ->status_is(200)
     ->content_is("ok");
+
+is $args->{admin},    'primus', 'admin = primus';
+is $args->{group},    'group1', 'group = group1';
+is $args->{action},   'open',   'action = open';
+is $args->{resource}, 'matrix', 'resource = matrix';
 
 $t->get_ok("http://localhost:$port/authz/user/optimus/open/matrix")
     ->status_is(200)

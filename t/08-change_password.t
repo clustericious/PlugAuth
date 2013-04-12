@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 21;
+use Test::More tests => 23;
 use Test::Mojo;
 
 my $t = Test::Mojo->new('PlugAuth');
@@ -40,8 +40,17 @@ $t->get_ok("http://optimus:optimus\@localhost:$port/auth")
   ->status_is(200);
 
 # attempt to change password of optimus with primus (super user)
+my $args = {};
+$t->app->once(change_password => sub {
+  my $e = shift;
+  $args = shift;
+});
+
 $t->post_ok("http://primus:primus\@localhost:$port/user/optimus", json { password => 'matrix' } )
   ->status_is(200);
+
+is $args->{admin}, 'primus',  'admin = primus';
+is $args->{user},  'optimus', 'user = optimus';
 
 # double check that old credentials for optimus no longer work
 $t->get_ok("http://optimus:optimus\@localhost:$port/auth")
