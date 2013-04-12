@@ -379,6 +379,16 @@ del '/group/:group/#user' => sub {
 Grant access to the given group (#group) so they can perform the given action (:action1)
 on the given resource (*resource).  Returns 200 ok on success, 404 not ok on failure.
 
+Emits event 'grant' on success
+
+ $app->on(grant => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who did the granting
+   my $group    = $hash->{group};
+   my $action   = $hash->{action};
+   my $resource = $hash->{resource};
+ });
+
 =cut
 
 post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
@@ -405,6 +415,19 @@ post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
 
 Revoke permission to the given group (#group) to perform the given action (:action1) on
 the given resource (*resource).  Returns 200 ok on success, 404 not ok on failure.
+
+(the action is specified in the route as action1 because action is reserved by
+L<Mojolicious>).
+
+Emits event 'revoke' on success
+
+ $app->on(revoke => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who did the revoking
+   my $group    = $hash->{group};
+   my $action   = $hash->{action};
+   my $resource = $hash->{resource};
+ });
 
 =cut
 
