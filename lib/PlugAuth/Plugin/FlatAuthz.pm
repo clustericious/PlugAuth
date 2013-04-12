@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.08'; # VERSION
+our $VERSION = '0.09'; # VERSION
 
 
 use strict;
@@ -231,10 +231,15 @@ sub create_group
 
         close $fh;
     };
-
-    ERROR "modifying file $filename: $@" if $@;
+    
     mark_changed($filename);
-    return 1;
+    if(my $error = $@) {
+        ERROR "modifying file $filename: $@";
+        return 0;
+    } else {
+        INFO "created group $group with members $users";
+        return 1;
+    }
 }
 
 
@@ -276,9 +281,17 @@ sub delete_group
         close $fh;
     };
 
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
-    return 1;
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $error";
+        return 0;
+    }
+    else
+    {
+        INFO "deleted group $group";
+        return 1;
+    }
 }
 
 
@@ -322,9 +335,17 @@ sub update_group
         close $fh;
     };
 
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
-    return 1;
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $error";
+        return 0;
+    }
+    else
+    {
+        INFO "update group $group set members to $users";
+        return 1;
+    }
 }
 
 
@@ -372,9 +393,17 @@ sub grant
         close $fh;
     };
 
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
-    return 1;
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $error";
+        return 0;
+    }
+    else
+    {
+        INFO "grant $group $action $resource";
+        return 1;
+    }
 }
 
 
@@ -430,8 +459,17 @@ sub revoke
     
     };
     
-    ERROR "modifying file $filename: $@" if $@;
     mark_changed($filename);
+    if(my $error = $@)
+    {
+        ERROR "modifying file $filename: $@";
+        return 0;
+    }
+    else
+    {
+        INFO "revoke $group $action $resource";
+        return 1;
+    }
 
     return 1;
 }
@@ -480,7 +518,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
@@ -505,7 +543,7 @@ Start PlugAuth:
 =head1 DESCRIPTION
 
 This is the default Authorization plugin for L<PlugAuth>.  It is designed to work closely
-with L<FlatAuth> which is the default Authentication plugin.
+with L<PlugAuth::Plugin::FlatAuth> which is the default Authentication plugin.
 
 This plugin provides storage for groups, hosts and access control for PlugAuth.  In addition
 it provides a mechanism for PlugAuth to alter the group, host and access control databases.

@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::Test;
 
 # ABSTRACT: Test Plugin server
-our $VERSION = '0.08'; # VERSION
+our $VERSION = '0.09'; # VERSION
 
 use strict;
 use warnings;
@@ -127,7 +127,7 @@ PlugAuth::Plugin::Test - Test Plugin server
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 AUTHOR
 

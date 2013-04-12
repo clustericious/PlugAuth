@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 475;
+use Test::More tests => 479;
 use Test::Mojo;
 use Mojo::JSON;
 use Test::Differences;
@@ -54,8 +54,20 @@ $t->delete_ok("/grant/megatron/open/matrix")->status_is(401);
 $t->delete_ok("/grant/optimus/open/matrix")->status_is(401);
 $t->delete_ok("http://primus:foo\@localhost:$port/grant/megatron/open/matrix")
   ->status_is(404)->content_is('not ok');
-$t->delete_ok("http://primus:foo\@localhost:$port/grant/optimus/open/matrix")
-  ->status_is(200)->content_is('ok');
+
+
+do {
+  my $args = {};
+  $t->app->once(revoke => sub { my $e = shift; $args = shift });
+
+  $t->delete_ok("http://primus:foo\@localhost:$port/grant/optimus/open/matrix")
+    ->status_is(200)->content_is('ok');
+    
+  is $args->{admin},    'primus',  'admin = primus';
+  is $args->{group},    'optimus', 'group = optimus';
+  is $args->{action},   'open',    'action = open';
+  is $args->{resource}, 'matrix',  'resource = matrix';
+};
 
 do {
   # / (accounts): god

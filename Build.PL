@@ -15,7 +15,6 @@ my %module_build_args = (
     "Test::More" => 0
   },
   "configure_requires" => {
-    "ExtUtils::MakeMaker" => "6.30",
     "Module::Build" => "0.3601"
   },
   "dist_abstract" => "Pluggable authentication and authorization server.",
@@ -23,7 +22,7 @@ my %module_build_args = (
     "Graham Ollis <gollis\@sesda3.com>"
   ],
   "dist_name" => "PlugAuth",
-  "dist_version" => "0.08",
+  "dist_version" => "0.09",
   "license" => "perl",
   "module_name" => "PlugAuth",
   "recommends" => {},

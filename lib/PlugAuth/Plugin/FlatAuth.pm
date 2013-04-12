@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.08'; # VERSION
+our $VERSION = '0.09'; # VERSION
 
 
 use strict;
@@ -138,9 +138,10 @@ sub create_user
         };
 
         if($@) {
-            WARN "writing file $filename: $@";
+            ERROR "writing file $filename: $@";
             return 0;
         } else {
+            INFO "created user $user";
             return 1;
         }
     }
@@ -207,6 +208,7 @@ sub change_password
         mark_changed($filename);
     }
 
+    INFO "user password changed $user";
     return 1;
 }
 
@@ -258,6 +260,7 @@ sub delete_user
         mark_changed($filename);
     }
 
+    INFO "deleted user $user";
     return 1;
 }
 
@@ -273,7 +276,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
@@ -300,7 +303,7 @@ Start PlugAuth:
 =head1 DESCRIPTION
 
 This is the default Authentication plugin for L<PlugAuth>.  It is designed to work closely
-with L<FlatAuthz> which is the default Authorization plugin.
+with L<PlugAuth::Plugin::FlatAuthz> which is the default Authorization plugin.
 
 This plugin provides storage and password verification for users.  This plugin also provides 
 a mechanism for PlugAuth to change passwords, create and delete users.  Although the user 

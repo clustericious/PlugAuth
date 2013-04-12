@@ -4,7 +4,7 @@
       "Graham Ollis <gollis@sesda3.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300029, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Zilla version 4.300031, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -21,7 +21,6 @@
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.30",
             "Module::Build" : "0.3601"
          }
       },
@@ -69,6 +68,6 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.08"
+   "version" : "0.09"
 }
 

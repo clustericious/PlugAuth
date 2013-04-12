@@ -37,7 +37,7 @@ ok $client->create_user(user => 'thrust', password => 'foo'), 'client.create_use
 eq_or_diff [grep /^thrust$/, @{ $client->user }], ['thrust'], 'user thrust was created';
 
 eq_or_diff [grep /^wheelie$/, @{ $client->user }], ['wheelie'], 'user wheelie does exist';
-ok $client->delete_user('wheelie'), 'client.delete_user(wheelie)';
+ok $client->delete_user(user => 'wheelie'), 'client.delete_user(wheelie)';
 eq_or_diff [grep /^wheelie$/, @{ $client->user }], [], 'user wheelie has been deleted';
 
 eq_or_diff [grep /^seekers$/, @{ $client->group }], [], 'group seekers does not exist yet';

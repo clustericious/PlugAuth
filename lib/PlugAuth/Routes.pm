@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.08'; # VERSION
+our $VERSION = '0.09'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -47,84 +47,84 @@ get '/auth' => sub {
 
 # Check authorization for a user to perform $action on $resource.
 get '/authz/user/#user/#action/(*resource)' => { resource => '/' } => sub {
-    my $c = shift;
-    # Ok iff the user is in a group for which $action on $resource is allowed.
-    my ($user,$resource,$action) = map $c->stash($_), qw/user resource action/;
-    $resource =~ s{^/?}{/};
-    TRACE "Checking authorization for $user to perform $action on $resource...";
-    my $found = $c->authz->can_user_action_resource($user,$action,$resource);
-    if ($found) {
-        TRACE "Authorization succeeded ($found)";
-        return $c->render_message('ok');
-    }
-    TRACE "Authorization failed";
-    $c->render_message("unauthorized : $user cannot $action $resource", 403);
+  my $c = shift;
+  # Ok iff the user is in a group for which $action on $resource is allowed.
+  my ($user,$resource,$action) = map $c->stash($_), qw/user resource action/;
+  $resource =~ s{^/?}{/};
+  TRACE "Checking authorization for $user to perform $action on $resource...";
+  my $found = $c->authz->can_user_action_resource($user,$action,$resource);
+  if ($found) {
+    TRACE "Authorization succeeded ($found)";
+    return $c->render_message('ok');
+  }
+  TRACE "Authorization failed";
+  $c->render_message("unauthorized : $user cannot $action $resource", 403);
 };
 
 
 # Given a user, an action and a regex, return a list of resources
 # on which $user can do $action, where each resource matches that regex.
 get '/authz/resources/#user/#action/(*resourceregex)' => sub  {
-    my $c = shift;
-    my ($user,$action,$resourceregex) = map $c->stash($_), qw/user action resourceregex/;
-    TRACE "Checking $user, $action, $resourceregex";
-    $resourceregex = qr[$resourceregex];
-    my @resources;
-    for my $resource ($c->authz->match_resources($resourceregex)) {
-        TRACE "Checking resource $resource";
-        push @resources, $resource if $c->authz->can_user_action_resource($user,$action,$resource);
-    }
-    $c->stash->{autodata} = [sort @resources];
+  my $c = shift;
+  my ($user,$action,$resourceregex) = map $c->stash($_), qw/user action resourceregex/;
+  TRACE "Checking $user, $action, $resourceregex";
+  $resourceregex = qr[$resourceregex];
+  my @resources;
+  for my $resource ($c->authz->match_resources($resourceregex)) {
+    TRACE "Checking resource $resource";
+    push @resources, $resource if $c->authz->can_user_action_resource($user,$action,$resource);
+  }
+  $c->stash->{autodata} = [sort @resources];
 };
 
 
 # Return a list of all defined actions
 get '/actions' => sub {
-    my($self) = @_;
-    $self->stash->{autodata} = [ $self->authz->actions ];
+  my($self) = @_;
+  $self->stash->{autodata} = [ $self->authz->actions ];
 };
 
 
 # All the groups for a user :
 get '/groups/#user' => sub {
-    my $c = shift;
-    my $groups = $c->authz->groups_for_user($c->stash('user'));
-    $c->render_message('not ok', 404) unless defined $groups;
-    $c->stash->{autodata} = $groups;
+  my $c = shift;
+  my $groups = $c->authz->groups_for_user($c->stash('user'));
+  $c->render_message('not ok', 404) unless defined $groups;
+  $c->stash->{autodata} = $groups;
 };
 
 
 # Given a host and a tag (e.g. "trusted") return true if that host has
 # that tag.
 get '/host/#host/:tag' => sub {
-    my $c = shift;
-    my ($host,$tag) = map $c->stash($_), qw/host tag/;
-    if ($c->authz->host_has_tag($host,$tag)) {
-        TRACE "Host $host has tag $tag";
-        return $c->render_message('ok', 200);
-    }
-    TRACE "Host $host does not have tag $tag";
-    return $c->render_message('not ok', 403);
+  my $c = shift;
+  my ($host,$tag) = map $c->stash($_), qw/host tag/;
+  if ($c->authz->host_has_tag($host,$tag)) {
+    TRACE "Host $host has tag $tag";
+    return $c->render_message('ok', 200);
+  }
+  TRACE "Host $host does not have tag $tag";
+  return $c->render_message('not ok', 403);
 };
 
 
 get '/user' => sub {
-    my $c = shift;
-    $c->stash->{autodata} = [ uniq sort $c->auth->all_users ];
+  my $c = shift;
+  $c->stash->{autodata} = [ uniq sort $c->auth->all_users ];
 };
 
 
 get '/group' => sub {
-    my $c = shift;
-    $c->stash->{autodata} = [ $c->authz->all_groups ];
+  my $c = shift;
+  $c->stash->{autodata} = [ $c->authz->all_groups ];
 };
 
 
 get '/users/:group' => sub {
-    my $c = shift;
-    my $users = $c->authz->users_in_group($c->stash('group'));
-    $c->render_message('not ok', 404) unless defined $users;
-    $c->stash->{autodata} = $users;
+  my $c = shift;
+  my $users = $c->authz->users_in_group($c->stash('group'));
+  $c->render_message('not ok', 404) unless defined $users;
+  $c->stash->{autodata} = $users;
 };
 
 authenticate;
@@ -132,124 +132,196 @@ authorize 'accounts';
 
 
 post '/user' => sub {
-    my $c = shift;
-    $c->parse_autodata;
-    my $user = $c->stash->{autodata}->{user};
-    my $password = $c->stash->{autodata}->{password} || '';
-    delete $c->stash->{autodata};
-    if($c->auth->create_user($user, $password)) {
-        $c->render_message('ok', 200);
-        $c->app->emit('user_list_changed');
-    } else {
-        $c->render_message('not ok', 403);
-    }
+  my $c = shift;
+  $c->parse_autodata;
+  my $user = $c->stash->{autodata}->{user};
+  my $password = $c->stash->{autodata}->{password} || '';
+  delete $c->stash->{autodata};
+  if($c->auth->create_user($user, $password)) {
+    $c->render_message('ok', 200);
+    $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
+    $c->app->emit(create_user => {
+      admin => $c->stash('user'),
+      user  => $user,
+    });
+  } else {
+    $c->render_message('not ok', 403);
+  }
 };
 
 
-del '/user/#user' => sub {
-    my $c = shift;
-    if($c->auth->delete_user($c->param('user'))) {
-        $c->render_message('ok', 200);
-        $c->app->emit('user_list_changed');
-    } else {
-        $c->render_message('not ok', 404);
-    }
+del '/user/#username' => sub {
+  my $c = shift;
+  my $user = $c->param('username');
+  if($c->auth->delete_user($user)) {
+    $c->render_message('ok', 200);
+    $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
+    $c->app->emit(delete_user => {
+      admin => $c->stash('user'),
+      user  => $user,
+    });
+  } else {
+    $c->render_message('not ok', 404);
+  }
 };
 
 
 post '/group' => sub {
-    my $c = shift;
-    $c->parse_autodata;
-    my $group = $c->stash->{autodata}->{group};
-    my $users = $c->stash->{autodata}->{users};
-    delete $c->stash->{autodata};
-    $c->authz->create_group($group, $users)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 403);
+  my $c = shift;
+  $c->parse_autodata;
+  my $group = $c->stash->{autodata}->{group};
+  my $users = $c->stash->{autodata}->{users};
+  delete $c->stash->{autodata};
+  if($c->authz->create_group($group, $users))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(create_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 403);
+  }
 };
 
 
 del '/group/:group' => sub {
-    my $c = shift;
-    $c->authz->delete_group($c->param('group') )
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+  my $c = shift;
+  my $group = $c->param('group');
+  if($c->authz->delete_group($group))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(delete_group => {
+      admin => $c->stash('user'),
+      group => $group,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 
 post '/group/:group' => sub {
-    my $c = shift;
-    $c->parse_autodata;
-    my $users = $c->stash->{autodata}->{users};
-    delete $c->stash->{autodata};
-    $c->authz->update_group($c->param('group'), $users)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+  my $c = shift;
+  $c->parse_autodata;
+  my $users = $c->stash->{autodata}->{users};
+  delete $c->stash->{autodata};
+  my $group = $c->param('group');
+  _update_group($c,$group,$users);
 };
+
+sub _update_group
+{
+  my($c,$group,$users) = @_;
+  if($c->authz->update_group($group, $users))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
+}
+
 
 
 post '/group/:group/#user' => sub {
-    my($c) = @_;
-    my $users = $c->authz->users_in_group($c->stash('group'));
-    return $c->render_message('not ok', 404) unless defined $users;
-    push @$users, $c->stash('user');
-    @$users = uniq @$users;
-    $c->authz->update_group($c->param('group'), join(',', @$users))
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+  my($c) = @_;
+  my $users = $c->authz->users_in_group($c->stash('group'));
+  return $c->render_message('not ok', 404) unless defined $users;
+  push @$users, $c->stash('user');
+  my $group = $c->param('group');
+  _update_group($c,$group,join(',', uniq @$users));
 };
 
 
 del '/group/:group/#user' => sub {
-    my($c) = @_;
-    my $users = $c->authz->users_in_group($c->stash('group'));
-    return $c->render_message('not ok', 404) unless defined $users;
-    my $user = $c->stash('user');
-    @$users = grep { lc $_ ne lc $user } @$users;
-    $c->authz->update_group($c->param('group'), join(',', @$users))
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+  my($c) = @_;
+  my $users = $c->authz->users_in_group($c->stash('group'));
+  return $c->render_message('not ok', 404) unless defined $users;
+  my $user = $c->stash('user');
+  @$users = grep { lc $_ ne lc $user } @$users;
+  my $group = $c->param('group');
+  _update_group($c,$group,join(',', @$users));
 };
 
 
 post '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
-    my $c = shift;
-    my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
-    $resource =~ s/\.(json|yml)$//;
-    $c->authz->grant($group, $action, $resource)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+  my $c = shift;
+  my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+  $resource =~ s/\.(json|yml)$//;
+  if($c->authz->grant($group, $action, $resource))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(grant => {
+      admin => $c->stash('user'),
+      group => $group,
+      action => $action,
+      resource => $resource,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 
 del '/grant/#group/:action1/(*resource)' => { resource => '/' } => sub {
-    my($c) = @_;
-    my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
-    $resource =~ s/\.(json|yml)$//;
-    $c->authz->revoke($group, $action, $resource)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 404);
+  my($c) = @_;
+  my($group, $action, $resource) = map { $c->stash($_) } qw( group action1 resource );
+  $resource =~ s/\.(json|yml)$//;
+  if($c->authz->revoke($group, $action, $resource))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(revoke => {
+      admin => $c->stash('user'),
+      group => $group,
+      action => $action,
+      resource => $resource,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 
 get '/grant' => sub {
-    my($c) = @_;
-    $c->stash->{autodata} = $c->authz->granted;
+  my($c) = @_;
+  $c->stash->{autodata} = $c->authz->granted;
 };
 
 
 authenticate;
 authorize 'change_password';
 
-post '/user/#user' => sub {
-    my($c) = @_;
-    $c->parse_autodata;
-    my $user = $c->param('user');
-    my $password = eval { $c->stash->{autodata}->{password} } || '';
-    delete $c->stash->{autodata};
-    $c->auth->change_password($user, $password)
-    ? $c->render_message('ok',     200)
-    : $c->render_message('not ok', 403);
+post '/user/#username' => sub {
+  my($c) = @_;
+  $c->parse_autodata;
+  my $user = $c->param('username');
+  my $password = eval { $c->stash->{autodata}->{password} } || '';
+  delete $c->stash->{autodata};
+  if($c->auth->change_password($user, $password))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(change_password => { admin => $c->stash('user'), user => $user });
+  }
+  else
+  {
+    $c->render_message('not ok', 403);
+  }
 };
 
 1;
@@ -264,7 +336,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 DESCRIPTION
 
@@ -381,9 +453,25 @@ If the PlugAuth server cannot reach itself or the deligated PlugAuth server.
 Create a user.  The C<username> and C<password> are provided autodata arguments
 (JSON, YAML, form data, etc).
 
+Emits event 'create_user' on success
+
+ $app->on(create_user => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who created the group
+   my $user     = $hash->{user};
+ });
+
 =head3 DELETE /user/#user
 
 Delete the given user (#user).  Returns 200 ok on success, 404 not ok on failure.
+
+Emits event 'delete_user' on success
+
+ $app->on(delete_user => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who created the group
+   my $user     = $hash->{user};
+ });
 
 =head3 POST /group
 
@@ -391,9 +479,26 @@ Create a group.  The C<group> name and list of C<users> are provided as autodata
 arguments (JSON, YAML, form data etc).  Returns 200 ok on success, 403 not ok
 on failure.
 
+Emits event 'create_group' on success
+
+ $app->on(create_group => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who created the group
+   my $group    = $hash->{group};
+   my $users    = $hash->{users};
+ });
+
 =head3 DELETE /group/:group
 
 Delete the given group (:group).  Returns 200 ok on success, 403 not ok on failure.
+
+Emits event 'delete_group' on success
+
+ $app->on(delete_group => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who deleted the group
+   my $group    = $hash->{group};
+ });
 
 =head3 POST /group/:group
 
@@ -401,25 +506,63 @@ Update the list of users belonging to the given group (:group).  The list
 of C<users> is provided as an autodata argument (JSON, YAML, form data etc.).
 Returns 200 ok on success, 404 not ok on failure.
 
+Emits event 'update_group' on success
+
+ $app->on(update_group => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who updated the group
+   my $group    = $hash->{group};
+   my $users    = $hash->{users};
+ });
+
 =head3 POST /group/:group/#user
 
 Add the given user (#user) to the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
+
+Emits event 'update_group' (see route for POST /group/:group for
+an example).
 
 =head3 DELETE /group/:group/#user
 
 Remove the given user (#user) from the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
+Emits event 'update_group' (see route for POST /group/:group for
+an example).
+
 =head3 POST /grant/#group/:action1/(*resource)
 
 Grant access to the given group (#group) so they can perform the given action (:action1)
 on the given resource (*resource).  Returns 200 ok on success, 404 not ok on failure.
 
+Emits event 'grant' on success
+
+ $app->on(grant => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who did the granting
+   my $group    = $hash->{group};
+   my $action   = $hash->{action};
+   my $resource = $hash->{resource};
+ });
+
 =head3 DELETE /grant/#group/:action1/(*resource)
 
 Revoke permission to the given group (#group) to perform the given action (:action1) on
 the given resource (*resource).  Returns 200 ok on success, 404 not ok on failure.
+
+(the action is specified in the route as action1 because action is reserved by
+L<Mojolicious>).
+
+Emits event 'revoke' on success
+
+ $app->on(revoke => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who did the revoking
+   my $group    = $hash->{group};
+   my $action   = $hash->{action};
+   my $resource = $hash->{resource};
+ });
 
 =head3 GET /grant
 
@@ -451,6 +594,14 @@ If the PlugAuth server cannot reach itself or the deligated PlugAuth server.
 Change the password of the given user (#user).  The C<password> is provided as
 an autodata argument (JSON, YAML, form data, etc.).  Returns 200 ok on success,
 403 not ok on failure.
+
+Emits event 'change_password' on success
+
+ $app->on(change_password => sub {
+   my($event, $hash) = @_;
+   my $admin = $hash->{admin};  # user who changed the password
+   my $user  = $hash->{user};   # user whos password is changed
+ });
 
 =head1 SEE ALSO
 

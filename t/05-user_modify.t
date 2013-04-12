@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 82;
+use Test::More tests => 86;
 use Test::Mojo;
 use Mojo::JSON;
 
@@ -64,9 +64,17 @@ $t->post_ok("http://elmer:fudd\@localhost:$port/user", json { password => 'newpa
 is $event_triggered, 0, 'event NOT triggered';
 $event_triggered = 0;
 
-$t->post_ok("http://elmer:fudd\@localhost:$port/user", json { user => 'newuser', password => 'newpassword' })
+do {
+  my $args = {};
+  $t->app->once(create_user => sub { my $e = shift; $args = shift });
+
+  $t->post_ok("http://elmer:fudd\@localhost:$port/user", json { user => 'newuser', password => 'newpassword' })
     ->status_is(200)
     ->content_is("ok", "created newuser");
+    
+  is $args->{admin}, 'elmer',   'admin = elmer';
+  is $args->{user},  'newuser', 'user  = newuser';
+};
 
 is $event_triggered, 1, 'event triggered!';
 $event_triggered = 0;
@@ -109,9 +117,17 @@ $t->get_ok("http://charliebrown:snoopy\@localhost:$port/auth")
 $t->get_ok("http://localhost:$port/user");
 is grep(/^charliebrown$/, @{ $t->tx->res->json }), 1, "charlie brown not deleted in failed delete";
 
-$t->delete_ok("http://elmer:fudd\@localhost:$port/user/charliebrown")
+do {
+  my $args = {};
+  $t->app->once(delete_user => sub { my $e = shift; $args = shift });
+
+  $t->delete_ok("http://elmer:fudd\@localhost:$port/user/charliebrown")
     ->status_is(200)
     ->content_is("ok", "delete user");
+  
+  is $args->{admin}, 'elmer',        'admin = elmer';
+  is $args->{user},  'charliebrown', 'user = charliebrown';
+};
 
 is $event_triggered, 1, 'event triggered!';
 $event_triggered = 0;

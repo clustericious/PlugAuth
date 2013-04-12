@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.08'; # VERSION
+our $VERSION = '0.09'; # VERSION
 
 
 use strict;
@@ -137,7 +137,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 
@@ -233,9 +233,6 @@ authorization should succeed.
 The REST service returns the appropriate response to the client.
 
 =back
-
-If the REST service uses Apache, see L<SimpleAuthHandler> for Apache 
-authorization/authentication handlers.
 
 If the REST service is written in Perl, see L<PlugAuth::Client>.
 
@@ -340,9 +337,7 @@ lighttpd, Plack or Apache.
 
 =head1 EVENTS
 
-=head2 user_list_changed
-
-Emitted when a user is created or deleted.
+See L<PlugAuth::Routes>
 
 =head1 SEE ALSO
 
