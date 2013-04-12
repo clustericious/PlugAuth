@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.09      2013-04-12 09:49:34 America/New_York
   - audit log for create,change,remove users,groups and resources
   - fix t/selfauth.t to not use config in ~/etc
 
