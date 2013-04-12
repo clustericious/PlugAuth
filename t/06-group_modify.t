@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 96;
+use Test::More tests => 104;
 use Test::Mojo;
 use Mojo::JSON;
 use Test::Differences;
@@ -46,10 +46,19 @@ is grep(/^group3$/, @{ $t->tx->res->json }), 1, "group3 was created";
 $t->get_ok("http://localhost:$port/users/group3")
     ->json_content_is([], "group3 is empty");
 
-# create an group with four users
-$t->post_ok("http://huffer:snoopy\@localhost:$port/group", json { group => 'group4', users => 'optimus,rodimus,huffer,grimlock' } )
+do {
+  my $args = {};
+  $t->app->once(create_group => sub { my $e = shift; $args = shift });
+
+  # create an group with four users
+  $t->post_ok("http://huffer:snoopy\@localhost:$port/group", json { group => 'group4', users => 'optimus,rodimus,huffer,grimlock' } )
     ->status_is(200)
     ->content_is("ok", "create group4 (optimus,rodimus,huffer,grimlock)");
+    
+  is $args->{admin}, 'huffer', 'admin = huffer';
+  is $args->{group}, 'group4', 'group = group4';
+  is $args->{users}, 'optimus,rodimus,huffer,grimlock', 'users = optimus,rodimus,huffer,grimlock';
+};
 
 $t->get_ok("http://localhost:$port/group");
 is grep(/^group4$/, @{ $t->tx->res->json }), 1, "group4 was created";
@@ -62,9 +71,17 @@ eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( optimus rodimus huffer griml
 $t->get_ok("http://localhost:$port/group");
 is grep(/^group5$/, @{ $t->tx->res->json }), 1, "group5 exists";
 
-$t->delete_ok("http://huffer:snoopy\@localhost:$port/group/group5")
+do {
+  my $args = {};
+  $t->app->once(delete_group => sub { my $e = shift; $args = shift });
+
+  $t->delete_ok("http://huffer:snoopy\@localhost:$port/group/group5")
     ->status_is(200)
     ->content_is("ok", "delete group5");
+
+  is $args->{admin}, 'huffer', 'admin = huffer';
+  is $args->{group}, 'group5', 'group = group5';
+};
 
 $t->get_ok("http://localhost:$port/group");
 is grep(/^group5$/, @{ $t->tx->res->json }), 0, "group5 deleted";
@@ -109,9 +126,18 @@ $t->get_ok("http://localhost:$port/users/group9");
 
 eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( nightbeat starscream soundwave )], "group9 is [ nightbeat,starscream,soundwave ]";
 
-$t->post_ok("http://huffer:snoopy\@localhost:$port/group/group9", json { users => "optimus,rodimus,huffer,grimlock" })
+do {
+  my $args = {};
+  $t->app->once(update_group => sub { my $e = shift; $args = shift });
+
+  $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group9", json { users => "optimus,rodimus,huffer,grimlock" })
     ->status_is(200)
     ->content_is("ok");
+    
+  is $args->{admin}, 'huffer', 'admin = huffer';
+  is $args->{group}, 'group9', 'group = group9';
+  is $args->{users}, "optimus,rodimus,huffer,grimlock", 'users = optimus,rodimus,huffer,grimlock';
+};
 
 $t->get_ok("http://localhost:$port/users/group9");
 

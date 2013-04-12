@@ -294,6 +294,15 @@ Create a group.  The C<group> name and list of C<users> are provided as autodata
 arguments (JSON, YAML, form data etc).  Returns 200 ok on success, 403 not ok
 on failure.
 
+Emits event 'update_group' on success
+
+ $app->on(create_group => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who created the group
+   my $group    = $hash->{group};
+   my $users   = $hash->{users};
+ });
+
 =cut
 
 post '/group' => sub {
@@ -302,22 +311,50 @@ post '/group' => sub {
   my $group = $c->stash->{autodata}->{group};
   my $users = $c->stash->{autodata}->{users};
   delete $c->stash->{autodata};
-  $c->authz->create_group($group, $users)
-  ? $c->render_message('ok',     200)
-  : $c->render_message('not ok', 403);
+  if($c->authz->create_group($group, $users))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(create_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 403);
+  }
 };
 
 =head3 DELETE /group/:group
 
 Delete the given group (:group).  Returns 200 ok on success, 403 not ok on failure.
 
+Emits event 'delete_group' on success
+
+ $app->on(delete_group => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who deleted the group
+   my $group    = $hash->{group};
+ });
+
 =cut
 
 del '/group/:group' => sub {
   my $c = shift;
-  $c->authz->delete_group($c->param('group') )
-  ? $c->render_message('ok',     200)
-  : $c->render_message('not ok', 404);
+  my $group = $c->param('group');
+  if($c->authz->delete_group($group))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(delete_group => {
+      admin => $c->stash('user'),
+      group => $group,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 =head3 POST /group/:group
@@ -326,6 +363,15 @@ Update the list of users belonging to the given group (:group).  The list
 of C<users> is provided as an autodata argument (JSON, YAML, form data etc.).
 Returns 200 ok on success, 404 not ok on failure.
 
+Emits event 'update_group' on success
+
+ $app->on(update_group => sub {
+   my($event, $hash) = @_;
+   my $admin    = $hash->{admin};  # user who updated the group
+   my $group    = $hash->{group};
+   my $users   = $hash->{users};
+ });
+
 =cut
 
 post '/group/:group' => sub {
@@ -333,15 +379,29 @@ post '/group/:group' => sub {
   $c->parse_autodata;
   my $users = $c->stash->{autodata}->{users};
   delete $c->stash->{autodata};
-  $c->authz->update_group($c->param('group'), $users)
-  ? $c->render_message('ok',     200)
-  : $c->render_message('not ok', 404);
+  my $group = $c->param('group');
+  if($c->authz->update_group($group, $users))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 =head3 POST /group/:group/#user
 
 Add the given user (#user) to the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
+
+Emits event 'update_group' (see route for POST /group/:group for
+an example).
 
 =cut
 
@@ -351,15 +411,29 @@ post '/group/:group/#user' => sub {
   return $c->render_message('not ok', 404) unless defined $users;
   push @$users, $c->stash('user');
   @$users = uniq @$users;
-  $c->authz->update_group($c->param('group'), join(',', @$users))
-  ? $c->render_message('ok',     200)
-  : $c->render_message('not ok', 404);
+  my $group = $c->param('group');
+  if($c->authz->update_group($group, $users))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 =head3 DELETE /group/:group/#user
 
 Remove the given user (#user) from the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
+
+Emits event 'update_group' (see route for POST /group/:group for
+an example).
 
 =cut
 
@@ -369,9 +443,20 @@ del '/group/:group/#user' => sub {
   return $c->render_message('not ok', 404) unless defined $users;
   my $user = $c->stash('user');
   @$users = grep { lc $_ ne lc $user } @$users;
-  $c->authz->update_group($c->param('group'), join(',', @$users))
-  ? $c->render_message('ok',     200)
-  : $c->render_message('not ok', 404);
+  my $group = $c->param('group');
+  if($c->authz->update_group($group, $users))
+  {
+    $c->render_message('ok',     200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 =head3 POST /grant/#group/:action1/(*resource)
