@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.10      2013-04-16 11:14:23 America/New_York
   - don't clobber user with route variables
 
 0.09      2013-04-12 09:49:34 America/New_York
