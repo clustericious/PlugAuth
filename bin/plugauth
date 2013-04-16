@@ -6,7 +6,7 @@ use FindBin;
 
 # PODNAME: plugauth
 # ABSTRACT: PlugAuth server
-our $VERSION = '0.09'; # VERSION
+our $VERSION = '0.10'; # VERSION
 
 
 use lib "$FindBin::Bin/../lib";
@@ -28,7 +28,7 @@ plugauth - PlugAuth server
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 DESCRIPTION
 

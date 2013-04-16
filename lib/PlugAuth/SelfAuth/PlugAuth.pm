@@ -7,11 +7,12 @@ use Mojo::ByteStream qw( b );
 use Mojo::Base 'Mojolicious::Plugin';
 
 # ABSTRACT: Self authentication for PlugAuth
-our $VERSION = '0.09'; # VERSION
+our $VERSION = '0.10'; # VERSION
 
 
 sub register {
   my ($self, $app, $conf) = @_;
+  PlugAuth::Role::Plugin->_self_auth_plugin($self);
   $self;
 }
 
@@ -75,7 +76,7 @@ PlugAuth::SelfAuth::PlugAuth - Self authentication for PlugAuth
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 DESCRIPTION
 

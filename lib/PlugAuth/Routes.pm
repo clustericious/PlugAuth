@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.09'; # VERSION
+our $VERSION = '0.10'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -235,21 +235,21 @@ sub _update_group
 
 
 
-post '/group/:group/#user' => sub {
+post '/group/:group/#username' => sub {
   my($c) = @_;
   my $users = $c->authz->users_in_group($c->stash('group'));
   return $c->render_message('not ok', 404) unless defined $users;
-  push @$users, $c->stash('user');
+  push @$users, $c->stash('username');
   my $group = $c->param('group');
   _update_group($c,$group,join(',', uniq @$users));
 };
 
 
-del '/group/:group/#user' => sub {
+del '/group/:group/#username' => sub {
   my($c) = @_;
   my $users = $c->authz->users_in_group($c->stash('group'));
   return $c->render_message('not ok', 404) unless defined $users;
-  my $user = $c->stash('user');
+  my $user = $c->stash('username');
   @$users = grep { lc $_ ne lc $user } @$users;
   my $group = $c->param('group');
   _update_group($c,$group,join(',', @$users));
@@ -336,7 +336,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 DESCRIPTION
 
@@ -515,17 +515,17 @@ Emits event 'update_group' on success
    my $users    = $hash->{users};
  });
 
-=head3 POST /group/:group/#user
+=head3 POST /group/:group/#username
 
-Add the given user (#user) to the given group (:group).
+Add the given user (#username) to the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
 Emits event 'update_group' (see route for POST /group/:group for
 an example).
 
-=head3 DELETE /group/:group/#user
+=head3 DELETE /group/:group/#username
 
-Remove the given user (#user) from the given group (:group).
+Remove the given user (#username) from the given group (:group).
 Returns 200 ok on success, 404 not ok on failure.
 
 Emits event 'update_group' (see route for POST /group/:group for

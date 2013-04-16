@@ -5,7 +5,7 @@ use warnings;
 use base qw( Mojolicious::Plugins );
 
 # ABSTRACT: Self authentication for PlugAuth
-our $VERSION = '0.09'; # VERSION
+our $VERSION = '0.10'; # VERSION
 
 
 sub new
@@ -33,7 +33,7 @@ PlugAuth::SelfAuth - Self authentication for PlugAuth
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 DESCRIPTION
 

@@ -6,7 +6,7 @@ use v5.10;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth plugins
-our $VERSION = '0.09'; # VERSION
+our $VERSION = '0.10'; # VERSION
 
 
 sub init { }
@@ -45,6 +45,18 @@ sub new
   $self;
 }
 
+# undocumented, may go away.
+sub _self_auth_plugin
+{
+  my($class, $new_value) = @_;
+  
+  state $plugin;
+  
+  $plugin = $new_value if defined $new_value;
+  
+  return $plugin;
+}
+
 1;
 
 __END__
@@ -57,7 +69,7 @@ PlugAuth::Role::Plugin - Role for PlugAuth plugins
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
