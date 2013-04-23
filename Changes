@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - use MakeMaker instead of ModuleBuild
 
 0.10      2013-04-16 11:14:23 America/New_York
   - don't clobber user with route variables
