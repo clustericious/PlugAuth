@@ -12,7 +12,7 @@ use File::Spec;
 use File::Touch qw( touch );
 
 # ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
-our $VERSION = '0.10'; # VERSION
+our $VERSION = '0.11'; # VERSION
 
 my %MTimes;
 
@@ -112,8 +112,8 @@ sub flat_init
 
 1;
 
-__END__
 
+__END__
 =pod
 
 =head1 NAME
@@ -122,7 +122,7 @@ PlugAuth::Role::Flat - private role used by L<FlatAuth|PlugAuth::Plugin::FlatAut
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SEE ALSO
 
@@ -143,3 +143,4 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
+

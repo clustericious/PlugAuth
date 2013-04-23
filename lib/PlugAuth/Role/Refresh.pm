@@ -5,15 +5,15 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth reload plugins
-our $VERSION = '0.10'; # VERSION
+our $VERSION = '0.11'; # VERSION
 
 
 requires qw( refresh );
 
 1;
 
-__END__
 
+__END__
 =pod
 
 =head1 NAME
@@ -22,7 +22,7 @@ PlugAuth::Role::Refresh - Role for PlugAuth reload plugins
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 
@@ -72,3 +72,4 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
+
