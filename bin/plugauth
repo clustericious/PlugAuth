@@ -21,9 +21,6 @@ L<PlugAuth::Guide::Server>
 
 =cut
 
-use lib "$FindBin::Bin/../lib";
-use lib "$FindBin::Bin/../../lib";
-
 use Clustericious::Commands;
 
 $ENV{MOJO_APP} ||= 'PlugAuth';
