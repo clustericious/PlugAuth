@@ -1,4 +1,4 @@
-package PlugAuth::SelfAuth::PlugAuth;
+package Clustericious::Plugin::SelfPlugAuth;
 
 use strict;
 use warnings;

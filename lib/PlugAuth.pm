@@ -219,17 +219,44 @@ use warnings;
 use v5.10;
 use base 'Clustericious::App';
 use PlugAuth::Routes;
-use PlugAuth::SelfAuth;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use PlugAuth::Role::Plugin;
 use Clustericious::Config;
 use Mojo::Base 'Mojo::EventEmitter';
 
+sub plugin
+{
+  my($self, $name, @rest) = @_;
+  
+  # catch load of plug_auth and use self_plug_auth instead
+  if($name eq 'plug_auth'
+  || $name eq 'PlugAuth')
+  {
+    TRACE "loading plugin self_plug_auth ($name)";
+    return $self->SUPER::plugin('self_plug_auth', @rest);
+  }
+
+  # load the plugin  
+  TRACE "loading plugin $name";
+  my $ret = $self->SUPER::plugin($name, @rest);
+  
+  # just in case we miss it and plug_auth was loaded,
+  # load self_plug_auth instead.
+  if(eval { $ret->isa('Clustericious::Plugin::PlugAuth') })
+  {
+    TRACE "detected plug_auth plugin, switching with self_plug_auth";
+    return $self->SUPER::plugin('self_plug_auth', @rest);
+  }
+  else
+  {
+    return $ret;
+  }
+}
+
 sub startup 
 {
   my $self = shift;
-  $self->plugins(PlugAuth::SelfAuth->new);
   $self->SUPER::startup(@_);
 
   #$self->renderer->default_format('txt');
