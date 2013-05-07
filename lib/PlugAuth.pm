@@ -102,6 +102,10 @@ If the REST service is written in Perl, see L<PlugAuth::Client>.
 
 If the REST service uses Clustericious, see L<Clustericious::Plugin::PlugAuth>.
 
+PlugAuth was originally written for scientific data processing clusters based on 
+L<Clustericious> in which all the services are RESTful servers distributed over a number
+of different physical hosts, though it may be applicable in other contexts.
+
 =head2 AUTHENTICATION
 
 Checking for authentication is done by sending a GET request to URLs of the form
