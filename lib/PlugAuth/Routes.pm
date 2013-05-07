@@ -53,7 +53,7 @@ Return 200 ok
 
 Return 403 not ok
 
-=item * if username and password are not provided using BASIC authentiation
+=item * if username and password are not provided using BASIC authentication
 
 Return 401 please authenticate
 
@@ -253,7 +253,7 @@ If the user is unauthorized.
 
 =item * 503
 
-If the PlugAuth server cannot reach itself or the deligated PlugAuth server.
+If the PlugAuth server cannot reach itself or the delegated PlugAuth server.
 
 =back
 
@@ -583,7 +583,7 @@ If the user is unauthorized.
 
 =item * 503
 
-If the PlugAuth server cannot reach itself or the deligated PlugAuth server.
+If the PlugAuth server cannot reach itself or the delegated PlugAuth server.
 
 =back
 

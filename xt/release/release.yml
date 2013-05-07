@@ -23,6 +23,26 @@ pod_spelling_system:
     - API
     - Clustericious
     - Plack
+    - APIs
+    - Kragen
+    - SSL
+    - Sitaker
+    - auth
+    - authz
+    - http
+    - ocreate
+    - optimus
+    - primus
+    - url
+    - wget
+    - pam-http
+    - namespace
+    - FlatAuth
+    - FlatAuthz
+    - JSON
+    - YAML
+    - autodata
+    - ok
 
 pod_coverage:
   private:
@@ -30,3 +50,6 @@ pod_coverage:
     - PlugAuth::(Role|Plugin)::.*#new
     - PlugAuth::(Rold|Plugin)::.*#init
     - PlugAuth#startup
+    - PlugAuth#plugin
+    - Clustericious::Plugin::SelfPlugAuth
+    - PlugAuth::Plugin::Test

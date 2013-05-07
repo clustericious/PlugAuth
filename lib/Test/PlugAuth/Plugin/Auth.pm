@@ -23,7 +23,7 @@ our @EXPORT = qw( run_tests );
 
 =head2 run_tests $plugin_name, [ $global_config, [ $plugin_config ] ]
 
-Run the specification tests against the given plugin.  The configuraton
+Run the specification tests against the given plugin.  The configuration
 arguments are optional.  The first is the hash which is usually found in
 ~/etc/PlugAuth.conf and the second is the plugin config.
 

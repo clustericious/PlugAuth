@@ -110,7 +110,7 @@ sub grant { 0 }
 
 =head2 $plugin-E<gt>revoke( $group, $action, $resource )
 
-Revoke the given group or user ($group) the authorization to performa
+Revoke the given group or user ($group) the authorization to perform
 the given action ($action) on the given resource ($resource)
 
 =cut

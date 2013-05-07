@@ -4,7 +4,7 @@
 
 =head1 DESCRIPTION
 
-This document contains some common recipies for using interacting as a client
+This document contains some common recipes for using interacting as a client
 in various environments with a L<PlugAuth> server.
 
 This document assumes a PlugAuth server listening on http://localhost:3000 with
@@ -54,7 +54,7 @@ And test it by navigating your browser to http://localhost:3001/some/user/resour
 The web browser should prompt you for a username and password, and accept the 
 credentials for C<optimus>.
 
-For more details seee L<Clustericious::Plugin::PlugAuth>.
+For more details see L<Clustericious::Plugin::PlugAuth>.
 
 =head2 From Perl using L<PlugAuth::Client>
 
