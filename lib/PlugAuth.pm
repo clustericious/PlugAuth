@@ -226,113 +226,132 @@ use PlugAuth::Role::Plugin;
 use Clustericious::Config;
 use Mojo::Base 'Mojo::EventEmitter';
 
-sub startup {
-    my $self = shift;
-    $self->plugins(PlugAuth::SelfAuth->new);
-    $self->SUPER::startup(@_);
+sub startup 
+{
+  my $self = shift;
+  $self->plugins(PlugAuth::SelfAuth->new);
+  $self->SUPER::startup(@_);
 
-    #$self->renderer->default_format('txt');
+  #$self->renderer->default_format('txt');
     
-    my @plugins_config = eval {
-        my $plugins = $self->config->{plugins} // [];
-        ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
-    };
+  my @plugins_config = eval {
+    my $plugins = $self->config->{plugins} // [];
+    ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
+  };
 
-    my $auth_plugin;
-    my $authz_plugin;
-    my $welcome_plugin;
-    my @refresh;
+  my $auth_plugin;
+  my $authz_plugin;
+  my $welcome_plugin;
+  my @refresh;
     
-    foreach my $plugin_class (reverse @plugins_config) {
-
-        my $plugin_config;
-        if(ref $plugin_class) {
-            ($plugin_config) = values %$plugin_class;
-            $plugin_config = Clustericious::Config->new($plugin_config)
-              unless ref($plugin_config) eq 'ARRAY';
-            ($plugin_class)  = keys %$plugin_class;
-        } else {
-            $plugin_config = Clustericious::Config->new({});
-        }
+  foreach my $plugin_class (reverse @plugins_config) 
+  {
+    my $plugin_config;
+    if(ref $plugin_class)
+    {
+      ($plugin_config) = values %$plugin_class;
+      $plugin_config = Clustericious::Config->new($plugin_config)
+        unless ref($plugin_config) eq 'ARRAY';
+      ($plugin_class)  = keys %$plugin_class;
+    }
+    else
+    {
+      $plugin_config = Clustericious::Config->new({});
+    }
         
-        eval qq{ require $plugin_class };
-        LOGDIE $@ if $@;
-        Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
-            || LOGDIE "$plugin_class is not a PlugAuth plugin";
+    eval qq{ require $plugin_class };
+    LOGDIE $@ if $@;
+    Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
+      || LOGDIE "$plugin_class is not a PlugAuth plugin";
+    
+    my $plugin = $plugin_class->new($self->config, $plugin_config, $self);
+
+    if($plugin->does('PlugAuth::Role::Auth'))
+    {
+      $plugin->next_auth($auth_plugin);
+      $auth_plugin = $plugin;
+    }
         
-        my $plugin = $plugin_class->new($self->config, $plugin_config, $self);
-
-        if($plugin->does('PlugAuth::Role::Auth')) {
-            $plugin->next_auth($auth_plugin);
-            $auth_plugin = $plugin;
-        }
-        
-        if($plugin->does('PlugAuth::Role::Welcome')) {
-            $welcome_plugin = $plugin;
-        }
-
-        $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
-        push @refresh, $plugin if $plugin->does('PlugAuth::Role::Refresh')
+    if($plugin->does('PlugAuth::Role::Welcome'))
+    {
+      $welcome_plugin = $plugin;
     }
 
-    unless(defined $auth_plugin) {
-        require PlugAuth::Plugin::FlatAuth;
-        if($self->config->ldap(default => '')) {
-            require PlugAuth::Plugin::LDAP;
-            $auth_plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
-            $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self));
-            push @refresh, $auth_plugin->next_auth;
-            
-        } else {
-            $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self);
-            push @refresh, $auth_plugin;
-        }
-    }
-    
-    unless(defined $authz_plugin) {
-        require PlugAuth::Plugin::FlatAuthz;
-        $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, Clustericious::Config->new({}), $self);
-        push @refresh, $authz_plugin;
-    }
+    $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
+    push @refresh, $plugin if $plugin->does('PlugAuth::Role::Refresh')
+  }
 
-    $self->helper(data  => sub { $auth_plugin  });
-    $self->helper(auth  => sub { $auth_plugin  });
-    $self->helper(authz => sub { $authz_plugin });
-    
-    if(@refresh > 0 ) {
-        $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
-    } else {
-        $self->helper(refresh => sub { 1 });
+  unless(defined $auth_plugin)
+  {
+    require PlugAuth::Plugin::FlatAuth;
+    if($self->config->ldap(default => ''))
+    {
+      require PlugAuth::Plugin::LDAP;
+      $auth_plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
+      $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self));
+      push @refresh, $auth_plugin->next_auth;
     }
+    else
+    {
+      $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self);
+      push @refresh, $auth_plugin;
+    }
+  }
     
-    $self->helper(welcome => sub {
-        my($self) = @_;
-        if($welcome_plugin) {
-            $welcome_plugin->welcome($self);
-        } else {
-            $self->render_message("welcome to plug auth");
-        }
-    });
+  unless(defined $authz_plugin)
+  {
+    require PlugAuth::Plugin::FlatAuthz;
+    $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, Clustericious::Config->new({}), $self);
+    push @refresh, $authz_plugin;
+  }
+
+  $self->helper(data  => sub { $auth_plugin  });
+  $self->helper(auth  => sub { $auth_plugin  });
+  $self->helper(authz => sub { $authz_plugin });
     
-    # for historical reasons, some routes return text by default
-    # in older versions, even if a format (e.g. /auth.json) is specified.
-    # this is a simple helper to render using autodata if a format
-    # is explicitly specified, otherwise fallback on the original
-    # behavior.
-    $self->helper(render_message => sub {
-        my($self, $message, $status) = @_;
-        $status //= 200;
-        my $format = $self->stash->{format} // 'txt';
-        if($format ne 'txt') {
-            $self->render(autodata => { message => $message, status => $status }, status => $status);
-        } else {
-            $self->render(text => $message, status => $status);
-        }
-    });
+  if(@refresh > 0 )
+  {
+    $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
+  }
+  else
+  {
+    $self->helper(refresh => sub { 1 });
+  }
     
-    # Silence warnings; this is only used for for session
-    # cookies, which we don't use.
-    $self->secret(rand);
+  $self->helper(welcome => sub {
+    my($self) = @_;
+    if($welcome_plugin)
+    {
+      $welcome_plugin->welcome($self);
+    }
+    else
+    {
+      $self->render_message("welcome to plug auth");
+    }
+  });
+    
+  # for historical reasons, some routes return text by default
+  # in older versions, even if a format (e.g. /auth.json) is specified.
+  # this is a simple helper to render using autodata if a format
+  # is explicitly specified, otherwise fallback on the original
+  # behavior.
+  $self->helper(render_message => sub {
+    my($self, $message, $status) = @_;
+    $status //= 200;
+    my $format = $self->stash->{format} // 'txt';
+    if($format ne 'txt')
+    {
+      $self->render(autodata => { message => $message, status => $status }, status => $status);
+    }
+    else
+    {
+      $self->render(text => $message, status => $status);
+    }
+  });
+    
+  # Silence warnings; this is only used for for session
+  # cookies, which we don't use.
+  $self->secret(rand);
 }
 
 1;

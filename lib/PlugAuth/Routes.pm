@@ -63,22 +63,25 @@ Return 401 please authenticate
 
 # Check authentication for a user (http basic auth protocol).
 get '/auth' => sub {
-    my $self = shift;
-    my $auth = $self->req->headers->authorization or do {
-        $self->res->headers->www_authenticate('Basic "ACPS"');
-        $self->render_message('please authenticate', 401);
-        return;
-    };
-    my ($method,$str) = split / /,$auth;
-    my ($user,$pw) = split /:/, b($str)->b64_decode;
+  my $self = shift;
+  my $auth = $self->req->headers->authorization or do {
+    $self->res->headers->www_authenticate('Basic "ACPS"');
+    $self->render_message('please authenticate', 401);
+    return;
+  };
+  my ($method,$str) = split / /,$auth;
+  my ($user,$pw) = split /:/, b($str)->b64_decode;
 
-    if($self->auth->check_credentials($user,$pw)) {
-        $self->render_message('ok');
-        DEBUG "Authentication succeeded for user $user";
-    } else {
-        $self->render_message('not ok', 403);
-        DEBUG "Authentication failed for user $user";
-    }
+  if($self->auth->check_credentials($user,$pw))
+  {
+    $self->render_message('ok');
+    DEBUG "Authentication succeeded for user $user";
+  }
+  else
+  {
+    $self->render_message('not ok', 403);
+    DEBUG "Authentication failed for user $user";
+  }
 };
 
 =head3 GET /authz/user/#user/#action/(*resource)
@@ -105,7 +108,8 @@ get '/authz/user/#user/#action/(*resource)' => { resource => '/' } => sub {
   $resource =~ s{^/?}{/};
   TRACE "Checking authorization for $user to perform $action on $resource...";
   my $found = $c->authz->can_user_action_resource($user,$action,$resource);
-  if ($found) {
+  if ($found)
+  {
     TRACE "Authorization succeeded ($found)";
     return $c->render_message('ok');
   }
@@ -128,7 +132,8 @@ get '/authz/resources/#user/#action/(*resourceregex)' => sub  {
   TRACE "Checking $user, $action, $resourceregex";
   $resourceregex = qr[$resourceregex];
   my @resources;
-  for my $resource ($c->authz->match_resources($resourceregex)) {
+  for my $resource ($c->authz->match_resources($resourceregex))
+  {
     TRACE "Checking resource $resource";
     push @resources, $resource if $c->authz->can_user_action_resource($user,$action,$resource);
   }
@@ -184,7 +189,8 @@ return 403 not ok
 get '/host/#host/:tag' => sub {
   my $c = shift;
   my ($host,$tag) = map $c->stash($_), qw/host tag/;
-  if ($c->authz->host_has_tag($host,$tag)) {
+  if ($c->authz->host_has_tag($host,$tag))
+  {
     TRACE "Host $host has tag $tag";
     return $c->render_message('ok', 200);
   }
@@ -272,14 +278,17 @@ post '/user' => sub {
   my $user = $c->stash->{autodata}->{user};
   my $password = $c->stash->{autodata}->{password} || '';
   delete $c->stash->{autodata};
-  if($c->auth->create_user($user, $password)) {
+  if($c->auth->create_user($user, $password))
+  {
     $c->render_message('ok', 200);
     $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
     $c->app->emit(create_user => {
       admin => $c->stash('user'),
       user  => $user,
     });
-  } else {
+  }
+  else
+  {
     $c->render_message('not ok', 403);
   }
 };
@@ -301,14 +310,17 @@ Emits event 'delete_user' on success
 del '/user/#username' => sub {
   my $c = shift;
   my $user = $c->param('username');
-  if($c->auth->delete_user($user)) {
+  if($c->auth->delete_user($user))
+  {
     $c->render_message('ok', 200);
     $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
     $c->app->emit(delete_user => {
       admin => $c->stash('user'),
       user  => $user,
     });
-  } else {
+  }
+  else
+  {
     $c->render_message('not ok', 404);
   }
 };
