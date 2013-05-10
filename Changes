@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.12      2013-05-09 21:05:22 America/New_York
   - simplify the self auth plugin
   - don't use lib in main script
   - documentation updates
