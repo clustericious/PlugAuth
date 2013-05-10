@@ -12,108 +12,115 @@ use File::Spec;
 use File::Touch qw( touch );
 
 # ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
-our $VERSION = '0.11'; # VERSION
+our $VERSION = '0.12'; # VERSION
 
 my %MTimes;
 
 sub has_changed {
-    my $filename = shift;
-    -e $filename or LOGDIE "File $filename does not exist";
-    my $mtime = stat($filename)->mtime;
-    return 0 if $MTimes{$filename} && $MTimes{$filename}==$mtime;
-    $MTimes{$filename} = $mtime;
-    return 1;
+  my $filename = shift;
+  -e $filename or LOGDIE "File $filename does not exist";
+  my $mtime = stat($filename)->mtime;
+  return 0 if $MTimes{$filename} && $MTimes{$filename}==$mtime;
+  $MTimes{$filename} = $mtime;
+  return 1;
 }
 
 sub mark_changed {
-    delete $MTimes{$_} for @_;
+  delete $MTimes{$_} for @_;
 }
 
 sub read_file { # TODO: cache w/ mtime
-    my($class, $filename, %args) = @_;
-    $args{nest} ||= 0;
-    #
-    # _read_file:
-    #  x : y
-    #  z : q
-    # returns ( x => y, z => q )
-    #
-    # _read_file(nest => 1):
-    #  a : b,c
-    #  d : e,f
-    # returns ( x => { b => 1, c => 1 },
-    #           d => { e => 1, f => 1 } )
-    #
-    # _read_file(nest => 2):
-    #  a : (b) c,d
-    #  a : (g) h,i
-    #  d : (e) f,g
-    # returns ( a => { b => { c => 1, d => 1 },
-    #                { g => { h => 1, i => 1 },
-    #           d => { e => { f => 1, g => 1 } );
-    # Lines beginning with a # are ignored.
-    # All spaces are silently squashed.
-    #
-    TRACE "reading $filename";
-    my %h;
-    my $fh = IO::File->new("<$filename");
-    flock($fh, LOCK_SH) or WARN "Cannot lock $filename - $!\n";
-    for my $line ($fh->getlines) {
-        chomp $line;
-        $line =~ s/\s//g;
-        next if $line =~ /^#/ || !length($line);
-        my ($k,$v) = split /:/, $line;
-        my $p;
-        # commenting this out because it puts the password salt in
-        # the log file if TRACE is on
-        #TRACE "parsing $v";
-        ($k,$p) = ( $k =~ m/^(.*)\(([^)]*)\)$/) if $args{nest}==2;
-        $k = lc $k if $args{lc_keys};
-        $v = lc $v if $args{lc_values};
-        my %m = ( map { $_ => 1 } split /,/, $v ) if $args{nest};
-        if ($args{nest}==0) {
-            $h{$k} = $v;
-        } elsif ($args{nest}==1) {
-            $h{$k} ||= {};
-            @{ $h{$k} }{keys %m} = values %m;
-        } elsif ($args{nest}==2) {
-            $h{$k} ||= {};
-            $h{$k}{$p} ||= {};
-            @{ $h{$k}{$p} }{keys %m} = values %m;
-        }
+  my($class, $filename, %args) = @_;
+  $args{nest} ||= 0;
+  #
+  # _read_file:
+  #  x : y
+  #  z : q
+  # returns ( x => y, z => q )
+  #
+  # _read_file(nest => 1):
+  #  a : b,c
+  #  d : e,f
+  # returns ( x => { b => 1, c => 1 },
+  #           d => { e => 1, f => 1 } )
+  #
+  # _read_file(nest => 2):
+  #  a : (b) c,d
+  #  a : (g) h,i
+  #  d : (e) f,g
+  # returns ( a => { b => { c => 1, d => 1 },
+  #                { g => { h => 1, i => 1 },
+  #           d => { e => { f => 1, g => 1 } );
+  # Lines beginning with a # are ignored.
+  # All spaces are silently squashed.
+  #
+  TRACE "reading $filename";
+  my %h;
+  my $fh = IO::File->new("<$filename");
+  flock($fh, LOCK_SH) or WARN "Cannot lock $filename - $!\n";
+  for my $line ($fh->getlines)
+  {
+    chomp $line;
+    $line =~ s/\s//g;
+    next if $line =~ /^#/ || !length($line);
+    my ($k,$v) = split /:/, $line;
+    my $p;
+    # commenting this out because it puts the password salt in
+    # the log file if TRACE is on
+    #TRACE "parsing $v";
+    ($k,$p) = ( $k =~ m/^(.*)\(([^)]*)\)$/) if $args{nest}==2;
+    $k = lc $k if $args{lc_keys};
+    $v = lc $v if $args{lc_values};
+    my %m = ( map { $_ => 1 } split /,/, $v ) if $args{nest};
+    if ($args{nest}==0)
+    {
+      $h{$k} = $v;
     }
-    return %h;
+    elsif ($args{nest}==1)
+    {
+      $h{$k} ||= {};
+      @{ $h{$k} }{keys %m} = values %m;
+    }
+    elsif ($args{nest}==2)
+    {
+      $h{$k} ||= {};
+      $h{$k}{$p} ||= {};
+      @{ $h{$k}{$p} }{keys %m} = values %m;
+    }
+  }
+  return %h;
 }
 
 sub temp_dir
 {
-    state $dir;
-    unless(defined $dir) {
-        $dir = File::Temp::tempdir( CLEANUP => 1);
-    }
-    return $dir;
+  state $dir;
+  unless(defined $dir)
+  {
+    $dir = File::Temp::tempdir( CLEANUP => 1);
+  }
+  return $dir;
 }
 
 sub flat_init
 {
-    my($self) = @_;
-    my $config = $self->global_config;
+  my($self) = @_;
+  my $config = $self->global_config;
     
-    foreach my $file (qw( group_file resource_file user_file ))
-    {
-        $config->{$file} //= do {
-            my $fn = File::Spec->catfile($self->temp_dir, $file);
-            WARN "$file not defined in configuration, using temp $fn, modifiations will be lost on exit";
-            touch $fn;
-            $fn;
-        };
-    }
+  foreach my $file (qw( group_file resource_file user_file ))
+  {
+    $config->{$file} //= do {
+      my $fn = File::Spec->catfile($self->temp_dir, $file);
+      WARN "$file not defined in configuration, using temp $fn, modifiations will be lost on exit";
+      touch $fn;
+      $fn;
+    };
+  }
 }
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -122,7 +129,7 @@ PlugAuth::Role::Flat - private role used by L<FlatAuth|PlugAuth::Plugin::FlatAut
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SEE ALSO
 
@@ -143,4 +150,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

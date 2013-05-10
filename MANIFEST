@@ -22,6 +22,7 @@ example/plugin/lib/PlugAuth/Plugin/ExampleAuth.pm
 example/plugin/lib/PlugAuth/Plugin/ExampleRoute.pm
 example/plugin/t/plug_exampleauth_auth.t
 example/plugin/t/plug_exampleroute.t
+lib/Clustericious/Plugin/SelfPlugAuth.pm
 lib/PlugAuth.pm
 lib/PlugAuth/Guide/Client.pod
 lib/PlugAuth/Guide/Plugin.pod
@@ -37,8 +38,6 @@ lib/PlugAuth/Role/Plugin.pm
 lib/PlugAuth/Role/Refresh.pm
 lib/PlugAuth/Role/Welcome.pm
 lib/PlugAuth/Routes.pm
-lib/PlugAuth/SelfAuth.pm
-lib/PlugAuth/SelfAuth/PlugAuth.pm
 lib/Test/PlugAuth/Plugin.pm
 lib/Test/PlugAuth/Plugin/Auth.pm
 lib/Test/PlugAuth/Plugin/Authz.pm
@@ -150,7 +149,6 @@ t/data/27/resource.txt
 t/data/27/user.txt
 t/etc/PlugAuth.conf
 t/etc/setup.pl
-t/fixme.t
 t/plug_flatauth_auth.t
 t/plug_flatauth_refresh.t
 t/plug_flatauthz_authz.t
@@ -159,7 +157,16 @@ t/plug_test_auth.t
 t/plug_test_authz.t
 t/plug_test_refresh.t
 t/plugins.t
-t/pod-coverage.t
 t/selfauth.t
 t/use.t
+xt/release/build_environment.t
+xt/release/changes.t
+xt/release/eol.t
+xt/release/fixme.t
+xt/release/no_tabs.t
+xt/release/pod.t
+xt/release/pod_coverage.t
+xt/release/pod_spelling_common.t
+xt/release/pod_spelling_system.t
 xt/release/release.yml
+xt/release/strict.t

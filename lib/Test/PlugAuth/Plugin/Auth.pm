@@ -12,7 +12,7 @@ use base qw( Exporter );
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Auth plugin for correctness
-our $VERSION = '0.11'; # VERSION
+our $VERSION = '0.12'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -133,8 +133,8 @@ sub run_tests
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -143,7 +143,7 @@ Test::PlugAuth::Plugin::Auth - Test a PlugAuth Auth plugin for correctness
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -154,7 +154,7 @@ version 0.11
 
 =head2 run_tests $plugin_name, [ $global_config, [ $plugin_config ] ]
 
-Run the specification tests against the given plugin.  The configuraton
+Run the specification tests against the given plugin.  The configuration
 arguments are optional.  The first is the hash which is usually found in
 ~/etc/PlugAuth.conf and the second is the plugin config.
 
@@ -175,4 +175,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

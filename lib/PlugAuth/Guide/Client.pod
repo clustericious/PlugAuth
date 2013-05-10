@@ -2,8 +2,8 @@
 # VERSION
 # PODNAME: PlugAuth::Guide::Client
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -12,11 +12,11 @@ PlugAuth::Guide::Client - Guide for authenticating and authorizing against a Plu
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 DESCRIPTION
 
-This document contains some common recipies for using interacting as a client
+This document contains some common recipes for using interacting as a client
 in various environments with a L<PlugAuth> server.
 
 This document assumes a PlugAuth server listening on http://localhost:3000 with
@@ -66,7 +66,7 @@ And test it by navigating your browser to http://localhost:3001/some/user/resour
 The web browser should prompt you for a username and password, and accept the 
 credentials for C<optimus>.
 
-For more details seee L<Clustericious::Plugin::PlugAuth>.
+For more details see L<Clustericious::Plugin::PlugAuth>.
 
 =head2 From Perl using L<PlugAuth::Client>
 
@@ -289,4 +289,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

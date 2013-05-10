@@ -11,13 +11,7 @@ use ExtUtils::MakeMaker 6.30;
 my %WriteMakefileArgs = (
   "ABSTRACT" => "Pluggable authentication and authorization server.",
   "AUTHOR" => "Graham Ollis <gollis\@sesda3.com>",
-  "BUILD_REQUIRES" => {
-    "File::HomeDir" => 0,
-    "Mojo::JSON" => 0,
-    "Test::Differences" => 0,
-    "Test::Mojo" => 0,
-    "Test::More" => 0
-  },
+  "BUILD_REQUIRES" => {},
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
@@ -49,7 +43,6 @@ my %WriteMakefileArgs = (
     "Log::Log4perl" => 0,
     "Mojo::Base" => 0,
     "Mojo::ByteStream" => 0,
-    "Mojolicious::Plugins" => 0,
     "Role::Tiny" => 0,
     "Role::Tiny::With" => 0,
     "Test::Builder" => 0,
@@ -57,12 +50,32 @@ my %WriteMakefileArgs = (
     "YAML" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.11",
+  "TEST_REQUIRES" => {
+    "File::HomeDir" => 0,
+    "Mojo::JSON" => 0,
+    "Test::Differences" => 0,
+    "Test::Mojo" => 0,
+    "Test::More" => 0
+  },
+  "VERSION" => "0.12",
   "test" => {
     "TESTS" => "t/*.t"
   }
 );
 
+
+unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
+  my $tr = delete $WriteMakefileArgs{TEST_REQUIRES};
+  my $br = $WriteMakefileArgs{BUILD_REQUIRES};
+  for my $mod ( keys %$tr ) {
+    if ( exists $br->{$mod} ) {
+      $br->{$mod} = $tr->{$mod} if $tr->{$mod} > $br->{$mod};
+    }
+    else {
+      $br->{$mod} = $tr->{$mod};
+    }
+  }
+}
 
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
   my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};

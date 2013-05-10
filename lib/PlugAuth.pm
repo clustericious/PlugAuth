@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.11'; # VERSION
+our $VERSION = '0.12'; # VERSION
 
 
 use strict;
@@ -9,126 +9,172 @@ use warnings;
 use v5.10;
 use base 'Clustericious::App';
 use PlugAuth::Routes;
-use PlugAuth::SelfAuth;
 use Log::Log4perl qw( :easy );
 use Role::Tiny ();
 use PlugAuth::Role::Plugin;
 use Clustericious::Config;
 use Mojo::Base 'Mojo::EventEmitter';
 
-sub startup {
-    my $self = shift;
-    $self->plugins(PlugAuth::SelfAuth->new);
-    $self->SUPER::startup(@_);
+sub plugin
+{
+  my($self, $name, @rest) = @_;
+  
+  # catch load of plug_auth and use self_plug_auth instead
+  if($name eq 'plug_auth'
+  || $name eq 'PlugAuth')
+  {
+    TRACE "loading plugin self_plug_auth ($name)";
+    return $self->SUPER::plugin('self_plug_auth', @rest);
+  }
 
-    #$self->renderer->default_format('txt');
+  # load the plugin  
+  TRACE "loading plugin $name";
+  my $ret = $self->SUPER::plugin($name, @rest);
+  
+  # just in case we miss it and plug_auth was loaded,
+  # load self_plug_auth instead.
+  if(eval { $ret->isa('Clustericious::Plugin::PlugAuth') })
+  {
+    TRACE "detected plug_auth plugin, switching with self_plug_auth";
+    return $self->SUPER::plugin('self_plug_auth', @rest);
+  }
+  else
+  {
+    return $ret;
+  }
+}
+
+sub startup 
+{
+  my $self = shift;
+  $self->SUPER::startup(@_);
+
+  #$self->renderer->default_format('txt');
     
-    my @plugins_config = eval {
-        my $plugins = $self->config->{plugins} // [];
-        ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
-    };
+  my @plugins_config = eval {
+    my $plugins = $self->config->{plugins} // [];
+    ref($plugins) eq 'ARRAY' ? @$plugins : ($plugins);
+  };
 
-    my $auth_plugin;
-    my $authz_plugin;
-    my $welcome_plugin;
-    my @refresh;
+  my $auth_plugin;
+  my $authz_plugin;
+  my $welcome_plugin;
+  my @refresh;
     
-    foreach my $plugin_class (reverse @plugins_config) {
-
-        my $plugin_config;
-        if(ref $plugin_class) {
-            ($plugin_config) = values %$plugin_class;
-            $plugin_config = Clustericious::Config->new($plugin_config)
-              unless ref($plugin_config) eq 'ARRAY';
-            ($plugin_class)  = keys %$plugin_class;
-        } else {
-            $plugin_config = Clustericious::Config->new({});
-        }
+  foreach my $plugin_class (reverse @plugins_config) 
+  {
+    my $plugin_config;
+    if(ref $plugin_class)
+    {
+      ($plugin_config) = values %$plugin_class;
+      $plugin_config = Clustericious::Config->new($plugin_config)
+        unless ref($plugin_config) eq 'ARRAY';
+      ($plugin_class)  = keys %$plugin_class;
+    }
+    else
+    {
+      $plugin_config = Clustericious::Config->new({});
+    }
         
-        eval qq{ require $plugin_class };
-        LOGDIE $@ if $@;
-        Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
-            || LOGDIE "$plugin_class is not a PlugAuth plugin";
+    eval qq{ require $plugin_class };
+    LOGDIE $@ if $@;
+    Role::Tiny::does_role($plugin_class, 'PlugAuth::Role::Plugin')
+      || LOGDIE "$plugin_class is not a PlugAuth plugin";
+    
+    my $plugin = $plugin_class->new($self->config, $plugin_config, $self);
+
+    if($plugin->does('PlugAuth::Role::Auth'))
+    {
+      $plugin->next_auth($auth_plugin);
+      $auth_plugin = $plugin;
+    }
         
-        my $plugin = $plugin_class->new($self->config, $plugin_config, $self);
-
-        if($plugin->does('PlugAuth::Role::Auth')) {
-            $plugin->next_auth($auth_plugin);
-            $auth_plugin = $plugin;
-        }
-        
-        if($plugin->does('PlugAuth::Role::Welcome')) {
-            $welcome_plugin = $plugin;
-        }
-
-        $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
-        push @refresh, $plugin if $plugin->does('PlugAuth::Role::Refresh')
+    if($plugin->does('PlugAuth::Role::Welcome'))
+    {
+      $welcome_plugin = $plugin;
     }
 
-    unless(defined $auth_plugin) {
-        require PlugAuth::Plugin::FlatAuth;
-        if($self->config->ldap(default => '')) {
-            require PlugAuth::Plugin::LDAP;
-            $auth_plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
-            $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self));
-            push @refresh, $auth_plugin->next_auth;
-            
-        } else {
-            $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self);
-            push @refresh, $auth_plugin;
-        }
-    }
-    
-    unless(defined $authz_plugin) {
-        require PlugAuth::Plugin::FlatAuthz;
-        $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, Clustericious::Config->new({}), $self);
-        push @refresh, $authz_plugin;
-    }
+    $authz_plugin = $plugin if $plugin->does('PlugAuth::Role::Authz');
+    push @refresh, $plugin if $plugin->does('PlugAuth::Role::Refresh')
+  }
 
-    $self->helper(data  => sub { $auth_plugin  });
-    $self->helper(auth  => sub { $auth_plugin  });
-    $self->helper(authz => sub { $authz_plugin });
-    
-    if(@refresh > 0 ) {
-        $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
-    } else {
-        $self->helper(refresh => sub { 1 });
+  unless(defined $auth_plugin)
+  {
+    require PlugAuth::Plugin::FlatAuth;
+    if($self->config->ldap(default => ''))
+    {
+      require PlugAuth::Plugin::LDAP;
+      $auth_plugin = PlugAuth::Plugin::LDAP->new($self->config, {}, $self);
+      $auth_plugin->next_auth(PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self));
+      push @refresh, $auth_plugin->next_auth;
     }
+    else
+    {
+      $auth_plugin = PlugAuth::Plugin::FlatAuth->new($self->config, Clustericious::Config->new({}), $self);
+      push @refresh, $auth_plugin;
+    }
+  }
     
-    $self->helper(welcome => sub {
-        my($self) = @_;
-        if($welcome_plugin) {
-            $welcome_plugin->welcome($self);
-        } else {
-            $self->render_message("welcome to plug auth");
-        }
-    });
+  unless(defined $authz_plugin)
+  {
+    require PlugAuth::Plugin::FlatAuthz;
+    $authz_plugin = PlugAuth::Plugin::FlatAuthz->new($self->config, Clustericious::Config->new({}), $self);
+    push @refresh, $authz_plugin;
+  }
+
+  $self->helper(data  => sub { $auth_plugin  });
+  $self->helper(auth  => sub { $auth_plugin  });
+  $self->helper(authz => sub { $authz_plugin });
     
-    # for historical reasons, some routes return text by default
-    # in older versions, even if a format (e.g. /auth.json) is specified.
-    # this is a simple helper to render using autodata if a format
-    # is explicitly specified, otherwise fallback on the original
-    # behavior.
-    $self->helper(render_message => sub {
-        my($self, $message, $status) = @_;
-        $status //= 200;
-        my $format = $self->stash->{format} // 'txt';
-        if($format ne 'txt') {
-            $self->render(autodata => { message => $message, status => $status }, status => $status);
-        } else {
-            $self->render(text => $message, status => $status);
-        }
-    });
+  if(@refresh > 0 )
+  {
+    $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
+  }
+  else
+  {
+    $self->helper(refresh => sub { 1 });
+  }
     
-    # Silence warnings; this is only used for for session
-    # cookies, which we don't use.
-    $self->secret(rand);
+  $self->helper(welcome => sub {
+    my($self) = @_;
+    if($welcome_plugin)
+    {
+      $welcome_plugin->welcome($self);
+    }
+    else
+    {
+      $self->render_message("welcome to plug auth");
+    }
+  });
+    
+  # for historical reasons, some routes return text by default
+  # in older versions, even if a format (e.g. /auth.json) is specified.
+  # this is a simple helper to render using autodata if a format
+  # is explicitly specified, otherwise fallback on the original
+  # behavior.
+  $self->helper(render_message => sub {
+    my($self, $message, $status) = @_;
+    $status //= 200;
+    my $format = $self->stash->{format} // 'txt';
+    if($format ne 'txt')
+    {
+      $self->render(autodata => { message => $message, status => $status }, status => $status);
+    }
+    else
+    {
+      $self->render(text => $message, status => $status);
+    }
+  });
+    
+  # Silence warnings; this is only used for for session
+  # cookies, which we don't use.
+  $self->secret(rand);
 }
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -137,7 +183,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -237,6 +283,10 @@ The REST service returns the appropriate response to the client.
 If the REST service is written in Perl, see L<PlugAuth::Client>.
 
 If the REST service uses Clustericious, see L<Clustericious::Plugin::PlugAuth>.
+
+PlugAuth was originally written for scientific data processing clusters based on 
+L<Clustericious> in which all the services are RESTful servers distributed over a number
+of different physical hosts, though it may be applicable in other contexts.
 
 =head2 AUTHENTICATION
 
@@ -359,4 +409,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

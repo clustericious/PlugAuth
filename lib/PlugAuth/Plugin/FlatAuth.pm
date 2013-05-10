@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.11'; # VERSION
+our $VERSION = '0.12'; # VERSION
 
 
 use strict;
@@ -26,248 +26,269 @@ sub init {
 
 
 sub refresh {
-    # Should be called with every request.
-    my $config = __PACKAGE__->global_config;
-    my @user_files = $config->user_file;
-    if ( grep has_changed($_), @user_files ) {
-        my @users = map +{ __PACKAGE__->read_file($_, lc_keys => 1) }, @user_files;
-        %Userpw = ();
-        for my $list (@users) {
-            for my $user (map { lc $_ } keys %$list) {
-                $Userpw{$user} //= [];
-                push @{ $Userpw{$user} }, $list->{$user};
-            }
-        }
-
-        # if the user file has changed, then that may mean the
-        # group file has to be reloaded, for example, for groups
-        # with wildcards * need to be updated.
-        mark_changed($config->group_file);
+  # Should be called with every request.
+  my $config = __PACKAGE__->global_config;
+  my @user_files = $config->user_file;
+  if ( grep has_changed($_), @user_files )
+  {
+    my @users = map +{ __PACKAGE__->read_file($_, lc_keys => 1) }, @user_files;
+    %Userpw = ();
+    for my $list (@users)
+    {
+      for my $user (map { lc $_ } keys %$list)
+      {
+        $Userpw{$user} //= [];
+        push @{ $Userpw{$user} }, $list->{$user};
+      }
     }
+
+    # if the user file has changed, then that may mean the
+    # group file has to be reloaded, for example, for groups
+    # with wildcards * need to be updated.
+    mark_changed($config->group_file);
+  }
 }
 
 
 sub _validate_pw
 {
-    my($plain, $encrypted) = @_;
-    return 1 if crypt($plain, $encrypted) eq $encrypted;
+  my($plain, $encrypted) = @_;
+  return 1 if crypt($plain, $encrypted) eq $encrypted;
     
-    # idea borrowed from Authen::Simple::Password
-    if($encrypted =~ /^\$(\w+)\$/) {
-        return 1 if $1 eq 'apr1' && apache_md5_crypt( $plain, $encrypted ) eq $encrypted;
+  # idea borrowed from Authen::Simple::Password
+  if($encrypted =~ /^\$(\w+)\$/)
+  {
+    return 1 if $1 eq 'apr1' && apache_md5_crypt( $plain, $encrypted ) eq $encrypted;
 
-        # on at least modern Linux crypt will accept a UNIX 
-        # MD5 password, so this may be redundant
-        return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted ) eq $encrypted;
-    }
-    return 0;
+    # on at least modern Linux crypt will accept a UNIX 
+    # MD5 password, so this may be redundant
+    return 1 if $1 eq '1'    && unix_md5_crypt  ( $plain, $encrypted ) eq $encrypted;
+  }
+  return 0;
 }
 
 sub check_credentials {
-    my ($class, $user,$pw) = @_;
-    $user = lc $user;
+  my ($class, $user,$pw) = @_;
+  $user = lc $user;
 
-    if($pw && $Userpw{$user})
-    {
-      return 1 if grep { _validate_pw($pw, $_) } @{ $Userpw{$user} };
-    }
-    return $class->deligate_check_credentials($user, $pw);
+  if($pw && $Userpw{$user})
+  {
+    return 1 if grep { _validate_pw($pw, $_) } @{ $Userpw{$user} };
+  }
+  return $class->deligate_check_credentials($user, $pw);
 }
 
 
 sub all_users {
-    return sort keys %Userpw;
+  return sort keys %Userpw;
 }
 
 
 sub _created_encrypted_password
 {
-    my($plain) = @_;
-    my $salt = join '', ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[rand 64, rand 64];
-    apache_md5_crypt($plain, $salt);
+  my($plain) = @_;
+  my $salt = join '', ('.', '/', 0..9, 'A'..'Z', 'a'..'z')[rand 64, rand 64];
+  apache_md5_crypt($plain, $salt);
 }
 
 sub create_user
 {
-    my($class, $user, $password) = @_;
+  my($class, $user, $password) = @_;
 
-    unless($user && $password) {
-        WARN "User or password not provided";
-        return 0;
-    }
+  unless($user && $password)
+  {
+    WARN "User or password not provided";
+      return 0;
+  }
 
-    $user = lc $user;
+  $user = lc $user;
 
-    if(defined $Userpw{$user}) {
-        WARN "User $user already exists";
-        return 0;
-    }
-
-    foreach my $filename ($class->global_config->user_file) {
-        next unless -w $filename;
-
-        $password = _created_encrypted_password($password);
-
-        eval {
-            use autodie;
-
-            open my $fh, '+<', $filename;
-
-            eval { flock $fh, LOCK_EX };
-            WARN "cannot lock $filename - $@" if $@;
-
-            my $buffer;
-            while(! eof $fh) {
-                my $line = <$fh>;
-                chomp $line;
-                $buffer .= "$line\n";
-            }
-            $buffer .= join(':', $user, $password) . "\n";
-            
-            seek $fh, 0, 0;
-            truncate $fh, 0;
-            print $fh $buffer;
-
-            close $fh;
-
-            # if the file is created in the same second
-            # as it is modified, then refresh might
-            # not pick up the change, unless we delete
-            # the timestatmp.
-            mark_changed($filename);
-        };
-
-        if($@) {
-            ERROR "writing file $filename: $@";
-            return 0;
-        } else {
-            INFO "created user $user";
-            return 1;
-        }
-    }
-
-    ERROR "None of the user files were writable";
+  if(defined $Userpw{$user})
+  {
+    WARN "User $user already exists";
     return 0;
+  }
+
+  foreach my $filename ($class->global_config->user_file)
+  {
+    next unless -w $filename;
+
+    $password = _created_encrypted_password($password);
+
+    eval {
+      use autodie;
+
+      open my $fh, '+<', $filename;
+
+      eval { flock $fh, LOCK_EX };
+      WARN "cannot lock $filename - $@" if $@;
+
+      my $buffer;
+      while(! eof $fh)
+      {
+        my $line = <$fh>;
+        chomp $line;
+        $buffer .= "$line\n";
+      }
+      $buffer .= join(':', $user, $password) . "\n";
+            
+      seek $fh, 0, 0;
+      truncate $fh, 0;
+      print $fh $buffer;
+
+      close $fh;
+
+      # if the file is created in the same second
+      # as it is modified, then refresh might
+      # not pick up the change, unless we delete
+      # the timestatmp.
+      mark_changed($filename);
+    };
+
+    if($@)
+    {
+      ERROR "writing file $filename: $@";
+      return 0;
+    }
+    else
+    {
+      INFO "created user $user";
+      return 1;
+    }
+  }
+
+  ERROR "None of the user files were writable";
+  return 0;
 }
 
 
 sub change_password
 {
-    my($class, $user, $password) = @_;
+  my($class, $user, $password) = @_;
 
-    unless($user && $password) {
-        WARN "User or password not provided";
-        return 0;
-    }
+  unless($user && $password)
+  {
+    WARN "User or password not provided";
+    return 0;
+  }
 
-    $user = lc $user;
+  $user = lc $user;
 
-    unless(defined $Userpw{$user}) {
-        WARN "User $user does not exist";
-        return 0;
-    }
+  unless(defined $Userpw{$user})
+  {
+    WARN "User $user does not exist";
+    return 0;
+  }
 
-    $password = _created_encrypted_password($password);
+  $password = _created_encrypted_password($password);
 
-    foreach my $filename ($class->global_config->user_file) {
-        eval {
-            use autodie;
+  foreach my $filename ($class->global_config->user_file)
+  {
+    eval {
+      use autodie;
 
-            my $buffer = '';
+      my $buffer = '';
 
-            open my $fh, '+<', $filename;
+      open my $fh, '+<', $filename;
 
-            eval { flock $fh, LOCK_EX };
-            WARN "cannot lock $filename - $@" if $@;
+      eval { flock $fh, LOCK_EX };
+      WARN "cannot lock $filename - $@" if $@;
 
-            while(! eof $fh) {
-                my $line = <$fh>;
-                chomp $line;
-                my($thisuser, $oldpassword) = split /:/, $line;
-                if(lc($thisuser) eq $user) {
-                    $buffer .= join(':', $user, $password) . "\n";
-                } else {
-                    $buffer .= "$line\n";
-                }
-            }
+      while(! eof $fh)
+      {
+        my $line = <$fh>;
+        chomp $line;
+        my($thisuser, $oldpassword) = split /:/, $line;
+        if(lc($thisuser) eq $user)
+        {
+          $buffer .= join(':', $user, $password) . "\n";
+        }
+        else
+        {
+          $buffer .= "$line\n";
+        }
+      }
 
-            seek $fh, 0, 0;
-            truncate $fh, 0;
-            print $fh $buffer;
+      seek $fh, 0, 0;
+      truncate $fh, 0;
+      print $fh $buffer;
 
-            close $fh;
+      close $fh;
 
-        };
+    };
 
-        ERROR "modifying file $filename: $@" if $@;
+    ERROR "modifying file $filename: $@" if $@;
 
-        # if the file is created in the same second
-        # as it is modified, then refresh might
-        # not pick up the change, unless we delete
-        # the timestatmp.
-        mark_changed($filename);
-    }
+    # if the file is created in the same second
+    # as it is modified, then refresh might
+    # not pick up the change, unless we delete
+    # the timestatmp.
+    mark_changed($filename);
+  }
 
-    INFO "user password changed $user";
-    return 1;
+  INFO "user password changed $user";
+  return 1;
 }
 
 
 sub delete_user
 {
-    my($class, $user) = @_;
+  my($class, $user) = @_;
 
-    $user = lc $user;
+  $user = lc $user;
 
-    unless(defined $Userpw{$user}) {
-        WARN "User $user does not exist";
-        return 0;
-    }
+  unless(defined $Userpw{$user})
+  {
+    WARN "User $user does not exist";
+    return 0;
+  }
 
-    foreach my $filename ($class->global_config->user_file) {
-        eval {
-            use autodie;
+  foreach my $filename ($class->global_config->user_file)
+  {
+    eval {
+      use autodie;
 
-            my $buffer = '';
+      my $buffer = '';
 
-            open my $fh, '+<', $filename;
+      open my $fh, '+<', $filename;
 
-            eval { flock $fh, LOCK_EX };
-            WARN "cannot lock $filename - $@" if $@;
+      eval { flock $fh, LOCK_EX };
+      WARN "cannot lock $filename - $@" if $@;
 
-            while(! eof $fh) {
-                my $line = <$fh>;
-                chomp $line;
-                my($thisuser, $password) = split /:/, $line;
-                next if ($thisuser//'') eq $user;
-                $buffer .= "$line\n";
-            }
+      while(! eof $fh)
+      {
+        my $line = <$fh>;
+        chomp $line;
+        my($thisuser, $password) = split /:/, $line;
+        next if ($thisuser//'') eq $user;
+        $buffer .= "$line\n";
+      }
 
-            seek $fh, 0, 0;
-            truncate $fh, 0;
-            print $fh $buffer;
+      seek $fh, 0, 0;
+      truncate $fh, 0;
+      print $fh $buffer;
 
-            close $fh;
+      close $fh;
 
-        };
+    };
 
-        ERROR "modifying file $filename: $@" if $@;
+    ERROR "modifying file $filename: $@" if $@;
 
-        # if the file is created in the same second
-        # as it is modified, then refresh might
-        # not pick up the change, unless we delete
-        # the timestatmp.
-        mark_changed($filename);
-    }
+    # if the file is created in the same second
+    # as it is modified, then refresh might
+    # not pick up the change, unless we delete
+    # the timestatmp.
+    mark_changed($filename);
+  }
 
-    INFO "deleted user $user";
-    return 1;
+  INFO "deleted user $user";
+  return 1;
 }
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -276,7 +297,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -371,4 +392,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

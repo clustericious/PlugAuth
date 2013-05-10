@@ -4,7 +4,7 @@
       "Graham Ollis <gollis@sesda3.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300021, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880",
    "license" : [
       "perl_5"
    ],
@@ -42,7 +42,6 @@
             "Log::Log4perl" : "0",
             "Mojo::Base" : "0",
             "Mojo::ByteStream" : "0",
-            "Mojolicious::Plugins" : "0",
             "Role::Tiny" : "0",
             "Role::Tiny::With" : "0",
             "Test::Builder" : "0",
@@ -63,6 +62,6 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.11"
+   "version" : "0.12"
 }
 

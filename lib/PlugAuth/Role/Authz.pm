@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth authorization plugins
-our $VERSION = '0.11'; # VERSION
+our $VERSION = '0.12'; # VERSION
 
 
 requires qw( 
@@ -38,8 +38,8 @@ sub update_group { 0 }
 
 1;
 
-
 __END__
+
 =pod
 
 =head1 NAME
@@ -48,7 +48,7 @@ PlugAuth::Role::Authz - Role for PlugAuth authorization plugins
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -129,7 +129,7 @@ action ($action) on the given resource ($resource).
 
 =head2 $plugin-E<gt>revoke( $group, $action, $resource )
 
-Revoke the given group or user ($group) the authorization to performa
+Revoke the given group or user ($group) the authorization to perform
 the given action ($action) on the given resource ($resource)
 
 =head2 $plugin-E<gt>granted
@@ -159,4 +159,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
