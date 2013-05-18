@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
   - Mojolicious 4.0 compatability
+
+0.14      2013-05-10 11:57:36 EST5EDT
   - declare Class::Method::Modifiers as a prereq
 
 0.12      2013-05-09 21:05:22 America/New_York
