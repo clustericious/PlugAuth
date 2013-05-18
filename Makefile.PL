@@ -22,6 +22,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "PlugAuth",
   "PREREQ_PM" => {
+    "Class::Method::Modifiers" => 0,
     "Clone" => 0,
     "Clustericious" => "0.9909",
     "Clustericious::App" => 0,
@@ -57,7 +58,7 @@ my %WriteMakefileArgs = (
     "Test::Mojo" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.12",
+  "VERSION" => "0.14",
   "test" => {
     "TESTS" => "t/*.t"
   }

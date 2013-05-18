@@ -1,5 +1,9 @@
 Revision history for PlugAuth
 
+0.14      2013-05-17 20:07:10 America/New_York
+  - Mojolicious 4.0 compatability
+  - declare Class::Method::Modifiers as a prereq
+
 0.12      2013-05-09 21:05:22 America/New_York
   - simplify the self auth plugin
   - don't use lib in main script

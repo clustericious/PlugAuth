@@ -13,7 +13,7 @@ my $port = $t->ua->app_url->port;
 
 $t->get_ok("http://localhost:$port/group")
     ->status_is(200)
-    ->json_content_is([
+    ->json_is('', [
         'peanuts',
         'public',
         'superuser',

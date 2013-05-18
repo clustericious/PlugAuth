@@ -18,6 +18,7 @@ meta-spec:
   version: 1.4
 name: PlugAuth
 requires:
+  Class::Method::Modifiers: 0
   Clone: 0
   Clustericious: 0.9909
   Clustericious::App: 0
@@ -46,4 +47,4 @@ requires:
   YAML: 0
   autodie: 0
   perl: v5.10.0
-version: 0.12
+version: 0.14

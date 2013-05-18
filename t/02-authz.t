@@ -47,21 +47,21 @@ _allowed(q|user/thor/glob/globtest|);
 #
 $t->get_ok("http://localhost:$port/authz/resources/thor/kick/.*ball")
   ->status_is(200)
-  ->json_content_is(["/baseball","/football","/soccerball"]);
+  ->json_is('', ["/baseball","/football","/soccerball"]);
 
 $t->get_ok("http://localhost:$port/authz/resources/tHOr/kick/.*ball")
   ->status_is(200)
-  ->json_content_is(["/baseball","/football","/soccerball"]);
+  ->json_is('', ["/baseball","/football","/soccerball"]);
 
 $t->get_ok('/actions')
   ->status_is(200)
-  ->json_content_is([sort qw/create search miss view kick GET hit glob/]);
+  ->json_is('', [sort qw/create search miss view kick GET hit glob/]);
 
-$t->get_ok('/groups/thor')->status_is(200)->json_content_is([qw/public superuser thor/]);
+$t->get_ok('/groups/thor')->status_is(200)->json_is('', [qw/public superuser thor/]);
 
-$t->get_ok('/groups/tHOr')->status_is(200)->json_content_is([qw/public superuser thor/]);
+$t->get_ok('/groups/tHOr')->status_is(200)->json_is('', [qw/public superuser thor/]);
 
-$t->get_ok('/groups/linus')->status_is(200)->json_content_is([qw/linus peanuts public/]);
+$t->get_ok('/groups/linus')->status_is(200)->json_is('', [qw/linus peanuts public/]);
 
 $t->get_ok('/groups/nobody')->status_is(404);
 

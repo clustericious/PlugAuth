@@ -29,7 +29,7 @@ eq_or_diff [sort @{ $t->tx->res->json }], [sort qw( bar charliebrown deckard elm
     
 $t->get_ok("http://localhost:$port/users/superuser")
     ->status_is(200)
-    ->json_content_is([
+    ->json_is('', [
         'thor',
     ], 'list of users belonging to superuser');
 
