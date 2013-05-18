@@ -20,7 +20,7 @@ name: PlugAuth
 requires:
   Class::Method::Modifiers: 0
   Clone: 0
-  Clustericious: 0.9909
+  Clustericious: 0.9920
   Clustericious::App: 0
   Clustericious::Commands: 0
   Clustericious::Config: 0
@@ -47,4 +47,4 @@ requires:
   YAML: 0
   autodie: 0
   perl: v5.10.0
-version: 0.15
+version: 0.16

@@ -24,7 +24,7 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Class::Method::Modifiers" => 0,
     "Clone" => 0,
-    "Clustericious" => "0.9909",
+    "Clustericious" => "0.9920",
     "Clustericious::App" => 0,
     "Clustericious::Commands" => 0,
     "Clustericious::Config" => 0,
@@ -58,7 +58,7 @@ my %WriteMakefileArgs = (
     "Test::Mojo" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.15",
+  "VERSION" => "0.16",
   "test" => {
     "TESTS" => "t/*.t"
   }
