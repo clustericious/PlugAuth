@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Mojolicious 4.0 compatability
   - declare Class::Method::Modifiers as a prereq
 
 0.12      2013-05-09 21:05:22 America/New_York

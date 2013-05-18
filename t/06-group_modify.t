@@ -44,7 +44,7 @@ $t->get_ok("http://localhost:$port/group");
 is grep(/^group3$/, @{ $t->tx->res->json }), 1, "group3 was created";
 
 $t->get_ok("http://localhost:$port/users/group3")
-    ->json_content_is([], "group3 is empty");
+    ->json_is('', [], "group3 is empty");
 
 do {
   my $args = {};
@@ -153,7 +153,7 @@ $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group10", json { users 
     ->content_is("ok");
 
 $t->get_ok("http://localhost:$port/users/group10")
-    ->json_content_is([], "group10 is empty");
+    ->json_is('', [], "group10 is empty");
 
 # change user membership of an existing group with an invalid username
 $t->get_ok("http://localhost:$port/users/group11");
@@ -165,7 +165,7 @@ $t->post_ok("http://huffer:snoopy\@localhost:$port/group/group11", json { users 
     ->content_is("ok");
 
 $t->get_ok("http://localhost:$port/users/group11")
-    ->json_content_is([sort qw( optimus )], "group11 is [ optimus ]");
+    ->json_is('', [sort qw( optimus )], "group11 is [ optimus ]");
 
 # change user membership of a non existent group
 $t->get_ok("http://localhost:$port/group");

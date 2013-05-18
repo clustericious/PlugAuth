@@ -48,7 +48,7 @@ $t->get_ok("http://bar:bar\@localhost:$port/auth")
   
 $t->get_ok("http://localhost:$port/user")
     ->status_is(200)
-    ->json_content_is([sort
+    ->json_is('', [sort
         qw( foo bar ralph bob george )
     ], 'full sorted user list');
 
@@ -62,7 +62,7 @@ do {
 
 $t->get_ok("http://localhost:$port/user")
     ->status_is(200)
-    ->json_content_is([sort
+    ->json_is('', [sort
         qw( foo bar ralph bob george optimus )
     ], 'full sorted user list');
 
@@ -76,6 +76,6 @@ do {
 
 $t->get_ok("http://localhost:$port/user")
     ->status_is(200)
-    ->json_content_is([sort
+    ->json_is('', [sort
         qw( foo bar one )
     ], 'full sorted user list');
