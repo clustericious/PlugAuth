@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.17      2013-05-30 15:05:49 America/New_York
   - Fixes for MSWin32
 
 0.16      2013-05-17 22:39:37 America/New_York
