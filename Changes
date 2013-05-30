@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fixes for MSWin32
 
 0.16      2013-05-17 22:39:37 America/New_York
   - Require Clustericious 0.9920
