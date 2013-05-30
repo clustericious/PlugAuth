@@ -7,7 +7,7 @@ use Mojo::ByteStream qw( b );
 use Mojo::Base 'Mojolicious::Plugin';
 
 # ABSTRACT: Self authentication for PlugAuth
-our $VERSION = '0.16'; # VERSION
+our $VERSION = '0.17'; # VERSION
 
 
 sub register {
@@ -67,7 +67,6 @@ sub authorize
 1;
 
 __END__
-
 =pod
 
 =head1 NAME
@@ -76,7 +75,7 @@ Clustericious::Plugin::SelfPlugAuth - Self authentication for PlugAuth
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 DESCRIPTION
 
@@ -95,3 +94,4 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
+

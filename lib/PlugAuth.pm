@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.16'; # VERSION
+our $VERSION = '0.17'; # VERSION
 
 
 use strict;
@@ -173,8 +173,8 @@ sub startup
 
 1;
 
-__END__
 
+__END__
 =pod
 
 =head1 NAME
@@ -183,7 +183,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 SYNOPSIS
 
@@ -409,3 +409,4 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
+
