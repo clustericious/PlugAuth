@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - take advantage of the new Test::Clustericious::Config
 
 0.17      2013-05-30 15:05:49 America/New_York
   - Fixes for MSWin32
