@@ -14,6 +14,7 @@ my %WriteMakefileArgs = (
   "BUILD_REQUIRES" => {
     "File::HomeDir" => 0,
     "Mojo::JSON" => 0,
+    "Test::Clustericious::Config" => 0,
     "Test::Differences" => 0,
     "Test::Mojo" => 0,
     "Test::More" => 0
@@ -33,7 +34,7 @@ my %WriteMakefileArgs = (
     "Clustericious" => "0.9920",
     "Clustericious::App" => 0,
     "Clustericious::Commands" => 0,
-    "Clustericious::Config" => 0,
+    "Clustericious::Config" => "0.17",
     "Clustericious::Log" => 0,
     "Clustericious::RouteBuilder" => 0,
     "Crypt::PasswdMD5" => 0,
@@ -57,7 +58,7 @@ my %WriteMakefileArgs = (
     "YAML" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.17",
+  "VERSION" => "0.18",
   "test" => {
     "TESTS" => "t/*.t"
   }

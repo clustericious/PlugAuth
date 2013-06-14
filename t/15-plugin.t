@@ -1,28 +1,15 @@
-delete $ENV{HARNESS_ACTIVE};
-delete $ENV{CLUSTERICIOUS_CONF_DIR};
 $ENV{LOG_LEVEL} = "ERROR";
 
 use strict;
 use warnings;
-use File::HomeDir::Test;
-use File::HomeDir;
+use Test::Clustericious::Config;
 use File::Spec;
-use Test::More tests => 27;
+use Test::More tests => 32;
 use PlugAuth;
 use Clustericious::Config;
-use YAML ();
 use Test::Differences;
 
-my $config_filename = File::Spec->catfile(File::HomeDir->my_home, qw( etc PlugAuth.conf ));
-mkdir(File::Spec->catdir(File::HomeDir->my_home, 'etc'));
-
-do {
-  YAML::DumpFile($config_filename, {});
-  my $app = PlugAuth->new;
-  isa_ok $app, 'PlugAuth';
-  $app->startup;
-  is ref($app->data), 'PlugAuth::Plugin::FlatAuth', 'data = FlatAuth by default';
-};
+create_config_ok PlugAuth => {};
 
 eval q{
   package
@@ -36,10 +23,9 @@ eval q{
 die $@ if $@;
 
 do {
-  YAML::DumpFile($config_filename, { ldap => { } });
+  create_config_ok PlugAuth => { ldap => { } };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  $app->startup;
   is ref($app->data), 'PlugAuth::Plugin::LDAP', 'data = LDAP when LDAP is mentioned.';
 };
 
@@ -78,20 +64,18 @@ eval q{
 die $@ if $@;
 
 do {
-  YAML::DumpFile($config_filename, { plugins => [ 'JustAuth' ] });
+  create_config_ok PlugAuth =>{ plugins => [ 'JustAuth' ] };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  $app->startup;
   is ref $app->data,  'JustAuth',                    '[JustAuth@] data  = JustAuth';
   is ref $app->auth,  'JustAuth',                    '[JustAuth@] auth  = JustAuth';
   is ref $app->authz, 'PlugAuth::Plugin::FlatAuthz', '[JustAuth@] authz = FlatAuthz';
 };
 
 do {
-  YAML::DumpFile($config_filename, { plugins => 'JustAuth' });
+  create_config_ok PlugAuth => { plugins => 'JustAuth' };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  $app->startup;
   is ref $app->data,  'JustAuth',                    '[JustAuth$] data  = JustAuth';
   is ref $app->auth,  'JustAuth',                    '[JustAuth$] auth  = JustAuth';
   is ref $app->authz, 'PlugAuth::Plugin::FlatAuthz', '[JustAuth$] authz = FlatAuthz';
@@ -115,10 +99,9 @@ eval q{
 die $@ if $@;
 
 do {
-  YAML::DumpFile($config_filename, { plugins => [ 'JustAuthz' ] });
+  create_config_ok PlugAuth => { plugins => [ 'JustAuthz' ] };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  $app->startup;
   is ref $app->data,  'PlugAuth::Plugin::FlatAuth',      '[JustAuthz@] data  = FlatAuth';
   is ref $app->auth,  'PlugAuth::Plugin::FlatAuth',      '[JustAuthz@] auth  = FlatAuth';
   is ref $app->authz, 'JustAuthz',                       '[JustAuthz@] authz = JustAuthz';
@@ -142,10 +125,9 @@ ok(JustRefresh->does('PlugAuth::Role::Refresh'), "JustRefresh does Refresh");
 
 do {
   is(JustRefresh->get_refresh_count, 0, "refresh count = 0");
-  YAML::DumpFile($config_filename, { plugins => [ qw( JustRefresh JustAuth JustAuthz ) ] });
+  create_config_ok PlugAuth => { plugins => [ qw( JustRefresh JustAuth JustAuthz ) ] };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  $app->startup;
   is(JustRefresh->get_refresh_count, 0, "refresh count = 0");
   eval { $app->refresh };
   diag $@ if $@;
@@ -178,9 +160,8 @@ eval q{
 die $@ if $@;
 
 do {
-  YAML::DumpFile($config_filename, { plugins => [ 'List1', 'List2' ] });
+  create_config_ok PlugAuth => { plugins => [ 'List1', 'List2' ] };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  $app->startup;
   eq_or_diff [sort $app->auth->all_users], [sort qw( foo bar baz )], "all_users = foo bar baz";
 };

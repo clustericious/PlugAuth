@@ -5,6 +5,7 @@ author:
 build_requires:
   File::HomeDir: 0
   Mojo::JSON: 0
+  Test::Clustericious::Config: 0
   Test::Differences: 0
   Test::Mojo: 0
   Test::More: 0
@@ -23,7 +24,7 @@ requires:
   Clustericious: 0.9920
   Clustericious::App: 0
   Clustericious::Commands: 0
-  Clustericious::Config: 0
+  Clustericious::Config: 0.17
   Clustericious::Log: 0
   Clustericious::RouteBuilder: 0
   Crypt::PasswdMD5: 0
@@ -47,4 +48,4 @@ requires:
   YAML: 0
   autodie: 0
   perl: v5.10.0
-version: 0.17
+version: 0.18
