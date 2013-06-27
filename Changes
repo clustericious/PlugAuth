@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.19      2013-06-27 15:37:55 America/New_York
   - documentation
   - remove ladder and use before_dispatch hook instead for refresh
 
