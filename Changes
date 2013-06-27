@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - documentation
+  - remove ladder and use before_dispatch hook instead for refresh
 
 0.18      2013-06-14 10:50:23 America/New_York
   - take advantage of the new Test::Clustericious::Config
