@@ -39,8 +39,6 @@ Returns the string "welcome to plug auth"
 get '/'      => sub { shift->welcome } => 'index';
 get '/index' => sub { shift->welcome };
 
-ladder sub { shift->refresh };
-
 =head3 GET /auth
 
 =over 4

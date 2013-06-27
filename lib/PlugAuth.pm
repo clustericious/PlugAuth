@@ -342,11 +342,14 @@ sub startup
     
   if(@refresh > 0 )
   {
+    $self->hook(before_dispatch => sub {
+      $_->refresh for @refresh;
+    });
     $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
   }
   else
   {
-    $self->helper(refresh => sub { 1 });
+    $self->helper(refresh => sub { 1; });
   }
     
   $self->helper(welcome => sub {
