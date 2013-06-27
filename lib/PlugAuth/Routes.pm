@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.18'; # VERSION
+our $VERSION = '0.19'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -20,8 +20,6 @@ use List::MoreUtils qw( uniq );
 
 get '/'      => sub { shift->welcome } => 'index';
 get '/index' => sub { shift->welcome };
-
-ladder sub { shift->refresh };
 
 
 # Check authentication for a user (http basic auth protocol).
@@ -348,7 +346,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.18
+version 0.19
 
 =head1 DESCRIPTION
 

@@ -48,4 +48,4 @@ requires:
   YAML: 0
   autodie: 0
   perl: v5.10.0
-version: 0.18
+version: 0.19

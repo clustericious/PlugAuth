@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.18'; # VERSION
+our $VERSION = '0.19'; # VERSION
 
 
 use strict;
@@ -128,11 +128,14 @@ sub startup
     
   if(@refresh > 0 )
   {
+    $self->hook(before_dispatch => sub {
+      $_->refresh for @refresh;
+    });
     $self->helper(refresh => sub { $_->refresh for @refresh; 1 });
   }
   else
   {
-    $self->helper(refresh => sub { 1 });
+    $self->helper(refresh => sub { 1; });
   }
     
   $self->helper(welcome => sub {
@@ -183,7 +186,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.18
+version 0.19
 
 =head1 SYNOPSIS
 

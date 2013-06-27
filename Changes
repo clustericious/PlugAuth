@@ -1,5 +1,9 @@
 Revision history for PlugAuth
 
+0.19      2013-06-27 15:37:55 America/New_York
+  - documentation
+  - remove ladder and use before_dispatch hook instead for refresh
+
 0.18      2013-06-14 10:50:23 America/New_York
   - take advantage of the new Test::Clustericious::Config
 
