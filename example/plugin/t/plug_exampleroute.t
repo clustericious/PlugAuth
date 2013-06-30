@@ -4,7 +4,7 @@ use File::HomeDir::Test;
 use File::HomeDir;
 use Test::More tests => 3;
 use Test::Mojo;
-use YAML qw( DumpFile );
+use YAML::XS qw( DumpFile );
 
 mkdir File::HomeDir->my_home . '/etc';
 DumpFile( File::HomeDir->my_home . '/etc/PlugAuth.conf', {

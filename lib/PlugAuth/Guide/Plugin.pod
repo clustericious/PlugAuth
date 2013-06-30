@@ -12,7 +12,7 @@ PlugAuth::Guide::Plugin - Guide for writing PlugAuth plugins.
 
 =head1 VERSION
 
-version 0.19
+version 0.20
 
 =head1 DESCRIPTION
 
@@ -213,7 +213,7 @@ Here is a basic test for this plugin:
  use File::HomeDir;
  use Test::More tests => 3;
  use Test::Mojo;
- use YAML qw( DumpFile );
+ use YAML::XS qw( DumpFile );
  
  mkdir File::HomeDir->my_home . '/etc';
  DumpFile( File::HomeDir->my_home . '/etc/PlugAuth.conf', {
@@ -230,7 +230,7 @@ Here is a basic test for this plugin:
 
 We use L<File::HomeDir::Test> to create a temporary home directory for the test.  This
 means that no production configurations will be used by mistake.  Next we create a
-configuration for the test using L<YAML>'s C<DumpFile> function.  Finally we use
+configuration for the test using L<YAML::XS>'s C<DumpFile> function.  Finally we use
 L<Test::Mojo> to make an HTTP GET on /hello and check the status value and content
 of the response.
 

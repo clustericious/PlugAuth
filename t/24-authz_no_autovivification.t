@@ -9,7 +9,7 @@ use Test::More tests => 10;
 use Test::Mojo;
 use Mojo::JSON;
 use Test::Differences;
-use YAML qw( Dump );
+use YAML::XS qw( Dump );
 
 my $t = Test::Mojo->new('PlugAuth');
 

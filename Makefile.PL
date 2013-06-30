@@ -55,10 +55,10 @@ my %WriteMakefileArgs = (
     "Role::Tiny::With" => 0,
     "Test::Builder" => 0,
     "Text::Glob" => 0,
-    "YAML" => 0,
+    "YAML::XS" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.19",
+  "VERSION" => "0.20",
   "test" => {
     "TESTS" => "t/*.t"
   }

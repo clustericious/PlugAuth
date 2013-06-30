@@ -9,7 +9,6 @@ use Test::Mojo;
 use File::HomeDir;
 use File::Spec;
 use Clustericious::Config;
-use YAML ();
 
 do {
   my $config = Clustericious::Config->new('PlugAuth');

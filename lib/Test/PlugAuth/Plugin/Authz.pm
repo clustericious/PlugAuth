@@ -8,13 +8,13 @@ use Test::Builder;
 use Role::Tiny ();
 use PlugAuth;
 use File::Temp qw( tempdir );
-use YAML qw( DumpFile );
+use YAML::XS qw( DumpFile );
 use base qw( Exporter );
 
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Authz plugin for correctness
-our $VERSION = '0.19'; # VERSION
+our $VERSION = '0.20'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -327,7 +327,7 @@ Test::PlugAuth::Plugin::Authz - Test a PlugAuth Authz plugin for correctness
 
 =head1 VERSION
 
-version 0.19
+version 0.20
 
 =head1 SYNOPSIS
 
