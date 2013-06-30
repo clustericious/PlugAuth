@@ -8,7 +8,7 @@ use Test::Builder;
 use Role::Tiny ();
 use PlugAuth;
 use File::Temp qw( tempdir );
-use YAML qw( DumpFile );
+use YAML::XS qw( DumpFile );
 use base qw( Exporter );
 
 our @EXPORT = qw( run_tests );

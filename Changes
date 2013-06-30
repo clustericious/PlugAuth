@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fix examples
+  - use YAML::XS instead of YAML, since Clustericious requires YAML::XS (but not YAML)
 
 0.19      2013-06-27 15:37:55 America/New_York
   - documentation

@@ -6,7 +6,7 @@ use Test::More tests => 4;
 use Test::Mojo;
 use Mojo::JSON;
 use Test::Differences;
-use YAML qw( Dump );
+use YAML::XS qw( Dump );
 
 my $t = Test::Mojo->new('PlugAuth');
 $t->get_ok('/'); # creates $t->ua
