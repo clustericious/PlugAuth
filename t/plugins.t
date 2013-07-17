@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+BEGIN {   eval 'use Test::Clustericious::Log' }
 use Test::More tests => 1;
 use PlugAuth;
 use Test::Differences;
