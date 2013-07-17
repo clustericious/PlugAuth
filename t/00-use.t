@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More tests => 14;
 BEGIN { eval 'use EV' } # load it if it is there to avoid warning
 
 use_ok 'PlugAuth';
@@ -17,8 +17,6 @@ use_ok 'PlugAuth::Role::Plugin';
 use_ok 'PlugAuth::Role::Refresh';
 use_ok 'PlugAuth::Role::Flat';
 
-use_ok 'Test::PlugAuth::Plugin::Auth';
-use_ok 'Test::PlugAuth::Plugin::Authz';
-use_ok 'Test::PlugAuth::Plugin::Refresh';
-
 use_ok 'Clustericious::Plugin::SelfPlugAuth';
+
+pass '14th test';
