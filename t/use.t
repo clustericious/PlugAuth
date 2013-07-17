@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More tests => 16;
+BEGIN { eval 'use EV' } # load it if it is there to avoid warning
 
 use_ok 'PlugAuth';
 use_ok 'PlugAuth::Routes';
