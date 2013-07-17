@@ -160,6 +160,7 @@ t/plug_test_authz.t
 t/plug_test_refresh.t
 t/plugin_disable_group.t
 t/plugin_disable_group2.t
+t/plugin_disable_group3.t
 t/plugins.t
 t/selfauth.t
 xt/release/build_environment.t

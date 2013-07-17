@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth authentication plugins
-our $VERSION = '0.20_01'; # VERSION
+our $VERSION = '0.20_02'; # VERSION
 
 
 requires qw( check_credentials );
@@ -73,7 +73,7 @@ PlugAuth::Role::Auth - Role for PlugAuth authentication plugins
 
 =head1 VERSION
 
-version 0.20_01
+version 0.20_02
 
 =head1 SYNOPSIS
 
