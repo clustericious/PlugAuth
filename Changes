@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.20_02   2013-07-17 18:57:08 America/New_York
   - add disable_on_create option for DisableGroup Plugin
 
 0.20_01   2013-07-17 15:49:31 America/New_York
