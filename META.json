@@ -56,6 +56,7 @@
          "requires" : {
             "File::HomeDir" : "0",
             "Mojo::JSON" : "0",
+            "Test::Clustericious::Cluster" : "0",
             "Test::Clustericious::Config" : "0",
             "Test::Differences" : "0",
             "Test::Mojo" : "0",
@@ -63,7 +64,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "testing",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plicease/plugauth/issues"
@@ -75,6 +76,6 @@
          "web" : "https://github.com/plicease/plugauth"
       }
    },
-   "version" : "0.20"
+   "version" : "0.20_01"
 }
 

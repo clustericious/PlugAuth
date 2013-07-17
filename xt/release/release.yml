@@ -51,6 +51,7 @@ pod_coverage:
     - PlugAuth::Role::Flat
     - PlugAuth::(Role|Plugin)::.*#new
     - PlugAuth::(Rold|Plugin)::.*#init
+    - PlugAuth::Plugin::DisableGroup#check_credentials
     - PlugAuth#startup
     - PlugAuth#plugin
     - Clustericious::Plugin::SelfPlugAuth
