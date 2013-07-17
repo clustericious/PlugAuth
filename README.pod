@@ -1,12 +1,10 @@
-=pod
-
 =head1 NAME
 
 PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.20
+version 0.20_01
 
 =head1 SYNOPSIS
 
