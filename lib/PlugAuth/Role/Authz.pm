@@ -156,7 +156,8 @@ sub add_user_to_group
   my $users = $self->users_in_group($group);
   return 0 unless defined $users;
   push @$users, $user;
-  $self->update_group($group, join(',', uniq @$users));
+  $users = join(',', uniq @$users);
+  return $self->update_group($group, $users) ? $users : ();
 }
 
 =head2 $plugin-E<gt>remove_user_from_group( $group, $user )
@@ -176,11 +177,11 @@ given group.
 sub remove_user_from_group
 {
   my($self, $group, $user) = @_;
-  $DB::single = 1;
   my $users = $self->users_in_group($group);
   return 0 unless defined $users;
   @$users = grep { lc $_ ne lc $user } @$users;
-  $self->update_group($group, join(',', uniq @$users));
+  $users = join(',', uniq @$users);
+  return $self->update_group($group, $users) ? $users : ();
 }
 
 1;

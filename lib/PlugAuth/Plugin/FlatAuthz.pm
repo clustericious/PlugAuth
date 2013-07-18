@@ -80,6 +80,7 @@ use Text::Glob qw( match_glob );
 use Clone qw( clone );
 use Role::Tiny::With;
 use File::Touch;
+use List::MoreUtils qw( uniq );
 
 with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Authz';
@@ -446,7 +447,7 @@ sub update_group
     {
       my $line = <$fh>;
       chomp $line;
-      my($thisgroup, $password) = split /\s*:/, $line;
+      my($thisgroup) = split /\s*:/, $line;
       $line =~ s{:.*$}{: $users} if lc($thisgroup) eq $group;
       $buffer .= "$line\n";
     }
@@ -456,6 +457,50 @@ sub update_group
   return 0 unless $ok;
   INFO "update group $group set members to $users";
   return 1;
+}
+
+sub add_user_to_group
+{
+  my($self, $group, $user) = @_;
+  $group = lc $group;
+
+  unless($group && defined $groupUser{$group})
+  {
+    WARN "Group $group does not exist";
+    return 0;
+  }
+  
+  my $new_user_list;
+  my $filename = $self->global_config->group_file;
+  
+  my $ok = $self->lock_and_update_file($filename, sub {
+    use autodie;
+    my ($fh) = @_;
+    
+    my $buffer = '';
+    while(! eof $fh)
+    {
+      my $line = <$fh>;
+      chomp $line;
+      my($thisgroup, $users) = split /\s*:\s*/, $line;
+      if(lc($thisgroup) eq $group)
+      {
+        $users = join ',', uniq (split(/\s*,\s*/, $users), $user);
+        $buffer .= "$thisgroup: $users\n";
+        $new_user_list = $users;
+      }
+      else
+      {
+        $buffer .= "$line\n";
+      }
+    }
+    
+    $buffer;
+  });
+  
+  return unless $ok;
+  INFO "update group $group set members to $new_user_list";
+  return $new_user_list;
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>grant( $group, $action, $resource )
