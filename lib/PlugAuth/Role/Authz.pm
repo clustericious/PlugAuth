@@ -3,6 +3,7 @@ package PlugAuth::Role::Authz;
 use strict;
 use warnings;
 use Role::Tiny;
+use List::MoreUtils qw( uniq );
 
 # ABSTRACT: Role for PlugAuth authorization plugins
 # VERSION
@@ -134,6 +135,53 @@ $users is a comma separated list of user names.
 =cut
 
 sub update_group { 0 }
+
+=head2 $plugin-E<gt>add_user_to_group( $group, $user )
+
+Add the given user to the given group.  If you do not implement this
+method, but do implement the C<update_group> method above, then
+this method will get the group using C<users_in_group> and
+C<update_group>, but there is a race condition if another process
+updates the group between these two calls, so it is better to
+implement it yourself using whatever native locking mechanism you can.
+
+This method should return the new list of users that belong to the
+given group.
+
+=cut
+
+sub add_user_to_group
+{
+  my($self, $group, $user) = @_;
+  my $users = $self->users_in_group($group);
+  return 0 unless defined $users;
+  push @$users, $user;
+  $self->update_group($group, join(',', uniq @$users));
+}
+
+=head2 $plugin-E<gt>remove_user_from_group( $group, $user )
+
+Remove the given user from the given group.  If you do not implement this
+method, but do implement the C<update_group> method above, then
+this method will get the group using C<users_in_group> and
+C<update_group>, but there is a race condition if another process
+updates the group between these two calls, so it is better to
+implement it yourself using whatever native locking mechanism you can.
+
+This method should return the new list of users that belong to the
+given group.
+
+=cut
+
+sub remove_user_from_group
+{
+  my($self, $group, $user) = @_;
+  $DB::single = 1;
+  my $users = $self->users_in_group($group);
+  return 0 unless defined $users;
+  @$users = grep { lc $_ ne lc $user } @$users;
+  $self->update_group($group, join(',', uniq @$users));
+}
 
 1;
 

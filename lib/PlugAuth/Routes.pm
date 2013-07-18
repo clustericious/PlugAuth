@@ -413,14 +413,8 @@ post '/group/:group' => sub {
   my $c = shift;
   $c->parse_autodata;
   my $users = $c->stash->{autodata}->{users};
-  delete $c->stash->{autodata};
   my $group = $c->param('group');
-  _update_group($c,$group,$users);
-};
-
-sub _update_group
-{
-  my($c,$group,$users) = @_;
+  delete $c->stash->{autodata};
   if($c->authz->update_group($group, $users))
   {
     $c->render_message('ok',     200);
@@ -434,8 +428,7 @@ sub _update_group
   {
     $c->render_message('not ok', 404);
   }
-}
-
+};
 
 =head3 POST /group/:group/#username
 
@@ -450,10 +443,20 @@ an example).
 post '/group/:group/#username' => sub {
   my($c) = @_;
   my $group = $c->stash('group');
-  my $users = $c->authz->users_in_group($group);
-  return $c->render_message('not ok', 404) unless defined $users;
-  push @$users, $c->stash('username');
-  _update_group($c,$group,join(',', uniq @$users));
+  my $user  = $c->stash('username');
+  if(my $users = $c->authz->add_user_to_group($group, $user))
+  {
+    $c->render_message('ok', 200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 =head3 DELETE /group/:group/#username
@@ -469,11 +472,20 @@ an example).
 del '/group/:group/#username' => sub {
   my($c) = @_;
   my $group = $c->stash('group');
-  my $users = $c->authz->users_in_group($group);
-  return $c->render_message('not ok', 404) unless defined $users;
-  my $user = $c->stash('username');
-  @$users = grep { lc $_ ne lc $user } @$users;
-  _update_group($c,$group,join(',', @$users));
+  my $user  = $c->stash('username');
+  if(my $users = $c->authz->remove_user_from_group($group, $user))
+  {
+    $c->render_message('ok', 200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 =head3 POST /grant/#group/:action1/(*resource)
