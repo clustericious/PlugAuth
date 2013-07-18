@@ -13,6 +13,7 @@ install:
   - cpanm -n Test::Builder
   - cpanm -n Text::Glob
   - cpanm -n YAML
+  - cpanm -n Test::Clustericious::Cluster
 script: HARNESS_IS_VERBOSE=1 prove -lvr t xt
 perl:
   - "5.16"
