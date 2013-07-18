@@ -77,7 +77,6 @@ use warnings;
 use v5.10;
 use Log::Log4perl qw( :easy );
 use Text::Glob qw( match_glob );
-use Fcntl qw( :flock );
 use Clone qw( clone );
 use Role::Tiny::With;
 use File::Touch;
@@ -332,7 +331,7 @@ separated list of user names.
 
 sub create_group
 {
-  my($class, $group, $users) = @_;
+  my($self, $group, $users) = @_;
 
   unless(defined $group)
   {
@@ -348,17 +347,13 @@ sub create_group
 
   $users = '' unless defined $users;
 
-  my $filename = $class->global_config->group_file;
+  my $filename = $self->global_config->group_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
-    open my $fh, '+<', $filename;
-
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
-
-    my $buffer;
+    my $buffer = '';
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -366,25 +361,14 @@ sub create_group
       $buffer .= "$line\n";
     }
     $buffer .= "$group : $users\n";
-
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-
-    close $fh;
-  };
     
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $@";
-    return 0;
-  }
-  else
-  {
-    INFO "created group $group with members $users";
-    return 1;
-  }
+    $buffer;
+  });
+    
+  return 0 unless $ok;
+
+  INFO "created group $group with members $users";
+  return 1;
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>delete_group( $group )
@@ -395,7 +379,7 @@ Delete the given group.
 
 sub delete_group
 {
-  my($class, $group) = @_;
+  my($self, $group) = @_;
     
   $group = lc $group;
 
@@ -405,18 +389,12 @@ sub delete_group
     return 0;
   }
 
-  my $filename = $class->global_config->group_file;
+  my $filename = $self->global_config->group_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
-
+    my($fh) = @_;
     my $buffer = '';
-
-    open my $fh, '+<', $filename;
-
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
-
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -426,24 +404,13 @@ sub delete_group
       $buffer .= "$line\n";
     }
 
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
+    $buffer;
+  });
 
-    close $fh;
-  };
+  return 0 unless $ok;
 
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $error";
-    return 0;
-  }
-  else
-  {
-    INFO "deleted group $group";
-    return 1;
-  }
+  INFO "deleted group $group";
+  return 1;
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>update_group( $group, $users )
@@ -456,7 +423,7 @@ $users is a comma separated list of user names.
 
 sub update_group
 {
-  my($class, $group, $users) = @_;
+  my($self, $group, $users) = @_;
 
   $group = lc $group;
     
@@ -468,18 +435,13 @@ sub update_group
 
   return 1 unless defined $users;
 
-  my $filename = $class->global_config->group_file;
+  my $filename = $self->global_config->group_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
     my $buffer = '';
-
-    open my $fh, '+<', $filename;
-
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
-
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -488,25 +450,12 @@ sub update_group
       $line =~ s{:.*$}{: $users} if lc($thisgroup) eq $group;
       $buffer .= "$line\n";
     }
-
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-
-    close $fh;
-  };
-
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $error";
-    return 0;
-  }
-  else
-  {
-    INFO "update group $group set members to $users";
-    return 1;
-  }
+    $buffer;
+  });
+  
+  return 0 unless $ok;
+  INFO "update group $group set members to $users";
+  return 1;
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>grant( $group, $action, $resource )
@@ -518,7 +467,7 @@ action ($action) on the given resource ($resource).
 
 sub grant
 {
-  my($class, $group, $action, $resource) = @_;
+  my($self, $group, $action, $resource) = @_;
     
   $group = lc $group;
 
@@ -536,16 +485,13 @@ sub grant
     return 1;
   }
 
-  my $filename = $class->global_config->resource_file;
+  my $filename = $self->global_config->resource_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
     my $buffer = '';
-        
-    open my $fh, '+<', $filename;
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
         
     while(! eof $fh)
     {
@@ -554,25 +500,12 @@ sub grant
       $buffer .= "$line\n";
     }
     $buffer .= "$resource ($action) : $group\n";
-        
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-
-    close $fh;
-  };
-
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $error";
-    return 0;
-  }
-  else
-  {
-    INFO "grant $group $action $resource";
-    return 1;
-  }
+    $buffer;
+  });
+  
+  return 0 unless $ok;
+  INFO "grant $group $action $resource";
+  return 1;
 }
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>revoke( $group, $action, $resource )
@@ -584,7 +517,7 @@ action ($action) on the given resource ($resource).
 
 sub revoke
 {
-  my($class, $group, $action, $resource) = @_;
+  my($self, $group, $action, $resource) = @_;
     
   $group = lc $group;
 
@@ -602,16 +535,13 @@ sub revoke
     return 0;
   }
     
-  my $filename = $class->global_config->resource_file;
+  my $filename = $self->global_config->resource_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
     my $buffer = '';
-        
-    open my $fh, '+<', $filename;
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -631,27 +561,11 @@ sub revoke
         $buffer .= "$line\n";
       }
     }
-        
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-        
-    close $fh;
-    
-  };
-    
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $@";
-    return 0;
-  }
-  else
-  {
-    INFO "revoke $group $action $resource";
-    return 1;
-  }
-
+    $buffer;
+  });
+  
+  return 0 unless $ok;
+  INFO "revoke $group $action $resource";
   return 1;
 }
 
@@ -663,18 +577,16 @@ Returns a list of granted permissions
 
 sub granted
 {
-  my($class) = @_;
+  my($self) = @_;
     
-  my $filename = $class->global_config->resource_file;
+  my $filename = $self->global_config->resource_file;
     
   my @granted_list;
     
-  eval {
+  my $ok = $self->lock_and_read_file($filename, sub {
     use autodie;
-        
-    open my $fh, '<', $filename;
-    eval { flock $fh, LOCK_SH };
-    WARN "cannot lock $filename - $@" if $@;
+    my($fh) = @_;
+    
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -682,11 +594,7 @@ sub granted
       push @granted_list, "$1 ($2): $3" 
         if $line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$};
     }
-        
-    close $fh;
-  };
-    
-  ERROR "error reading $filename: $@" if $@;
+  });
     
   return \@granted_list;
 }

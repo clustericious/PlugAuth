@@ -60,7 +60,6 @@ use strict;
 use warnings;
 use v5.10;
 use Log::Log4perl qw( :easy );
-use Fcntl qw( :flock );
 # TODO: maybe optionally use Crypt::Passwd::XS instead
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
@@ -132,14 +131,14 @@ sub _validate_pw
 }
 
 sub check_credentials {
-  my ($class, $user,$pw) = @_;
+  my ($self, $user,$pw) = @_;
   $user = lc $user;
 
   if($pw && $Userpw{$user})
   {
     return 1 if grep { _validate_pw($pw, $_) } @{ $Userpw{$user} };
   }
-  return $class->deligate_check_credentials($user, $pw);
+  return $self->deligate_check_credentials($user, $pw);
 }
 
 =head2 PlugAuth::Plugin::FlatAuth-E<gt>all_users
@@ -167,12 +166,12 @@ sub _created_encrypted_password
 
 sub create_user
 {
-  my($class, $user, $password) = @_;
+  my($self, $user, $password) = @_;
 
   unless($user && $password)
   {
     WARN "User or password not provided";
-      return 0;
+    return 0;
   }
 
   $user = lc $user;
@@ -183,21 +182,17 @@ sub create_user
     return 0;
   }
 
-  foreach my $filename ($class->global_config->user_file)
+  foreach my $filename ($self->global_config->user_file)
   {
     next unless -w $filename;
 
     $password = _created_encrypted_password($password);
 
-    eval {
+    my $ok = $self->lock_and_update_file($filename, sub {
       use autodie;
+      my($fh) = @_;
 
-      open my $fh, '+<', $filename;
-
-      eval { flock $fh, LOCK_EX };
-      WARN "cannot lock $filename - $@" if $@;
-
-      my $buffer;
+      my $buffer = '';
       while(! eof $fh)
       {
         my $line = <$fh>;
@@ -205,30 +200,13 @@ sub create_user
         $buffer .= "$line\n";
       }
       $buffer .= join(':', $user, $password) . "\n";
-            
-      seek $fh, 0, 0;
-      truncate $fh, 0;
-      print $fh $buffer;
+      $buffer;
+    });
 
-      close $fh;
+    return 0 unless $ok;
 
-      # if the file is created in the same second
-      # as it is modified, then refresh might
-      # not pick up the change, unless we delete
-      # the timestatmp.
-      mark_changed($filename);
-    };
-
-    if($@)
-    {
-      ERROR "writing file $filename: $@";
-      return 0;
-    }
-    else
-    {
-      INFO "created user $user";
-      return 1;
-    }
+    INFO "created user $user";
+    return 1;
   }
 
   ERROR "None of the user files were writable";
@@ -244,7 +222,7 @@ Change the password of the given user.
 
 sub change_password
 {
-  my($class, $user, $password) = @_;
+  my($self, $user, $password) = @_;
 
   unless($user && $password)
   {
@@ -262,18 +240,14 @@ sub change_password
 
   $password = _created_encrypted_password($password);
 
-  foreach my $filename ($class->global_config->user_file)
+  foreach my $filename ($self->global_config->user_file)
   {
-    eval {
+    $self->lock_and_update_file($filename, sub {
       use autodie;
+      my($fh) = @_;
 
       my $buffer = '';
-
-      open my $fh, '+<', $filename;
-
-      eval { flock $fh, LOCK_EX };
-      WARN "cannot lock $filename - $@" if $@;
-
+      
       while(! eof $fh)
       {
         my $line = <$fh>;
@@ -288,22 +262,9 @@ sub change_password
           $buffer .= "$line\n";
         }
       }
-
-      seek $fh, 0, 0;
-      truncate $fh, 0;
-      print $fh $buffer;
-
-      close $fh;
-
-    };
-
-    ERROR "modifying file $filename: $@" if $@;
-
-    # if the file is created in the same second
-    # as it is modified, then refresh might
-    # not pick up the change, unless we delete
-    # the timestatmp.
-    mark_changed($filename);
+      
+      $buffer;
+    });
   }
 
   INFO "user password changed $user";
@@ -318,7 +279,7 @@ Delete the given user.
 
 sub delete_user
 {
-  my($class, $user) = @_;
+  my($self, $user) = @_;
 
   $user = lc $user;
 
@@ -328,18 +289,13 @@ sub delete_user
     return 0;
   }
 
-  foreach my $filename ($class->global_config->user_file)
+  foreach my $filename ($self->global_config->user_file)
   {
-    eval {
+    $self->lock_and_update_file($filename, sub {
       use autodie;
+      my($fh) = @_;
 
       my $buffer = '';
-
-      open my $fh, '+<', $filename;
-
-      eval { flock $fh, LOCK_EX };
-      WARN "cannot lock $filename - $@" if $@;
-
       while(! eof $fh)
       {
         my $line = <$fh>;
@@ -348,22 +304,8 @@ sub delete_user
         next if ($thisuser//'') eq $user;
         $buffer .= "$line\n";
       }
-
-      seek $fh, 0, 0;
-      truncate $fh, 0;
-      print $fh $buffer;
-
-      close $fh;
-
-    };
-
-    ERROR "modifying file $filename: $@" if $@;
-
-    # if the file is created in the same second
-    # as it is modified, then refresh might
-    # not pick up the change, unless we delete
-    # the timestatmp.
-    mark_changed($filename);
+      $buffer;
+    });
   }
 
   INFO "deleted user $user";
