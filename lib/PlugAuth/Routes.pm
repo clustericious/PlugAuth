@@ -449,10 +449,10 @@ an example).
 
 post '/group/:group/#username' => sub {
   my($c) = @_;
-  my $users = $c->authz->users_in_group($c->stash('group'));
+  my $group = $c->stash('group');
+  my $users = $c->authz->users_in_group($group);
   return $c->render_message('not ok', 404) unless defined $users;
   push @$users, $c->stash('username');
-  my $group = $c->param('group');
   _update_group($c,$group,join(',', uniq @$users));
 };
 
@@ -468,11 +468,11 @@ an example).
 
 del '/group/:group/#username' => sub {
   my($c) = @_;
-  my $users = $c->authz->users_in_group($c->stash('group'));
+  my $group = $c->stash('group');
+  my $users = $c->authz->users_in_group($group);
   return $c->render_message('not ok', 404) unless defined $users;
   my $user = $c->stash('username');
   @$users = grep { lc $_ ne lc $user } @$users;
-  my $group = $c->param('group');
   _update_group($c,$group,join(',', @$users));
 };
 
