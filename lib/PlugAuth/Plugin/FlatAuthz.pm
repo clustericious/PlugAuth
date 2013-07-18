@@ -459,10 +459,17 @@ sub update_group
   return 1;
 }
 
+=head2 PlugAuth::Plugin::FlatAuthz-E<gt>add_user_to_group( $group, $user )
+
+Add the given user to the given group.
+
+=cut
+
 sub add_user_to_group
 {
   my($self, $group, $user) = @_;
   $group = lc $group;
+  $user  = lc $user;
 
   unless($group && defined $groupUser{$group})
   {
@@ -486,6 +493,57 @@ sub add_user_to_group
       if(lc($thisgroup) eq $group)
       {
         $users = join ',', uniq (split(/\s*,\s*/, $users), $user);
+        $buffer .= "$thisgroup: $users\n";
+        $new_user_list = $users;
+      }
+      else
+      {
+        $buffer .= "$line\n";
+      }
+    }
+    
+    $buffer;
+  });
+  
+  return unless $ok;
+  INFO "update group $group set members to $new_user_list";
+  return $new_user_list;
+}
+
+=head2 PlugAuth::Plugin::FlatAuthz-E<gt>remove_user_from_group( $group, $user )
+
+Remove the given user from the given group
+
+=cut
+
+sub remove_user_from_group
+{
+  my($self, $group, $user) = @_;
+  $group = lc $group;
+  $user  = lc $user;
+
+  unless($group && defined $groupUser{$group})
+  {
+    WARN "Group $group does not exist";
+    return 0;
+  }
+  
+  my $new_user_list;
+  my $filename = $self->global_config->group_file;
+  
+  my $ok = $self->lock_and_update_file($filename, sub {
+    use autodie;
+    my ($fh) = @_;
+    
+    my $buffer = '';
+    while(! eof $fh)
+    {
+      my $line = <$fh>;
+      chomp $line;
+      my($thisgroup, $users) = split /\s*:\s*/, $line;
+      if(lc($thisgroup) eq $group)
+      {
+        $users = join ',', grep { lc($_) ne $user } uniq @{ $self->users_in_group($group) };
         $buffer .= "$thisgroup: $users\n";
         $new_user_list = $users;
       }
