@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - promote to production
 
 0.20_04   2013-07-19 11:14:19 America/New_York
   - allow create_user_cb to work even when implemented by a auth plugin NOT on the head
