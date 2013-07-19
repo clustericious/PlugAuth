@@ -287,11 +287,14 @@ post '/user' => sub {
   my $method = 'create_user';
   my $cb;
   
+  my $auth_plugin = $c->auth;
+  
   if(defined $groups)
   {
     $method = 'create_user_cb';
+    $auth_plugin = $c->auth->_find_create_user_cb;
     return $c->render_message('not ok', 501)
-      unless $c->auth->can($method);
+      unless defined $auth_plugin;
     $cb = sub {
       foreach my $group (split /\s*,\s*/, $groups)
       {
@@ -305,7 +308,7 @@ post '/user' => sub {
     };
   }
   
-  if($c->auth->$method($user, $password, $cb))
+  if($auth_plugin->$method($user, $password, $cb))
   {
     $c->render_message('ok', 200);
     $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version

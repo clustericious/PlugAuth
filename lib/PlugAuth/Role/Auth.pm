@@ -83,6 +83,16 @@ then L<PlugAuth> can create users who belong to specific groups
 as one atomic action.  If you do not implement this method then
 the server will return 501 Not Implemented.
 
+=cut
+
+sub _find_create_user_cb
+{
+  my $self = shift;
+  return $self if $self->can('create_user_cb');
+  my $next = $self->next_auth;
+  return $next ? $next->_find_create_user_cb : ();
+}
+
 =head2 $plugin-E<gt>change_password( $user, $password )
 
 Change the password of the given user.  Return 1 on
