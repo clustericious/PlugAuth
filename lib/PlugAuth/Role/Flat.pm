@@ -12,7 +12,7 @@ use File::Spec;
 use File::Touch qw( touch );
 
 # ABSTRACT: private role used by L<FlatAuth|PlugAuth::Plugin::FlatAuth> and L<FlatAuthz|PlugAuth::Plugin::FlatAuthz>.
-our $VERSION = '0.20_02'; # VERSION
+our $VERSION = '0.20_03'; # VERSION
 
 my %MTimes;
 
@@ -117,6 +117,67 @@ sub flat_init
   }
 }
 
+sub lock_and_update_file
+{
+  use autodie;
+  my($self, $filename, $cb) = @_;
+
+  my $buffer; 
+  
+  eval {
+    open my $fh, '+<', $filename;
+    eval { flock $fh, LOCK_EX };
+    WARN "cannot lock $filename - $@" if $@;
+  
+    $buffer = $cb->($fh);
+    
+    if(defined $buffer)
+    {
+      TRACE "updating $filename";
+      seek $fh, 0, 0;
+      truncate $fh, 0;
+      print $fh $buffer;
+    }
+    
+    mark_changed($filename);
+    close $fh;
+  };
+
+  if(my $error = $@)
+  {
+    ERROR "update $filename: $error";
+  }
+
+  return defined $buffer;
+}
+
+sub lock_and_read_file
+{
+  my($self, $filename, $cb) = @_;
+  
+  use autodie;
+  
+  my $ok = eval {
+  
+    open my $fh, '<', $filename;
+    eval { flock $fh, LOCK_SH };
+    WARN "cannot lock $filename - $@" if $@;
+  
+    my $ret  = $cb->($fh);
+    
+    close $fh;
+    
+    $ret;
+  };
+  
+  if(my $error = $@)
+  {
+    ERROR "reading $filename: $error";
+  }
+  
+  $ok;
+}
+
 1;
 
 
@@ -129,7 +190,7 @@ PlugAuth::Role::Flat - private role used by L<FlatAuth|PlugAuth::Plugin::FlatAut
 
 =head1 VERSION
 
-version 0.20_02
+version 0.20_03
 
 =head1 SEE ALSO
 

@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth authentication plugins
-our $VERSION = '0.20_02'; # VERSION
+our $VERSION = '0.20_03'; # VERSION
 
 
 requires qw( check_credentials );
@@ -73,7 +73,7 @@ PlugAuth::Role::Auth - Role for PlugAuth authentication plugins
 
 =head1 VERSION
 
-version 0.20_02
+version 0.20_03
 
 =head1 SYNOPSIS
 
@@ -124,6 +124,15 @@ this cannot be determined, then return an empty list.
 
 Create the given user with the given password.  Return 1
 on success, return 0 on failure.
+
+=head2 $plugin-E<gt>create_user_cb( $user, $password, $cb )
+
+Create user with call back.  This works like C<create_user>, but
+it calls the callback while your plugin still has a lock on the
+user database (if applicable).  If this method is implemented,
+then L<PlugAuth> can create users who belong to specific groups
+as one atomic action.  If you do not implement this method then
+the server will return 501 Not Implemented.
 
 =head2 $plugin-E<gt>change_password( $user, $password )
 

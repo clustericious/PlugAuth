@@ -3,9 +3,10 @@ package PlugAuth::Role::Authz;
 use strict;
 use warnings;
 use Role::Tiny;
+use List::MoreUtils qw( uniq );
 
 # ABSTRACT: Role for PlugAuth authorization plugins
-our $VERSION = '0.20_02'; # VERSION
+our $VERSION = '0.20_03'; # VERSION
 
 
 requires qw( 
@@ -36,6 +37,28 @@ sub granted { [] }
 
 sub update_group { 0 }
 
+
+sub add_user_to_group
+{
+  my($self, $group, $user) = @_;
+  my $users = $self->users_in_group($group);
+  return 0 unless defined $users;
+  push @$users, $user;
+  $users = join(',', uniq @$users);
+  return $self->update_group($group, $users) ? $users : ();
+}
+
+
+sub remove_user_from_group
+{
+  my($self, $group, $user) = @_;
+  my $users = $self->users_in_group($group);
+  return 0 unless defined $users;
+  @$users = grep { lc $_ ne lc $user } @$users;
+  $users = join(',', uniq @$users);
+  return $self->update_group($group, $users) ? $users : ();
+}
+
 1;
 
 
@@ -48,7 +71,7 @@ PlugAuth::Role::Authz - Role for PlugAuth authorization plugins
 
 =head1 VERSION
 
-version 0.20_02
+version 0.20_03
 
 =head1 SYNOPSIS
 
@@ -141,6 +164,30 @@ Returns a list of granted permissions
 Update the given group, setting the set of users that belong to that
 group.  The existing group membership will be replaced with the new one.
 $users is a comma separated list of user names.
+
+=head2 $plugin-E<gt>add_user_to_group( $group, $user )
+
+Add the given user to the given group.  If you do not implement this
+method, but do implement the C<update_group> method above, then
+this method will get the group using C<users_in_group> and
+C<update_group>, but there is a race condition if another process
+updates the group between these two calls, so it is better to
+implement it yourself using whatever native locking mechanism you can.
+
+This method should return the new list of users that belong to the
+given group.
+
+=head2 $plugin-E<gt>remove_user_from_group( $group, $user )
+
+Remove the given user from the given group.  If you do not implement this
+method, but do implement the C<update_group> method above, then
+this method will get the group using C<users_in_group> and
+C<update_group>, but there is a race condition if another process
+updates the group between these two calls, so it is better to
+implement it yourself using whatever native locking mechanism you can.
+
+This method should return the new list of users that belong to the
+given group.
 
 =head1 SEE ALSO
 

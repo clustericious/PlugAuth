@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.20_02'; # VERSION
+our $VERSION = '0.20_03'; # VERSION
 
 
 use strict;
@@ -9,10 +9,10 @@ use warnings;
 use v5.10;
 use Log::Log4perl qw( :easy );
 use Text::Glob qw( match_glob );
-use Fcntl qw( :flock );
 use Clone qw( clone );
 use Role::Tiny::With;
 use File::Touch;
+use List::MoreUtils qw( uniq );
 
 with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Authz';
@@ -208,7 +208,7 @@ sub users_in_group {
 
 sub create_group
 {
-  my($class, $group, $users) = @_;
+  my($self, $group, $users) = @_;
 
   unless(defined $group)
   {
@@ -224,17 +224,13 @@ sub create_group
 
   $users = '' unless defined $users;
 
-  my $filename = $class->global_config->group_file;
+  my $filename = $self->global_config->group_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
-    open my $fh, '+<', $filename;
-
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
-
-    my $buffer;
+    my $buffer = '';
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -242,31 +238,20 @@ sub create_group
       $buffer .= "$line\n";
     }
     $buffer .= "$group : $users\n";
-
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-
-    close $fh;
-  };
     
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $@";
-    return 0;
-  }
-  else
-  {
-    INFO "created group $group with members $users";
-    return 1;
-  }
+    $buffer;
+  });
+    
+  return 0 unless $ok;
+
+  INFO "created group $group with members $users";
+  return 1;
 }
 
 
 sub delete_group
 {
-  my($class, $group) = @_;
+  my($self, $group) = @_;
     
   $group = lc $group;
 
@@ -276,18 +261,12 @@ sub delete_group
     return 0;
   }
 
-  my $filename = $class->global_config->group_file;
+  my $filename = $self->global_config->group_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
-
+    my($fh) = @_;
     my $buffer = '';
-
-    open my $fh, '+<', $filename;
-
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
-
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -297,30 +276,19 @@ sub delete_group
       $buffer .= "$line\n";
     }
 
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
+    $buffer;
+  });
 
-    close $fh;
-  };
+  return 0 unless $ok;
 
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $error";
-    return 0;
-  }
-  else
-  {
-    INFO "deleted group $group";
-    return 1;
-  }
+  INFO "deleted group $group";
+  return 1;
 }
 
 
 sub update_group
 {
-  my($class, $group, $users) = @_;
+  my($self, $group, $users) = @_;
 
   $group = lc $group;
     
@@ -332,51 +300,125 @@ sub update_group
 
   return 1 unless defined $users;
 
-  my $filename = $class->global_config->group_file;
+  my $filename = $self->global_config->group_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
     my $buffer = '';
-
-    open my $fh, '+<', $filename;
-
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
-
     while(! eof $fh)
     {
       my $line = <$fh>;
       chomp $line;
-      my($thisgroup, $password) = split /\s*:/, $line;
+      my($thisgroup) = split /\s*:/, $line;
       $line =~ s{:.*$}{: $users} if lc($thisgroup) eq $group;
       $buffer .= "$line\n";
     }
+    $buffer;
+  });
+  
+  return 0 unless $ok;
+  INFO "update group $group set members to $users";
+  return 1;
+}
 
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
 
-    close $fh;
-  };
+sub add_user_to_group
+{
+  my($self, $group, $user) = @_;
+  $group = lc $group;
+  $user  = lc $user;
 
-  mark_changed($filename);
-  if(my $error = $@)
+  unless($group && defined $groupUser{$group})
   {
-    ERROR "modifying file $filename: $error";
+    WARN "Group $group does not exist";
     return 0;
   }
-  else
+  
+  my $new_user_list;
+  my $filename = $self->global_config->group_file;
+  
+  my $ok = $self->lock_and_update_file($filename, sub {
+    use autodie;
+    my ($fh) = @_;
+    
+    my $buffer = '';
+    while(! eof $fh)
+    {
+      my $line = <$fh>;
+      chomp $line;
+      my($thisgroup, $users) = split /\s*:\s*/, $line;
+      if(lc($thisgroup) eq $group)
+      {
+        $users = join ',', uniq (split(/\s*,\s*/, $users), $user);
+        $buffer .= "$thisgroup: $users\n";
+        $new_user_list = $users;
+      }
+      else
+      {
+        $buffer .= "$line\n";
+      }
+    }
+    
+    $buffer;
+  });
+  
+  return unless $ok;
+  INFO "update group $group set members to $new_user_list";
+  return $new_user_list;
+}
+
+
+sub remove_user_from_group
+{
+  my($self, $group, $user) = @_;
+  $group = lc $group;
+  $user  = lc $user;
+
+  unless($group && defined $groupUser{$group})
   {
-    INFO "update group $group set members to $users";
-    return 1;
+    WARN "Group $group does not exist";
+    return 0;
   }
+  
+  my $new_user_list;
+  my $filename = $self->global_config->group_file;
+  
+  my $ok = $self->lock_and_update_file($filename, sub {
+    use autodie;
+    my ($fh) = @_;
+    
+    my $buffer = '';
+    while(! eof $fh)
+    {
+      my $line = <$fh>;
+      chomp $line;
+      my($thisgroup, $users) = split /\s*:\s*/, $line;
+      if(lc($thisgroup) eq $group)
+      {
+        $users = join ',', grep { lc($_) ne $user } uniq @{ $self->users_in_group($group) };
+        $buffer .= "$thisgroup: $users\n";
+        $new_user_list = $users;
+      }
+      else
+      {
+        $buffer .= "$line\n";
+      }
+    }
+    
+    $buffer;
+  });
+  
+  return unless $ok;
+  INFO "update group $group set members to $new_user_list";
+  return $new_user_list;
 }
 
 
 sub grant
 {
-  my($class, $group, $action, $resource) = @_;
+  my($self, $group, $action, $resource) = @_;
     
   $group = lc $group;
 
@@ -394,16 +436,13 @@ sub grant
     return 1;
   }
 
-  my $filename = $class->global_config->resource_file;
+  my $filename = $self->global_config->resource_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
     my $buffer = '';
-        
-    open my $fh, '+<', $filename;
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
         
     while(! eof $fh)
     {
@@ -412,31 +451,18 @@ sub grant
       $buffer .= "$line\n";
     }
     $buffer .= "$resource ($action) : $group\n";
-        
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-
-    close $fh;
-  };
-
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $error";
-    return 0;
-  }
-  else
-  {
-    INFO "grant $group $action $resource";
-    return 1;
-  }
+    $buffer;
+  });
+  
+  return 0 unless $ok;
+  INFO "grant $group $action $resource";
+  return 1;
 }
 
 
 sub revoke
 {
-  my($class, $group, $action, $resource) = @_;
+  my($self, $group, $action, $resource) = @_;
     
   $group = lc $group;
 
@@ -454,16 +480,13 @@ sub revoke
     return 0;
   }
     
-  my $filename = $class->global_config->resource_file;
+  my $filename = $self->global_config->resource_file;
 
-  eval {
+  my $ok = $self->lock_and_update_file($filename, sub {
     use autodie;
+    my($fh) = @_;
 
     my $buffer = '';
-        
-    open my $fh, '+<', $filename;
-    eval { flock $fh, LOCK_EX };
-    WARN "cannot lock $filename - $@" if $@;
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -483,45 +506,27 @@ sub revoke
         $buffer .= "$line\n";
       }
     }
-        
-    seek $fh, 0, 0;
-    truncate $fh, 0;
-    print $fh $buffer;
-        
-    close $fh;
-    
-  };
-    
-  mark_changed($filename);
-  if(my $error = $@)
-  {
-    ERROR "modifying file $filename: $@";
-    return 0;
-  }
-  else
-  {
-    INFO "revoke $group $action $resource";
-    return 1;
-  }
-
+    $buffer;
+  });
+  
+  return 0 unless $ok;
+  INFO "revoke $group $action $resource";
   return 1;
 }
 
 
 sub granted
 {
-  my($class) = @_;
+  my($self) = @_;
     
-  my $filename = $class->global_config->resource_file;
+  my $filename = $self->global_config->resource_file;
     
   my @granted_list;
     
-  eval {
+  my $ok = $self->lock_and_read_file($filename, sub {
     use autodie;
-        
-    open my $fh, '<', $filename;
-    eval { flock $fh, LOCK_SH };
-    WARN "cannot lock $filename - $@" if $@;
+    my($fh) = @_;
+    
     while(! eof $fh)
     {
       my $line = <$fh>;
@@ -529,11 +534,7 @@ sub granted
       push @granted_list, "$1 ($2): $3" 
         if $line =~ m{^\s*(.*?)\s*\((.*?)\)\s*:\s*(.*?)\s*$};
     }
-        
-    close $fh;
-  };
-    
-  ERROR "error reading $filename: $@" if $@;
+  });
     
   return \@granted_list;
 }
@@ -550,7 +551,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.20_02
+version 0.20_03
 
 =head1 SYNOPSIS
 
@@ -675,6 +676,14 @@ Delete the given group.
 Update the given group, setting the set of users that belong to that
 group.  The existing group membership will be replaced with the new one.
 $users is a comma separated list of user names.
+
+=head2 PlugAuth::Plugin::FlatAuthz-E<gt>add_user_to_group( $group, $user )
+
+Add the given user to the given group.
+
+=head2 PlugAuth::Plugin::FlatAuthz-E<gt>remove_user_from_group( $group, $user )
+
+Remove the given user from the given group
 
 =head2 PlugAuth::Plugin::FlatAuthz-E<gt>grant( $group, $action, $resource )
 

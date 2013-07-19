@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.20_02'; # VERSION
+our $VERSION = '0.20_03'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -138,10 +138,33 @@ authorize 'accounts';
 post '/user' => sub {
   my $c = shift;
   $c->parse_autodata;
-  my $user = $c->stash->{autodata}->{user};
+  my $user     = $c->stash->{autodata}->{user};
   my $password = $c->stash->{autodata}->{password} || '';
+  my $groups   = $c->stash->{autodata}->{groups};
   delete $c->stash->{autodata};
-  if($c->auth->create_user($user, $password))
+  
+  my $method = 'create_user';
+  my $cb;
+  
+  if(defined $groups)
+  {
+    $method = 'create_user_cb';
+    return $c->render_message('not ok', 501)
+      unless $c->auth->can($method);
+    $cb = sub {
+      foreach my $group (split /\s*,\s*/, $groups)
+      {
+        my $users = $c->app->authz->add_user_to_group($group, $user);
+        $c->app->emit(create_group => {
+          admin => $c->stash('user'),
+          group => $group,
+          users => $users,
+        });
+      }
+    };
+  }
+  
+  if($c->auth->$method($user, $password, $cb))
   {
     $c->render_message('ok', 200);
     $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
@@ -220,14 +243,8 @@ post '/group/:group' => sub {
   my $c = shift;
   $c->parse_autodata;
   my $users = $c->stash->{autodata}->{users};
-  delete $c->stash->{autodata};
   my $group = $c->param('group');
-  _update_group($c,$group,$users);
-};
-
-sub _update_group
-{
-  my($c,$group,$users) = @_;
+  delete $c->stash->{autodata};
   if($c->authz->update_group($group, $users))
   {
     $c->render_message('ok',     200);
@@ -241,28 +258,46 @@ sub _update_group
   {
     $c->render_message('not ok', 404);
   }
-}
-
+};
 
 
 post '/group/:group/#username' => sub {
   my($c) = @_;
-  my $users = $c->authz->users_in_group($c->stash('group'));
-  return $c->render_message('not ok', 404) unless defined $users;
-  push @$users, $c->stash('username');
-  my $group = $c->param('group');
-  _update_group($c,$group,join(',', uniq @$users));
+  my $group = $c->stash('group');
+  my $user  = $c->stash('username');
+  if(my $users = $c->authz->add_user_to_group($group, $user))
+  {
+    $c->render_message('ok', 200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 
 del '/group/:group/#username' => sub {
   my($c) = @_;
-  my $users = $c->authz->users_in_group($c->stash('group'));
-  return $c->render_message('not ok', 404) unless defined $users;
-  my $user = $c->stash('username');
-  @$users = grep { lc $_ ne lc $user } @$users;
-  my $group = $c->param('group');
-  _update_group($c,$group,join(',', @$users));
+  my $group = $c->stash('group');
+  my $user  = $c->stash('username');
+  if(my $users = $c->authz->remove_user_from_group($group, $user))
+  {
+    $c->render_message('ok', 200);
+    $c->app->emit(update_group => {
+      admin => $c->stash('user'),
+      group => $group,
+      users => $users,
+    });
+  }
+  else
+  {
+    $c->render_message('not ok', 404);
+  }
 };
 
 
@@ -346,7 +381,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.20_02
+version 0.20_03
 
 =head1 DESCRIPTION
 
@@ -462,6 +497,12 @@ If the PlugAuth server cannot reach itself or the delegated PlugAuth server.
 
 Create a user.  The C<username> and C<password> are provided autodata arguments
 (JSON, YAML, form data, etc).
+
+If supported by your authentiation plugin (requires C<create_user_cb> to be
+implemented see L<PlugAuth::Plugin::Auth> for details) You may also optionally
+include C<groups> as an autodata argument, which specifies the list of groups
+to which the new user should belong.  C<groups> should be a comma separated
+list stored as a string.
 
 Emits event 'create_user' on success
 

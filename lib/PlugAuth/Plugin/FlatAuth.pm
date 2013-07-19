@@ -1,14 +1,13 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.20_02'; # VERSION
+our $VERSION = '0.20_03'; # VERSION
 
 
 use strict;
 use warnings;
 use v5.10;
 use Log::Log4perl qw( :easy );
-use Fcntl qw( :flock );
 # TODO: maybe optionally use Crypt::Passwd::XS instead
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
 use Role::Tiny::With;
@@ -68,14 +67,14 @@ sub _validate_pw
 }
 
 sub check_credentials {
-  my ($class, $user,$pw) = @_;
+  my ($self, $user,$pw) = @_;
   $user = lc $user;
 
   if($pw && $Userpw{$user})
   {
     return 1 if grep { _validate_pw($pw, $_) } @{ $Userpw{$user} };
   }
-  return $class->deligate_check_credentials($user, $pw);
+  return $self->deligate_check_credentials($user, $pw);
 }
 
 
@@ -91,14 +90,16 @@ sub _created_encrypted_password
   apache_md5_crypt($plain, $salt);
 }
 
-sub create_user
+sub create_user { goto &create_user_cb }
+
+sub create_user_cb
 {
-  my($class, $user, $password) = @_;
+  my($self, $user, $password, $cb) = @_;
 
   unless($user && $password)
   {
     WARN "User or password not provided";
-      return 0;
+    return 0;
   }
 
   $user = lc $user;
@@ -109,21 +110,17 @@ sub create_user
     return 0;
   }
 
-  foreach my $filename ($class->global_config->user_file)
+  foreach my $filename ($self->global_config->user_file)
   {
     next unless -w $filename;
 
     $password = _created_encrypted_password($password);
 
-    eval {
+    my $ok = $self->lock_and_update_file($filename, sub {
       use autodie;
+      my($fh) = @_;
 
-      open my $fh, '+<', $filename;
-
-      eval { flock $fh, LOCK_EX };
-      WARN "cannot lock $filename - $@" if $@;
-
-      my $buffer;
+      my $buffer = '';
       while(! eof $fh)
       {
         my $line = <$fh>;
@@ -131,30 +128,23 @@ sub create_user
         $buffer .= "$line\n";
       }
       $buffer .= join(':', $user, $password) . "\n";
-            
-      seek $fh, 0, 0;
-      truncate $fh, 0;
-      print $fh $buffer;
+      
+      # as a rule we don't update the data structure
+      # directly, we update the config files and let
+      # refresh do that on the next request, but in
+      # this case the callback is used to modify groups,
+      # and for that to work we need to update the 
+      # userdatabase first.
+      $Userpw{$user} = $password;
+      $cb->() if defined $cb;
+      
+      $buffer;
+    });
 
-      close $fh;
+    return 0 unless $ok;
 
-      # if the file is created in the same second
-      # as it is modified, then refresh might
-      # not pick up the change, unless we delete
-      # the timestatmp.
-      mark_changed($filename);
-    };
-
-    if($@)
-    {
-      ERROR "writing file $filename: $@";
-      return 0;
-    }
-    else
-    {
-      INFO "created user $user";
-      return 1;
-    }
+    INFO "created user $user";
+    return 1;
   }
 
   ERROR "None of the user files were writable";
@@ -164,7 +154,7 @@ sub create_user
 
 sub change_password
 {
-  my($class, $user, $password) = @_;
+  my($self, $user, $password) = @_;
 
   unless($user && $password)
   {
@@ -182,18 +172,14 @@ sub change_password
 
   $password = _created_encrypted_password($password);
 
-  foreach my $filename ($class->global_config->user_file)
+  foreach my $filename ($self->global_config->user_file)
   {
-    eval {
+    $self->lock_and_update_file($filename, sub {
       use autodie;
+      my($fh) = @_;
 
       my $buffer = '';
-
-      open my $fh, '+<', $filename;
-
-      eval { flock $fh, LOCK_EX };
-      WARN "cannot lock $filename - $@" if $@;
-
+      
       while(! eof $fh)
       {
         my $line = <$fh>;
@@ -208,22 +194,9 @@ sub change_password
           $buffer .= "$line\n";
         }
       }
-
-      seek $fh, 0, 0;
-      truncate $fh, 0;
-      print $fh $buffer;
-
-      close $fh;
-
-    };
-
-    ERROR "modifying file $filename: $@" if $@;
-
-    # if the file is created in the same second
-    # as it is modified, then refresh might
-    # not pick up the change, unless we delete
-    # the timestatmp.
-    mark_changed($filename);
+      
+      $buffer;
+    });
   }
 
   INFO "user password changed $user";
@@ -233,7 +206,7 @@ sub change_password
 
 sub delete_user
 {
-  my($class, $user) = @_;
+  my($self, $user) = @_;
 
   $user = lc $user;
 
@@ -243,18 +216,13 @@ sub delete_user
     return 0;
   }
 
-  foreach my $filename ($class->global_config->user_file)
+  foreach my $filename ($self->global_config->user_file)
   {
-    eval {
+    $self->lock_and_update_file($filename, sub {
       use autodie;
+      my($fh) = @_;
 
       my $buffer = '';
-
-      open my $fh, '+<', $filename;
-
-      eval { flock $fh, LOCK_EX };
-      WARN "cannot lock $filename - $@" if $@;
-
       while(! eof $fh)
       {
         my $line = <$fh>;
@@ -263,22 +231,8 @@ sub delete_user
         next if ($thisuser//'') eq $user;
         $buffer .= "$line\n";
       }
-
-      seek $fh, 0, 0;
-      truncate $fh, 0;
-      print $fh $buffer;
-
-      close $fh;
-
-    };
-
-    ERROR "modifying file $filename: $@" if $@;
-
-    # if the file is created in the same second
-    # as it is modified, then refresh might
-    # not pick up the change, unless we delete
-    # the timestatmp.
-    mark_changed($filename);
+      $buffer;
+    });
   }
 
   INFO "deleted user $user";
@@ -297,7 +251,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.20_02
+version 0.20_03
 
 =head1 SYNOPSIS
 
@@ -365,6 +319,8 @@ Given a user and password, check to see if the password is correct.
 Returns a list of all users.
 
 =head2 PlugAuth::Plugin::FlatAuth-E<gt>create_user( $user, $password )
+
+=head2 PlugAuth::Plugin::FlatAuth-E<gt>create_user_cb( $user, $password, $callback)
 
 Create a new user with the given password.
 

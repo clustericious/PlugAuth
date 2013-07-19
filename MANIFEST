@@ -69,6 +69,7 @@ t/24-authz_no_autovivification.t
 t/25-case_insensitive.t
 t/26-authz-slash.t
 t/27-new_line.t
+t/28-create_user_with_groups.t
 t/data/01/group.txt
 t/data/01/host.txt
 t/data/01/more_users.txt
