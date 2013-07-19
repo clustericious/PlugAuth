@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - allow create_user_cb to work even when implemented by a auth plugin NOT on the head
 
 0.20_03   2013-07-19 09:20:15 America/New_York
   - added ability to assign groups to a user when user is created
