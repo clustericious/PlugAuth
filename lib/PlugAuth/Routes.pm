@@ -260,6 +260,12 @@ If the PlugAuth server cannot reach itself or the delegated PlugAuth server.
 Create a user.  The C<username> and C<password> are provided autodata arguments
 (JSON, YAML, form data, etc).
 
+If supported by your authentiation plugin (requires C<create_user_cb> to be
+implemented see L<PlugAuth::Plugin::Auth> for details) You may also optionally
+include C<groups> as an autodata argument, which specifies the list of groups
+to which the new user should belong.  C<groups> should be a comma separated
+list stored as a string.
+
 Emits event 'create_user' on success
 
  $app->on(create_user => sub {
@@ -273,10 +279,33 @@ Emits event 'create_user' on success
 post '/user' => sub {
   my $c = shift;
   $c->parse_autodata;
-  my $user = $c->stash->{autodata}->{user};
+  my $user     = $c->stash->{autodata}->{user};
   my $password = $c->stash->{autodata}->{password} || '';
+  my $groups   = $c->stash->{autodata}->{groups};
   delete $c->stash->{autodata};
-  if($c->auth->create_user($user, $password))
+  
+  my $method = 'create_user';
+  my $cb;
+  
+  if(defined $groups)
+  {
+    $method = 'create_user_cb';
+    return $c->render_message('not ok', 501)
+      unless $c->auth->can($method);
+    $cb = sub {
+      foreach my $group (split /\s*,\s*/, $groups)
+      {
+        my $users = $c->app->authz->add_user_to_group($group, $user);
+        $c->app->emit(create_group => {
+          admin => $c->stash('user'),
+          group => $group,
+          users => $users,
+        });
+      }
+    };
+  }
+  
+  if($c->auth->$method($user, $password, $cb))
   {
     $c->render_message('ok', 200);
     $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version

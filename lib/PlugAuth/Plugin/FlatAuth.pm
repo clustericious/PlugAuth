@@ -164,9 +164,11 @@ sub _created_encrypted_password
   apache_md5_crypt($plain, $salt);
 }
 
-sub create_user
+sub create_user { goto &create_user_cb }
+
+sub create_user_cb
 {
-  my($self, $user, $password) = @_;
+  my($self, $user, $password, $cb) = @_;
 
   unless($user && $password)
   {
@@ -200,6 +202,16 @@ sub create_user
         $buffer .= "$line\n";
       }
       $buffer .= join(':', $user, $password) . "\n";
+      
+      # as a rule we don't update the data structure
+      # directly, we update the config files and let
+      # refresh do that on the next request, but in
+      # this case the callback is used to modify groups,
+      # and for that to work we need to update the 
+      # userdatabase first.
+      $Userpw{$user} = $password;
+      $cb->() if defined $cb;
+      
       $buffer;
     });
 
