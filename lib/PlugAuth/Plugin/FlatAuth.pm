@@ -153,6 +153,8 @@ sub all_users {
 
 =head2 PlugAuth::Plugin::FlatAuth-E<gt>create_user( $user, $password )
 
+=head2 PlugAuth::Plugin::FlatAuth-E<gt>create_user_cb( $user, $password, $callback)
+
 Create a new user with the given password.
 
 =cut
