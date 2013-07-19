@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.20_03   2013-07-19 09:20:15 America/New_York
   - added ability to assign groups to a user when user is created
 
 0.20_02   2013-07-17 18:57:08 America/New_York
