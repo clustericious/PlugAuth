@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.20_03'; # VERSION
+our $VERSION = '0.20_04'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -146,11 +146,14 @@ post '/user' => sub {
   my $method = 'create_user';
   my $cb;
   
+  my $auth_plugin = $c->auth;
+  
   if(defined $groups)
   {
     $method = 'create_user_cb';
+    $auth_plugin = $c->auth->_find_create_user_cb;
     return $c->render_message('not ok', 501)
-      unless $c->auth->can($method);
+      unless defined $auth_plugin;
     $cb = sub {
       foreach my $group (split /\s*,\s*/, $groups)
       {
@@ -164,7 +167,7 @@ post '/user' => sub {
     };
   }
   
-  if($c->auth->$method($user, $password, $cb))
+  if($auth_plugin->$method($user, $password, $cb))
   {
     $c->render_message('ok', 200);
     $c->app->emit('user_list_changed');  # deprecated, but documented in a previous version
@@ -381,7 +384,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.20_03
+version 0.20_04
 
 =head1 DESCRIPTION
 

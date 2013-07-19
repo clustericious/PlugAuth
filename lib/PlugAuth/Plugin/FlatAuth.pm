@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuth;
 
 # ABSTRACT: Authentication using Flat Files for PlugAuth
-our $VERSION = '0.20_03'; # VERSION
+our $VERSION = '0.20_04'; # VERSION
 
 
 use strict;
@@ -251,7 +251,7 @@ PlugAuth::Plugin::FlatAuth - Authentication using Flat Files for PlugAuth
 
 =head1 VERSION
 
-version 0.20_03
+version 0.20_04
 
 =head1 SYNOPSIS
 

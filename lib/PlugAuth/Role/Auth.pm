@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth authentication plugins
-our $VERSION = '0.20_03'; # VERSION
+our $VERSION = '0.20_04'; # VERSION
 
 
 requires qw( check_credentials );
@@ -19,6 +19,15 @@ sub create_user
   my $next_auth = shift->next_auth;
   return 0 unless defined $next_auth;
   $next_auth->create_user(@_);
+}
+
+
+sub _find_create_user_cb
+{
+  my $self = shift;
+  return $self if $self->can('create_user_cb');
+  my $next = $self->next_auth;
+  return $next ? $next->_find_create_user_cb : ();
 }
 
 
@@ -73,7 +82,7 @@ PlugAuth::Role::Auth - Role for PlugAuth authentication plugins
 
 =head1 VERSION
 
-version 0.20_03
+version 0.20_04
 
 =head1 SYNOPSIS
 
@@ -160,8 +169,6 @@ authentication has failed if your plugin is not authoritative.
 L<PlugAuth>,
 L<PlugAuth::Guide::Plugin>,
 L<Test::PlugAuth::Plugin::Auth>
-
-=cut
 
 =head1 AUTHOR
 
