@@ -1,7 +1,7 @@
 package PlugAuth::Plugin::FlatAuthz;
 
 # ABSTRACT: Authorization using flat files for PlugAuth
-our $VERSION = '0.20_04'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 
 use strict;
@@ -551,7 +551,7 @@ PlugAuth::Plugin::FlatAuthz - Authorization using flat files for PlugAuth
 
 =head1 VERSION
 
-version 0.20_04
+version 0.21
 
 =head1 SYNOPSIS
 

@@ -6,7 +6,7 @@ use FindBin;
 
 # PODNAME: plugauth
 # ABSTRACT: PlugAuth server
-our $VERSION = '0.20_04'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 
 use Clustericious::Commands;
@@ -24,7 +24,7 @@ plugauth - PlugAuth server
 
 =head1 VERSION
 
-version 0.20_04
+version 0.21
 
 =head1 DESCRIPTION
 

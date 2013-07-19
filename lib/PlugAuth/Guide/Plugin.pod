@@ -12,7 +12,7 @@ PlugAuth::Guide::Plugin - Guide for writing PlugAuth plugins.
 
 =head1 VERSION
 
-version 0.20_04
+version 0.21
 
 =head1 DESCRIPTION
 

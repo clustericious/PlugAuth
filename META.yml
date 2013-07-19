@@ -53,4 +53,4 @@ resources:
   bugtracker: https://github.com/plicease/plugauth/issues
   homepage: http://perl.wdlabs.com/PlugAuth/
   repository: git://github.com/plicease/plugauth.git
-version: 0.20_04
+version: 0.21

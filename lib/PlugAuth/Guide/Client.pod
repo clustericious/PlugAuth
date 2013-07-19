@@ -12,7 +12,7 @@ PlugAuth::Guide::Client - Guide for authenticating and authorizing against a Plu
 
 =head1 VERSION
 
-version 0.20_04
+version 0.21
 
 =head1 DESCRIPTION
 
