@@ -14,7 +14,7 @@ my %WriteMakefileArgs = (
   "BUILD_REQUIRES" => {
     "File::HomeDir" => 0,
     "Mojo::JSON" => 0,
-    "Test::Clustericious::Cluster" => 0,
+    "Test::Clustericious::Cluster" => "0.08",
     "Test::Clustericious::Config" => 0,
     "Test::Differences" => 0,
     "Test::Mojo" => 0,
@@ -59,7 +59,7 @@ my %WriteMakefileArgs = (
     "YAML::XS" => 0,
     "autodie" => 0
   },
-  "VERSION" => "0.21",
+  "VERSION" => "0.22",
   "test" => {
     "TESTS" => "t/*.t"
   }

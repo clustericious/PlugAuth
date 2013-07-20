@@ -5,7 +5,7 @@ author:
 build_requires:
   File::HomeDir: 0
   Mojo::JSON: 0
-  Test::Clustericious::Cluster: 0
+  Test::Clustericious::Cluster: 0.08
   Test::Clustericious::Config: 0
   Test::Differences: 0
   Test::Mojo: 0
@@ -53,4 +53,4 @@ resources:
   bugtracker: https://github.com/plicease/plugauth/issues
   homepage: http://perl.wdlabs.com/PlugAuth/
   repository: git://github.com/plicease/plugauth.git
-version: 0.21
+version: 0.22
