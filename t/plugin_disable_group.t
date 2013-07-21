@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use Test::Clustericious::Cluster;
 use Test::More tests => 10;
@@ -10,8 +11,10 @@ my $cluster = Test::Clustericious::Cluster->new;
 $cluster->create_cluster_ok(qw( PlugAuth ));
 
 my $app = $cluster->apps->[0];
-$app->auth->create_user('roger', 'rabit');
-$app->auth->create_user('bugs', 'bunny');
+eval { $app->auth->create_user('roger', 'rabit') };
+diag $@ if $@;
+eval { $app->auth->create_user('bugs', 'bunny') };
+diag $@ if $@;
 
 my $url = $cluster->url;
 my $t   = $cluster->t;
@@ -24,7 +27,8 @@ $url->userinfo('roger:rabit');
 $t->get_ok("$url/auth")
   ->status_is(200);
 
-$app->authz->create_group('disabled', 'roger');
+eval { $app->authz->create_group('disabled', 'roger') };
+diag $@ if $@;
 
 $url->userinfo('bugs:bunny');
 $t->get_ok("$url/auth")
