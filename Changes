@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.22      2013-07-19 22:55:33 America/New_York
   - require Test::Clustericious::Cluster 0.08 for MSWin32 fixes
 
 0.21      2013-07-19 16:19:45 America/New_York
