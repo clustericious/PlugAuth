@@ -14,7 +14,7 @@ use base qw( Exporter );
 our @EXPORT = qw( run_tests );
 
 # ABSTRACT: Test a PlugAuth Authz plugin for correctness
-our $VERSION = '0.22'; # VERSION
+our $VERSION = '0.22_01'; # VERSION
 
 
 my $Test = Test::Builder->new;
@@ -327,7 +327,7 @@ Test::PlugAuth::Plugin::Authz - Test a PlugAuth Authz plugin for correctness
 
 =head1 VERSION
 
-version 0.22
+version 0.22_01
 
 =head1 SYNOPSIS
 

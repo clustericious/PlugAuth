@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use Test::Clustericious::Cluster;
 use Test::More tests => 12;
@@ -18,8 +19,12 @@ sub json($) {
     ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
 }
 
-$app->authz->create_group('disabled', '');
-$app->refresh;
+eval {
+  $app->authz->create_group('disabled', '');
+  $app->refresh;
+};
+diag $@ if $@;
+
 $t->post_ok("$url/user", json { user => 'roger', password => 'rabbit' })
   ->status_is(200);
 $t->post_ok("$url/user", json { user => 'bugs', password => 'bunny' })
@@ -36,8 +41,6 @@ $url->userinfo('roger:rabit');
 $t->get_ok("$url/auth")
   ->status_is(403);
 
-exit;
-  
 __DATA__
 
 @@ etc/PlugAuth.conf

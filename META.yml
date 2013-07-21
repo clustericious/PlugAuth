@@ -7,6 +7,7 @@ build_requires:
   Mojo::JSON: 0
   Test::Clustericious::Cluster: 0.08
   Test::Clustericious::Config: 0
+  Test::Clustericious::Log: 0
   Test::Differences: 0
   Test::Mojo: 0
   Test::More: 0
@@ -22,11 +23,11 @@ name: PlugAuth
 requires:
   Class::Method::Modifiers: 0
   Clone: 0
-  Clustericious: 0.9920
+  Clustericious: 0.9929
   Clustericious::App: 0
   Clustericious::Commands: 0
-  Clustericious::Config: 0.17
-  Clustericious::Log: 0
+  Clustericious::Config: 0.25
+  Clustericious::Log: 0.14
   Clustericious::RouteBuilder: 0
   Crypt::PasswdMD5: 0
   Exporter: 0
@@ -53,4 +54,4 @@ resources:
   bugtracker: https://github.com/plicease/plugauth/issues
   homepage: http://perl.wdlabs.com/PlugAuth/
   repository: git://github.com/plicease/plugauth.git
-version: 0.22
+version: 0.22_01

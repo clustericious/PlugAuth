@@ -5,7 +5,7 @@ use warnings;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth reload plugins
-our $VERSION = '0.22'; # VERSION
+our $VERSION = '0.22_01'; # VERSION
 
 
 requires qw( welcome );
@@ -22,7 +22,7 @@ PlugAuth::Role::Welcome - Role for PlugAuth reload plugins
 
 =head1 VERSION
 
-version 0.22
+version 0.22_01
 
 =head1 SYNOPSIS
 
