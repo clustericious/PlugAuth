@@ -65,7 +65,7 @@
          }
       }
    },
-   "release_status" : "testing",
+   "release_status" : "stable",
    "resources" : {
       "bugtracker" : {
          "web" : "https://github.com/plicease/plugauth/issues"
@@ -77,6 +77,6 @@
          "web" : "https://github.com/plicease/plugauth"
       }
    },
-   "version" : "0.22_01"
+   "version" : "0.23"
 }
 

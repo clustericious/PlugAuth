@@ -6,7 +6,7 @@ use v5.10;
 use Role::Tiny::With;
 
 # ABSTRACT: Disable accounts which belong to a group
-our $VERSION = '0.22_01'; # VERSION
+our $VERSION = '0.23'; # VERSION
 
 
 with 'PlugAuth::Role::Plugin';
@@ -44,7 +44,7 @@ PlugAuth::Plugin::DisableGroup - Disable accounts which belong to a group
 
 =head1 VERSION
 
-version 0.22_01
+version 0.23
 
 =head1 SYNOPSIS
 

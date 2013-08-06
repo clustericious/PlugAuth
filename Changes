@@ -1,5 +1,8 @@
 Revision history for PlugAuth
 
+0.23      2013-08-06 08:42:11 America/New_York
+  - promote to production
+
 0.22_01   2013-07-21 18:25:29 America/New_York
   - better diagnostics in new tests
 
