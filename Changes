@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Mojo 4.50 compat
 
 0.23      2013-08-06 08:42:11 America/New_York
   - promote to production

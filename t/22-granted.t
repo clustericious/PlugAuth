@@ -10,7 +10,7 @@ use YAML::XS qw( Dump );
 
 my $t = Test::Mojo->new('PlugAuth');
 $t->get_ok('/'); # creates $t->ua
-my $port = $t->ua->app_url->port;
+my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 
 $t->get_ok("http://primus:spark\@localhost:$port/grant")
   ->status_is(200);

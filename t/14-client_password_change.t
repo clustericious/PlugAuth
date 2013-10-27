@@ -25,7 +25,7 @@ BEGIN {
 
 my $client = do {
   my $t = Test::Mojo->new('PlugAuth');
-  my $port = $t->ua->app_url->port;
+  my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
   my $client = PlugAuth::Client->new(server_url => "http://localhost:$port");
   $client->client($t->ua);
   $client;

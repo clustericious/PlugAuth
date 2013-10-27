@@ -7,7 +7,7 @@ use Test::Mojo;
 
 my $t = Test::Mojo->new('PlugAuth');
 
-my $port = $t->ua->app_url->port;
+my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 
 sub json($) {
   ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
