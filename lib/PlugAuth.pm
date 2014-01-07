@@ -385,7 +385,10 @@ sub startup
     
   # Silence warnings; this is only used for for session
   # cookies, which we don't use.
-  $self->secret(rand);
+  if($self->can('secrets'))
+  { $self->secrets([rand]) }
+  else
+  { $self->secret(rand) }
 }
 
 1;
