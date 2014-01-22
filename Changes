@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.24      2014-01-22 17:57:53 America/New_York
   - Mojo 4.50 compat
 
 0.23      2013-08-06 08:42:11 America/New_York
