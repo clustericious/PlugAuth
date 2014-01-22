@@ -45,6 +45,7 @@ pod_spelling_system:
     - ok
     - GSFC
     - plugauth
+    - conf
 
 pod_coverage:
   private:

@@ -9,7 +9,7 @@ use Test::Differences;
 
 my $t = Test::Mojo->new('PlugAuth');
 $t->get_ok('/'); # creates $t->ua
-my $port = $t->ua->app_url->port;
+my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 
 # /authz/user/#user/#action/(*resource)
 # optimus:mpmPbOhUeIt1E

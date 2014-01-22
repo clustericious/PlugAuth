@@ -1,0 +1,14 @@
+---
+branches:
+  only:
+  - master
+install: perl Makefile.PL && make installdeps
+language: perl
+perl:
+- '5.19'
+- '5.18'
+- '5.16'
+- '5.14'
+- '5.12'
+- '5.10'
+script: dzil test -v

@@ -4,31 +4,28 @@ author:
   - 'Graham Ollis <gollis@sesda3.com>'
 build_requires:
   File::HomeDir: 0
-  Mojo::JSON: 0
   Test::Clustericious::Cluster: 0.08
   Test::Clustericious::Config: 0
   Test::Clustericious::Log: 0
   Test::Differences: 0
-  Test::Mojo: 0
   Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300021, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: PlugAuth
+recommends:
+  EV: 0
 requires:
   Class::Method::Modifiers: 0
   Clone: 0
   Clustericious: 0.9929
-  Clustericious::App: 0
-  Clustericious::Commands: 0
   Clustericious::Config: 0.25
   Clustericious::Log: 0.14
-  Clustericious::RouteBuilder: 0
   Crypt::PasswdMD5: 0
   Exporter: 0
   Fcntl: 0
@@ -41,10 +38,7 @@ requires:
   IO::File: 0
   List::MoreUtils: 0
   Log::Log4perl: 0
-  Mojo::Base: 0
-  Mojo::ByteStream: 0
   Role::Tiny: 0
-  Role::Tiny::With: 0
   Test::Builder: 0
   Text::Glob: 0
   YAML::XS: 0
@@ -54,4 +48,4 @@ resources:
   bugtracker: https://github.com/plicease/plugauth/issues
   homepage: http://perl.wdlabs.com/PlugAuth/
   repository: git://github.com/plicease/plugauth.git
-version: 0.23
+version: 0.24

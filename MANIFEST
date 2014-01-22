@@ -1,3 +1,4 @@
+.travis.yml
 Changes
 LICENSE
 MANIFEST
@@ -43,7 +44,10 @@ lib/Test/PlugAuth/Plugin.pm
 lib/Test/PlugAuth/Plugin/Auth.pm
 lib/Test/PlugAuth/Plugin/Authz.pm
 lib/Test/PlugAuth/Plugin/Refresh.pm
-t/00-use.t
+t/00_diag.pl
+t/00_diag.t
+t/00_diag.txt
+t/00_use.t
 t/01-auth.t
 t/02-authz.t
 t/03-user.t
@@ -175,3 +179,4 @@ xt/release/pod_spelling_common.t
 xt/release/pod_spelling_system.t
 xt/release/release.yml
 xt/release/strict.t
+xt/release/version.t

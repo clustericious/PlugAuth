@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.23'; # VERSION
+our $VERSION = '0.24'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -384,7 +384,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.23
+version 0.24
 
 =head1 DESCRIPTION
 
@@ -501,7 +501,7 @@ If the PlugAuth server cannot reach itself or the delegated PlugAuth server.
 Create a user.  The C<username> and C<password> are provided autodata arguments
 (JSON, YAML, form data, etc).
 
-If supported by your authentiation plugin (requires C<create_user_cb> to be
+If supported by your authentication plugin (requires C<create_user_cb> to be
 implemented see L<PlugAuth::Plugin::Auth> for details) You may also optionally
 include C<groups> as an autodata argument, which specifies the list of groups
 to which the new user should belong.  C<groups> should be a comma separated

@@ -31,7 +31,7 @@ do {
 };
 
 my $t = Test::Mojo->new('PlugAuth');
-my $port = $t->ua->app_url->port;
+my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 
 isa_ok $t->app->auth, 'PlugAuth::Plugin::FlatUserList';
 isa_ok $t->app->auth->next_auth, 'PlugAuth::Plugin::FlatAuth';

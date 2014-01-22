@@ -1,7 +1,7 @@
 package PlugAuth;
 
 # ABSTRACT: Pluggable authentication and authorization server.
-our $VERSION = '0.23'; # VERSION
+our $VERSION = '0.24'; # VERSION
 
 
 use strict;
@@ -171,7 +171,10 @@ sub startup
     
   # Silence warnings; this is only used for for session
   # cookies, which we don't use.
-  $self->secret(rand);
+  if($self->can('secrets'))
+  { $self->secrets([rand]) }
+  else
+  { $self->secret(rand) }
 }
 
 1;
@@ -186,7 +189,7 @@ PlugAuth - Pluggable authentication and authorization server.
 
 =head1 VERSION
 
-version 0.23
+version 0.24
 
 =head1 SYNOPSIS
 
