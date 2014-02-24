@@ -2,7 +2,7 @@ NAME
     PlugAuth - Pluggable authentication and authorization server.
 
 VERSION
-    version 0.24
+    version 0.25
 
 SYNOPSIS
     In the configuration file for the Clustericious app that will

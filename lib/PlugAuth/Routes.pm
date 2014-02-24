@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.24'; # VERSION
+our $VERSION = '0.25'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -36,12 +36,12 @@ get '/auth' => sub {
   if($self->auth->check_credentials($user,$pw))
   {
     $self->render_message('ok');
-    DEBUG "Authentication succeeded for user $user";
+    INFO "Authentication succeeded for user $user";
   }
   else
   {
     $self->render_message('not ok', 403);
-    DEBUG "Authentication failed for user $user";
+    INFO "Authentication failed for user $user";
   }
 };
 
@@ -384,7 +384,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.24
+version 0.25
 
 =head1 DESCRIPTION
 

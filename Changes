@@ -1,5 +1,9 @@
 Revision history for PlugAuth
 
+0.25      2014-02-24 10:29:37 America/New_York
+  - alter logging, make authentication INFO
+    instead of DEBUG
+
 0.24      2014-01-22 17:57:53 America/New_York
   - Mojo 4.50 compat
 
