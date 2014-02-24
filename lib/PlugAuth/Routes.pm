@@ -73,12 +73,12 @@ get '/auth' => sub {
   if($self->auth->check_credentials($user,$pw))
   {
     $self->render_message('ok');
-    DEBUG "Authentication succeeded for user $user";
+    INFO "Authentication succeeded for user $user";
   }
   else
   {
     $self->render_message('not ok', 403);
-    DEBUG "Authentication failed for user $user";
+    INFO "Authentication failed for user $user";
   }
 };
 
