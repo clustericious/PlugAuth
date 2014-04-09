@@ -24,7 +24,7 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "Class::Method::Modifiers" => 0,
     "Clone" => 0,
-    "Clustericious" => "0.9929",
+    "Clustericious" => "0.9936",
     "Clustericious::Config" => "0.25",
     "Clustericious::Log" => "0.14",
     "Crypt::PasswdMD5" => 0,
@@ -53,7 +53,7 @@ my %WriteMakefileArgs = (
     "Test::Differences" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.25",
+  "VERSION" => "0.26",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -63,7 +63,7 @@ my %WriteMakefileArgs = (
 my %FallbackPrereqs = (
   "Class::Method::Modifiers" => 0,
   "Clone" => 0,
-  "Clustericious" => "0.9929",
+  "Clustericious" => "0.9936",
   "Clustericious::Config" => "0.25",
   "Clustericious::Log" => "0.14",
   "Crypt::PasswdMD5" => 0,

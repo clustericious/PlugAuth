@@ -23,7 +23,7 @@ recommends:
 requires:
   Class::Method::Modifiers: 0
   Clone: 0
-  Clustericious: 0.9929
+  Clustericious: 0.9936
   Clustericious::Config: 0.25
   Clustericious::Log: 0.14
   Crypt::PasswdMD5: 0
@@ -48,4 +48,4 @@ resources:
   bugtracker: https://github.com/plicease/plugauth/issues
   homepage: http://perl.wdlabs.com/PlugAuth/
   repository: git://github.com/plicease/plugauth.git
-version: 0.25
+version: 0.26

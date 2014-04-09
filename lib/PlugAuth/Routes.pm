@@ -1,7 +1,7 @@
 package PlugAuth::Routes;
 
 # ABSTRACT: routes for plugauth
-our $VERSION = '0.25'; # VERSION
+our $VERSION = '0.26'; # VERSION
 
 
 # There may be external authentication for these routes, i.e. using
@@ -384,7 +384,7 @@ PlugAuth::Routes - routes for plugauth
 
 =head1 VERSION
 
-version 0.25
+version 0.26
 
 =head1 DESCRIPTION
 
