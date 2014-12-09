@@ -4,6 +4,7 @@ use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 23;
 use Test::Mojo;
+use Mojo::JSON qw( encode_json );
 
 my $t = Test::Mojo->new('PlugAuth');
 
@@ -12,7 +13,7 @@ $t->get_ok('/'); # creates $t->ua
 my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 
 sub json($) {
-  ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+  ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 # double check initial password for optimus

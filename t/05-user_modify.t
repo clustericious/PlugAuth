@@ -4,7 +4,7 @@ use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 86;
 use Test::Mojo;
-use Mojo::JSON;
+use Mojo::JSON qw( encode_json );
 
 my $t = Test::Mojo->new('PlugAuth');
 
@@ -18,7 +18,7 @@ my $event_triggered = 0;
 $t->app->on(user_list_changed =>  sub { $event_triggered = 1 });
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 # creating a user without credentials should return a 401
