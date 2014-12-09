@@ -4,6 +4,7 @@ use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use Test::Clustericious::Cluster;
 use Test::More tests => 17;
+use Mojo::JSON qw( encode_json );
 
 create_directory_ok 'data';
 
@@ -22,7 +23,7 @@ eval {
 diag $@ if $@;
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 $t->post_ok("$url/user", json { user => 'user1', password => 'password', groups => 'foo,bar' })

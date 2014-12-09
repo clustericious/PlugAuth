@@ -5,6 +5,7 @@ BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 21;
 use Test::Mojo;
 use Test::Differences;
+use Mojo::JSON qw( encode_json );
 
 my $t = Test::Mojo->new('PlugAuth');
 
@@ -12,7 +13,7 @@ $t->get_ok('/'); # creates $t->ua
 my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 # creating a user with bogus credentials should return 403

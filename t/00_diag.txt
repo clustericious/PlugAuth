@@ -18,6 +18,7 @@ FindBin
 IO::File
 List::MoreUtils
 Log::Log4perl
+Mojolicious
 Role::Tiny
 Test::Builder
 Test::Clustericious::Cluster

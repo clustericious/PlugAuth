@@ -7,7 +7,6 @@ BEGIN {
 }
 use Test::More tests => 10;
 use Test::Mojo;
-use Mojo::JSON;
 use Test::Differences;
 use YAML::XS qw( Dump );
 

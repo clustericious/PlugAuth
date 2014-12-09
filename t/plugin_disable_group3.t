@@ -4,6 +4,7 @@ use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use Test::Clustericious::Cluster;
 use Test::More tests => 12;
+use Mojo::JSON qw( encode_json );
 
 create_directory_ok 'data';
 
@@ -16,7 +17,7 @@ my $t   = $cluster->t;
 my $app = $cluster->apps->[0];
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 eval {

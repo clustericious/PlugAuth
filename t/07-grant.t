@@ -4,7 +4,7 @@ use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 44;
 use Test::Mojo;
-use Mojo::JSON;
+use Mojo::JSON qw( encode_json );
 
 my $t = Test::Mojo->new('PlugAuth');
 
@@ -15,7 +15,7 @@ my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
 $t->app->config->{plug_auth} = { url => "http://localhost:$port" };
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 # grant an action on a resource to a group

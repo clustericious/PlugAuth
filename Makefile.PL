@@ -39,6 +39,7 @@ my %WriteMakefileArgs = (
     "IO::File" => 0,
     "List::MoreUtils" => 0,
     "Log::Log4perl" => 0,
+    "Mojolicious" => "4.82",
     "Role::Tiny" => 0,
     "Test::Builder" => 0,
     "Text::Glob" => 0,
@@ -53,7 +54,7 @@ my %WriteMakefileArgs = (
     "Test::Differences" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.26",
+  "VERSION" => "0.27",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -79,6 +80,7 @@ my %FallbackPrereqs = (
   "IO::File" => 0,
   "List::MoreUtils" => 0,
   "Log::Log4perl" => 0,
+  "Mojolicious" => "4.82",
   "Role::Tiny" => 0,
   "Test::Builder" => 0,
   "Test::Clustericious::Cluster" => "0.08",

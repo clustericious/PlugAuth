@@ -4,11 +4,11 @@ use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 95;
 use Test::Mojo;
-use Mojo::JSON;
+use Mojo::JSON qw( encode_json );
 use Test::Differences;
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 my $t = Test::Mojo->new('PlugAuth');
