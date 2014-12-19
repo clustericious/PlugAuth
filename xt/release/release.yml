@@ -57,3 +57,4 @@ pod_coverage:
     - PlugAuth#plugin
     - Clustericious::Plugin::SelfPlugAuth
     - PlugAuth::Plugin::Test
+    - PlugAuth::Plugin::Audit#log_filename

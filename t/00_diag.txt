@@ -5,6 +5,7 @@ Clustericious::Client
 Clustericious::Config
 Clustericious::Log
 Crypt::PasswdMD5
+DateTime
 EV
 Exporter
 ExtUtils::MakeMaker
@@ -21,6 +22,8 @@ List::MoreUtils
 Log::Log4perl
 Log::Log4perl::CommandLine
 Mojolicious
+Path::Class::Dir
+Path::Class::File
 Role::Tiny
 Term::Prompt
 Test::Builder
