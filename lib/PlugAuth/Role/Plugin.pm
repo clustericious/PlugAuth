@@ -2,7 +2,7 @@ package PlugAuth::Role::Plugin;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Role::Tiny;
 
 # ABSTRACT: Role for PlugAuth plugins

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use autodie;
-use v5.10;
+use 5.010001;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 18;

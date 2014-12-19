@@ -3,7 +3,7 @@ package Test::PlugAuth::Plugin::Auth;
 use strict;
 use warnings;
 use Test::PlugAuth::Plugin;
-use v5.10;
+use 5.010001;
 use Test::Builder;
 use Role::Tiny ();
 use PlugAuth;

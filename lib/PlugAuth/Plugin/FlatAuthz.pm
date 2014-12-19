@@ -74,7 +74,7 @@ The IP addresses on the right represent hosts from which authorization should su
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Log::Log4perl qw( :easy );
 use Text::Glob qw( match_glob );
 use Clone qw( clone );

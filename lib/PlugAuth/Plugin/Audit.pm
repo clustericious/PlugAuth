@@ -2,7 +2,7 @@ package PlugAuth::Plugin::Audit;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Role::Tiny::With;
 use Path::Class::Dir;
 use Path::Class::File;

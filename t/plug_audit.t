@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 BEGIN { delete $ENV{CLUSTERICIOUS_CONF_DIR} }
 use File::HomeDir::Test;
 use File::HomeDir;

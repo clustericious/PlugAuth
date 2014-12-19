@@ -23,7 +23,7 @@ line and answer the prompts correctly.
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Term::Prompt ();
 use File::Spec;
 use File::Basename 'dirname';

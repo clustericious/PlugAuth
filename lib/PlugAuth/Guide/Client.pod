@@ -70,7 +70,7 @@ First you will need t ocreate an instance of PlugAuth::Client:
 
  use strict;
  use warnings;
- use v5.10;
+ use 5.010001;
  use PlugAuth::Client;
  
  my $client = PlugAuth::Client->new;

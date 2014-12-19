@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More;

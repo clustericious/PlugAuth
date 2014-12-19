@@ -2,7 +2,7 @@ package PlugAuth::Role::Flat;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Log::Log4perl qw( :easy );
 use File::stat qw( stat );
 use Fcntl qw( :flock );

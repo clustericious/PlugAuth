@@ -2,7 +2,7 @@ package PlugAuth::Plugin::DisableGroup;
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Role::Tiny::With;
 
 # ABSTRACT: Disable accounts which belong to a group

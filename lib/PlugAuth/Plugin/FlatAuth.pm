@@ -58,7 +58,7 @@ It is possible to have multiple user files if you specify a list:
 
 use strict;
 use warnings;
-use v5.10;
+use 5.010001;
 use Log::Log4perl qw( :easy );
 # TODO: maybe optionally use Crypt::Passwd::XS instead
 use Crypt::PasswdMD5 qw( unix_md5_crypt apache_md5_crypt );
