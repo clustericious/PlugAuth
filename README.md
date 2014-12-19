@@ -1,4 +1,4 @@
-# PlugAuth
+# PlugAuth [![Build Status](https://secure.travis-ci.org/plicease/PlugAuth.png)](http://travis-ci.org/plicease/PlugAuth)
 
 Pluggable authentication and authorization server.
 
