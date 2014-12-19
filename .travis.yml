@@ -5,6 +5,7 @@ install:
   - dzil authordeps --missing | cpanm -n
   - cpanm -n Clone
   - cpanm -n Clustericious
+  - cpanm -n Clustericious::Client
   - cpanm -n Clustericious::Config
   - cpanm -n Clustericious::Log
   - cpanm -n Crypt::PasswdMD5
