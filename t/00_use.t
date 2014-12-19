@@ -19,4 +19,5 @@ use_ok 'PlugAuth::Role::Flat';
 
 use_ok 'Clustericious::Plugin::SelfPlugAuth';
 
-pass '14th test';
+use_ok 'PlugAuth::Client';
+

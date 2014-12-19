@@ -1,6 +1,7 @@
 Class::Method::Modifiers
 Clone
 Clustericious
+Clustericious::Client
 Clustericious::Config
 Clustericious::Log
 Crypt::PasswdMD5
@@ -18,8 +19,10 @@ FindBin
 IO::File
 List::MoreUtils
 Log::Log4perl
+Log::Log4perl::CommandLine
 Mojolicious
 Role::Tiny
+Term::Prompt
 Test::Builder
 Test::Clustericious::Cluster
 Test::Clustericious::Config
