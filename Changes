@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.29      2015-01-29 13:04:44 -0500
+  - Recent Mojo compat test fix
+
 0.28      2014-12-19 11:38:00 -0500
   - Merge PlugAuth::Plugin::Audit into this distro.
   - Merge PlugAuth::Client distro into this distro.
