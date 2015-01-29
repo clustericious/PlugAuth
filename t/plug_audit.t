@@ -34,7 +34,7 @@ ok $t->tx->res->json->{version}, 'tx.res.json.version = ' . $t->tx->res->json->{
 like $t->tx->res->json->{today}, qr{^\d{4}-\d{2}-\d{2}$}, "today = " . $t->tx->res->json->{today};
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON->new->encode(shift) );
+    ( { 'Content-Type' => 'application/json' }, Mojo::JSON::encode_json(shift) );
 }
 
 my($year, $month, $day) = do {
