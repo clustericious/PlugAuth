@@ -89,7 +89,7 @@ sub init
   my $authz = sub {
   };
   
-  $self->app->routes->bridge->to({ cb => $auth })->route('/audit/:year/:month/:day')->name('audit')->get(sub {
+  $self->app->routes->under->to({ cb => $auth })->route('/audit/:year/:month/:day')->name('audit')->get(sub {
     my($c) = @_;
     my $year  = $c->stash('year');
     my $month = $c->stash('month');

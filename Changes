@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Mojolicious 6.x compatability
 
 0.29      2015-01-29 13:04:44 -0500
   - Recent Mojo compat test fix
