@@ -18,6 +18,7 @@ install:
   - cpanm -n Text::Glob
   - cpanm -n YAML
   - cpanm -n Test::Clustericious::Cluster
+  - cpanm -n Log::Log4perl::CommandLine
   - cpanm -n Test::CPAN::Changes Test::EOL Test::Fixme Test::NoTabs Test::Pod::Spelling::CommonMistakes Test::Spelling Test::Strict Test::Version || true
 
 script: dzil test -v
