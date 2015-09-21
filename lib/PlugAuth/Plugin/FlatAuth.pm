@@ -116,7 +116,13 @@ Given a user and password, check to see if the password is correct.
 sub _validate_pw
 {
   my($plain, $encrypted) = @_;
-  return 1 if crypt($plain, $encrypted) eq $encrypted;
+  return 1 if do {
+    # crypt on an apache apr1 encrypted
+    # password seems to return undef
+    # on Debian 8 (probably others)
+    my $ret = crypt($plain, $encrypted);
+    (defined $ret) && ($ret eq $encrypted);
+  };
     
   # idea borrowed from Authen::Simple::Password
   if($encrypted =~ /^\$(\w+)\$/)
