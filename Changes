@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
   - Silence warnings coming from FlatAuth
+  - Fix bug where DisableGroup plugin would return 500
+    error if the user was invalid
 
 0.30      2015-03-13 03:53:43 -0400
   - Mojolicious 6.x compatability

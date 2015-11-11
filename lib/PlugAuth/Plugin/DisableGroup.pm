@@ -65,7 +65,9 @@ sub init
 sub check_credentials
 {
   my($self, $user, $pass) = @_;
-  return 0 if grep { lc($_) eq $self->{group} } @{ $self->app->authz->groups_for_user($user) };
+  my $groups = $self->app->authz->groups_for_user($user);
+  return 0 unless $groups;
+  return 0 if grep { lc($_) eq $self->{group} } @$groups;
   $self->deligate_check_credentials($user, $pass);
 }
 
