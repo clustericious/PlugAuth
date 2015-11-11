@@ -38,6 +38,7 @@ editor.
 
  ---
  url: http://localhost:3000
+ 
  user_file: <%= home %>/var/plugauth/user.txt
  group_file: <%= home %>/var/plugauth/group.txt
  resource_file: <%= home %>/var/plugauth/resource.txt
@@ -57,11 +58,11 @@ out with they only need to be empty files:
 
 =item * run server
 
-Run the PlugAuth server using the built in L<Mojolicious> web server.  Note that the
-server will be running I<without> authentication or authorization running so be sure
-it is listening only to localhost:
+Start the PlugAuth service using the default L<hypnotoad> web server.  Note that the
+service will be running I<without> authentication or authorization running so be
+sure it is listening only to localhost:
 
- % plugauth daemon -l http://localhost:3000
+ % plugauth start
 
 =item * create admin user
 
@@ -84,11 +85,9 @@ Make sure that the password is correct using the L<plugauthclient> auth command.
 
 =item * stop server
 
-In the window you are running the PlugAuth daemon type Ctrl-C.
+Stop the PlugAuth service.
 
- % plugauth daemon -l http://localhost:3000
- ^C
- %
+ % plugauth stop
 
 =item * configure
 
@@ -97,6 +96,7 @@ I<plug_auth> configuration.  Your PlugAuth.conf should look like this:
 
  ---
  url: http://localhost:3000
+ 
  user_file: <%= home %>/var/plugauth/user.txt
  group_file: <%= home %>/var/plugauth/group.txt
  resource_file: <%= home %>/var/plugauth/resource.txt
@@ -112,7 +112,7 @@ Restart the PlugAuth server, this time optionally listening to multiple addresse
 now that it has been locked down and only the admin user can modify the 
 authentication and authorization for the PlugAuth server.
 
- % plugauth daemon -l http://\*:3000
+ % plugauth start
 
 =item * create user
 
@@ -141,12 +141,11 @@ Do as above, but create your configuration initially with I<plug_auth> set in yo
 PlugAuth.conf file:
 
  ---
- % use File::HomeDir;  my $home = File::HomeDir->my_home;
  url: http://localhost:3000
- user_file: <%= $home %>/var/plugauth/user.txt
- group_file: <%= $home %>/var/plugauth/group.txt
- resource_file: <%= $home %>/var/plugauth/resource.txt
- host_file: <%= $home %>/var/plugauth/host.txt
+ user_file: <%= home %>/var/plugauth/user.txt
+ group_file: <%= home %>/var/plugauth/group.txt
+ resource_file: <%= home %>/var/plugauth/resource.txt
+ host_file: <%= home %>/var/plugauth/host.txt
  plug_auth:
    url: http://localhost:3000
 
@@ -184,12 +183,11 @@ included with the L<PlugAuth> distribution.
 Just like the default configuration, but add a ldap stanza to the configuration.
 
  ---
- % use File::HomeDir;  my $home = File::HomeDir->my_home;
  url: http://localhost:3000
- user_file: <%= $home %>/var/plugauth/user.txt
- group_file: <%= $home %>/var/plugauth/group.txt
- resource_file: <%= $home %>/var/plugauth/resource.txt
- host_file: <%= $home %>/var/plugauth/host.txt
+ user_file: <%= home %>/var/plugauth/user.txt
+ group_file: <%= home %>/var/plugauth/group.txt
+ resource_file: <%= home %>/var/plugauth/resource.txt
+ host_file: <%= home %>/var/plugauth/host.txt
  plug_auth:
    url: http://localhost:3000
  ldap:
