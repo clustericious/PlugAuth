@@ -46,6 +46,8 @@ pod_spelling_system:
     - GSFC
     - plugauth
     - conf
+    - plugauthclient
+    - plugauthpasswd
 
 pod_coverage:
   private:

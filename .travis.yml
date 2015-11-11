@@ -1,5 +1,7 @@
 language: perl
 
+sudo: false
+
 install:
   - cpanm -n Dist::Zilla
   - dzil authordeps --missing | cpanm -n

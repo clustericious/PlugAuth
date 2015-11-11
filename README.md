@@ -174,7 +174,7 @@ See [PlugAuth::Routes](https://metacpan.org/pod/PlugAuth::Routes)
 
 # AUTHOR
 
-Graham Ollis <gollis@sesda3.com>
+Graham Ollis &lt;gollis@sesda3.com>
 
 # COPYRIGHT AND LICENSE
 
