@@ -3,7 +3,7 @@ use warnings;
 use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use Test::Clustericious::Cluster;
-use Test::More tests => 10;
+use Test::More tests => 12;
 
 create_directory_ok 'data';
 
@@ -35,6 +35,10 @@ $t->get_ok("$url/auth")
   ->status_is(200);
 
 $url->userinfo('roger:rabit');
+$t->get_ok("$url/auth")
+  ->status_is(403);
+
+$url->userinfo('bogus:bogus');
 $t->get_ok("$url/auth")
   ->status_is(403);
 
