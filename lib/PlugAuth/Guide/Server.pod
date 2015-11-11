@@ -37,18 +37,16 @@ Create the configuration file ~/etc/PlugAuth.conf using your favorite
 editor.
 
  ---
- % use File::HomeDir;
- % my $home = File::HomeDir->my_home;
  url: http://localhost:3000
- user_file: <%= $home %>/var/plugauth/user.txt
- group_file: <%= $home %>/var/plugauth/group.txt
- resource_file: <%= $home %>/var/plugauth/resource.txt
- host_file: <%= $home %>/var/plugauth/host.txt
+ user_file: <%= home %>/var/plugauth/user.txt
+ group_file: <%= home %>/var/plugauth/group.txt
+ resource_file: <%= home %>/var/plugauth/resource.txt
+ host_file: <%= home %>/var/plugauth/host.txt
 
 Note this configuration is a template using L<Mojo::Template> and is in L<YAML> format.
-In this example, I'm using L<File::HomeDir> to dynamically find the user's home directory,
-so that if the user's home directory is moved, or a different user is used later the 
-configuration does not need to be changed.
+In this example, I'm using the C<home> helper from L<Clustericious::Config::Helpers>
+to dynamically find the user's home directory, so that if the user's home directory
+is moved, or a different user is used later the configuration does not need to be changed.
 
 =item * create database files
 
@@ -98,12 +96,11 @@ Make PlugAuth authenticate and authorize against itself using the
 I<plug_auth> configuration.  Your PlugAuth.conf should look like this:
 
  ---
- % use File::HomeDir;  my $home = File::HomeDir->my_home;
  url: http://localhost:3000
- user_file: <%= $home %>/var/plugauth/user.txt
- group_file: <%= $home %>/var/plugauth/group.txt
- resource_file: <%= $home %>/var/plugauth/resource.txt
- host_file: <%= $home %>/var/plugauth/host.txt
+ user_file: <%= home %>/var/plugauth/user.txt
+ group_file: <%= home %>/var/plugauth/group.txt
+ resource_file: <%= home %>/var/plugauth/resource.txt
+ host_file: <%= home %>/var/plugauth/host.txt
  plug_auth:
    url: http://localhost:3000
 
