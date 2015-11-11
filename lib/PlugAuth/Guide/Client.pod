@@ -259,6 +259,24 @@ than just authentication, which is not provided by L<PlugAuth>, so something
 like LDAP may be more appropriate.  None of these things are insurmountable 
 if you take the time to fix them, but care needs to be taken.
 
+=head2 From Apache 2.x
+
+The authentication and authorization handlers
+L<PlugAuth::Client::Tiny::Apache2AuthenHandler>, and
+L<PlugAuth::Client::Tiny::Apache2AuthzHandler>
+can be used to authenticate and authorize (respectively)
+against a PlugAuth server from an Apache 2.x configuration file.
+These modules require mod_perl.
+
+ <Location /protected>
+   PerlAuthenHandler PlugAuth::Client::Tiny::Apache2AuthenHandler
+   PerlAuthzHandler  PlugAuth::Client::Tiny::Apache2AuthzHandler
+   AuthType Basic
+   AuthName "My Protected Documents"
+   Require valid-user
+   PerlSetEnv PLUGAUTH_URL http://localhost:3001
+ </Location>
+
 =head1 SEE ALSO
 
 L<PlugAuth>, 
