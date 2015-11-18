@@ -4,7 +4,7 @@ use FindBin ();
 BEGIN { require "$FindBin::Bin/etc/setup.pl" }
 use Test::More tests => 104;
 use Test::Mojo;
-use Mojo::JSON qw( encode_json );
+use JSON::MaybeXS qw( encode_json );
 use Test::Differences;
 
 my $t = Test::Mojo->new('PlugAuth');

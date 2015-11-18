@@ -10,6 +10,7 @@ use Path::Class::Dir;
 use YAML::XS qw( Dump LoadFile );
 use Path::Class::File;
 use Path::Class::Dir;
+use JSON::MaybeXS qw( encode_json );
 
 delete $ENV{HARNESS_ACTIVE};
 $ENV{LOG_LEVEL} = 'FATAL';
@@ -34,7 +35,7 @@ ok $t->tx->res->json->{version}, 'tx.res.json.version = ' . $t->tx->res->json->{
 like $t->tx->res->json->{today}, qr{^\d{4}-\d{2}-\d{2}$}, "today = " . $t->tx->res->json->{today};
 
 sub json($) {
-    ( { 'Content-Type' => 'application/json' }, Mojo::JSON::encode_json(shift) );
+    ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
 my($year, $month, $day) = do {

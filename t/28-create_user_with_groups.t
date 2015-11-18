@@ -4,7 +4,7 @@ use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use Test::Clustericious::Cluster;
 use Test::More tests => 17;
-use Mojo::JSON qw( encode_json );
+use JSON::MaybeXS qw( encode_json );
 
 create_directory_ok 'data';
 
