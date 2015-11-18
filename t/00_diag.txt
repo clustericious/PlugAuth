@@ -4,6 +4,7 @@ Clustericious
 Clustericious::Client
 Clustericious::Config
 Clustericious::Log
+Cpanel::JSON::XS
 Crypt::PasswdMD5
 DateTime
 EV
@@ -18,6 +19,9 @@ File::Touch
 File::stat
 FindBin
 IO::File
+JSON::MaybeXS
+JSON::PP
+JSON::XS
 List::MoreUtils
 Log::Log4perl
 Log::Log4perl::CommandLine
