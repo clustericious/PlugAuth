@@ -1,25 +1,36 @@
 use strict;
 use warnings;
-use FindBin ();
-BEGIN { 
-  $ENV{PLUGAUTH_CONF_DIR} = "$FindBin::Bin/data/24";
-  require "$FindBin::Bin/etc/setup.pl" 
-}
-use Test::More tests => 10;
-use Test::Mojo;
-use Test::Differences;
-use YAML::XS qw( Dump );
+use Test::Clustericious::Cluster;
+use Test::More tests => 11;
 
-my $t = Test::Mojo->new('PlugAuth');
+my $cluster = Test::Clustericious::Cluster->new;
+$cluster->extract_data_section(qr{^var/data});
+$cluster->create_cluster_ok('PlugAuth');
+my($url) = map { $_->clone } @{ $cluster->urls };
+my $t = $cluster->t;
 
-$t->post_ok('/test/setup/basic');
-$t->post_ok('/grant/optimus/view/service/filefeed')->status_is(200);
+$t->post_ok("$url/test/setup/basic");
 
-$t->get_ok('/authz/user/optimus/view/service/filefeed')->status_is(200);
-$t->get_ok('/authz/user/optimus/view/service/filefeed/foo/bar/baz.png')->status_is(200);
+$t->post_ok("$url/grant/optimus/view/service/filefeed")
+  ->status_is(200);
 
-$t->get_ok('/grant');
+$t->get_ok("$url/authz/user/optimus/view/service/filefeed")
+  ->status_is(200);
+$t->get_ok("$url/authz/user/optimus/view/service/filefeed/foo/bar/baz.png")
+  ->status_is(200);
 
-$t->get_ok('/authz/resources/optimus/view/.*');
+# wtf?
+$t->get_ok("$url/grant");
 
-eq_or_diff Dump($t->tx->res->json), Dump(['/service/filefeed']), 'avoid autovivification';
+$t->get_ok("$url/authz/resources/optimus/view/.*");
+
+is_deeply $t->tx->res->json, ['/service/filefeed'], 'avoid autovivification';
+
+__DATA__
+
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+plugins:
+  - PlugAuth::Plugin::Test: {}
+
