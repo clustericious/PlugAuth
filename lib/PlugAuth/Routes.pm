@@ -18,7 +18,6 @@ use strict;
 use warnings;
 use Log::Log4perl qw/:easy/;
 use Mojo::ByteStream qw/b/;
-use IO::File;
 use List::MoreUtils qw/mesh/;
 use Clustericious::RouteBuilder;
 use Clustericious::Config;

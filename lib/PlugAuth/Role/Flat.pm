@@ -56,7 +56,7 @@ sub read_file { # TODO: cache w/ mtime
   #
   TRACE "reading $filename";
   my %h;
-  my $fh = IO::File->new("<$filename");
+  open my $fh, '<', $filename;
   flock($fh, LOCK_SH) or WARN "Cannot lock $filename - $!\n";
   for my $line ($fh->getlines)
   {

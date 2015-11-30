@@ -1,13 +1,11 @@
-$ENV{LOG_LEVEL} = "ERROR";
-
 use strict;
 use warnings;
+use Test::Clustericious::Log;
 use Test::Clustericious::Config;
 use File::Spec;
 use Test::More tests => 32;
 use PlugAuth;
 use Clustericious::Config;
-use Test::Differences;
 
 create_config_ok PlugAuth => {};
 
@@ -163,5 +161,5 @@ do {
   create_config_ok PlugAuth => { plugins => [ 'List1', 'List2' ] };
   my $app = PlugAuth->new;
   isa_ok $app, 'PlugAuth';
-  eq_or_diff [sort $app->auth->all_users], [sort qw( foo bar baz )], "all_users = foo bar baz";
+  is_deeply [sort $app->auth->all_users], [sort qw( foo bar baz )], "all_users = foo bar baz";
 };
