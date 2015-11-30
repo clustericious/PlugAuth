@@ -1,0 +1,27 @@
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+
+
+@@ var/data/user
+unicron:$apr1$FUS5Cvqu$Iz4bGkbVbdKLNOD1j66CQ0
+primus:$apr1$ZotZ.g2P$1LRpYkEeat0wMFiwITX4t.
+optimus:$apr1$mYZYu.n/$hJ6QfTDRsBzRNc35qcNnG0
+
+@@ var/data/group
+public: *
+
+@@ var/data/host
+
+
+@@ var/data/resource
+/ (accounts) : primus
+/user (change_password) : primus
+

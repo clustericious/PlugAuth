@@ -1,0 +1,33 @@
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+
+
+@@ var/data/user
+foo:kXdmy/G8gIr6E
+bar:We/RNrO28Rd/E
+baz:MsKrxsuIrbHLU
+primus:73Dh1aWX7Sm2g
+
+
+@@ var/data/group
+full1: foo,bar,baz,primus
+full2: *
+part1: foo
+part2: baz
+full3: foo,bar,baz,primus
+full4: *
+
+@@ var/data/host
+
+
+@@ var/data/resource
+/group (accounts): primus
+

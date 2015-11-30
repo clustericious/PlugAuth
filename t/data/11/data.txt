@@ -1,0 +1,36 @@
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+
+
+@@ var/data/user
+optimus:IOuzB7YXmBSZk
+grimlock:YyRXFbRpJiCLk
+galvatron:3l17w9z1qOGxo
+starscream:lLUnXzT8Zzozs
+
+
+@@ var/data/group
+transformer: *
+autobot: optimus,grimlock
+decepticon: galvatron,starscream
+
+
+@@ var/data/host
+1.2.3.4: trusted
+5.6.7.8: trusted
+
+
+@@ var/data/resource
+/matrix (open): optimus
+/sky (fly): galvatron,starscream
+/troops (lead): galvatron,optimus
+/body (transform): transformer
+

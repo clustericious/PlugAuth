@@ -1,0 +1,41 @@
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+
+
+@@ var/data/user
+optimus:mpmPbOhUeIt1E
+primus:Bv4QLfsRAW.pY
+grimlock:uogf5/viZOdDA
+starscream:tCp3KDOivhlzo
+megatron:8n2eh8qdddqdI
+skylynks:wPCaIh1gAmL8w
+swoop:G/LxEEIR9PsBI
+unicron:g8qCjd1FUZUEk
+
+
+@@ var/data/group
+autobot: optimus,grimlock,skylynks,swoop
+decepticon: starscream,megatron
+public: *
+god: primus,unicron
+
+
+@@ var/data/host
+
+
+@@ var/data/resource
+/ (accounts): god
+/altmode (transform): public
+/red (color): autobot
+/purple (color): decepticon
+/battle (retreat): megatron
+/matrix (open): optimus
+

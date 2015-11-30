@@ -26,6 +26,7 @@ List::MoreUtils
 Log::Log4perl
 Log::Log4perl::CommandLine
 Mojolicious
+Path::Class
 Path::Class::Dir
 Path::Class::File
 Role::Tiny
