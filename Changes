@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.32      2015-11-30 15:32:53 -0500
   - Remove deprecated use of JSON configuration files
     from test suite.
   - Remove dependency on Test::Differences
