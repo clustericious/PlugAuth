@@ -1,80 +1,101 @@
 use strict;
 use warnings;
 use autodie;
-use 5.010001;
-use FindBin ();
-BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More tests => 18;
-use Test::Mojo;
+use Test::Clustericious::Cluster;
+use Test::More tests => 19;
 use File::HomeDir;
 use File::Spec;
-use Clustericious::Config;
 
-do {
-  my $config = Clustericious::Config->new('PlugAuth');
-  $config->{plugins} = [
-    { 'PlugAuth::Plugin::FlatUserList' => { 'user_list_file' => File::Spec->catfile(File::HomeDir->my_home, 'user_list.txt') } },
-    { 'PlugAuth::Plugin::FlatAuth' => {} },
-  ];
-  mkdir(File::Spec->catdir(File::HomeDir->my_home, 'etc'));
-  open(my $fh, '>', File::Spec->catfile(File::HomeDir->my_home, 'etc', 'PlugAuth.conf'));
-  print $fh $config->dump_as_yaml;
-  close $fh;
-  $ENV{CLUSTERICIOUS_CONF_DIR} = File::Spec->catdir(File::HomeDir->my_home, 'etc');
-  
-  open($fh, '>', File::Spec->catfile(File::HomeDir->my_home, 'user_list.txt'));
-  say $fh "ralph";
-  say $fh "bob";
-  say $fh "george";
-  say $fh "bar";
-  close $fh;
-};
+my $cluster = Test::Clustericious::Cluster->new;
+$cluster->extract_data_section(qr{^var/data});
+$cluster->create_cluster_ok('PlugAuth');
+my($url) = map { $_->clone } @{ $cluster->urls };
+my $t = $cluster->t;
 
-my $t = Test::Mojo->new('PlugAuth');
-my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
+isa_ok $cluster->apps->[0]->auth, 'PlugAuth::Plugin::FlatUserList';
+isa_ok $cluster->apps->[0]->app->auth->next_auth, 'PlugAuth::Plugin::FlatAuth';
+is $cluster->apps->[0]->auth->next_auth->next_auth, undef, 'app->auth->next_auth->next_auth is undef';
 
-isa_ok $t->app->auth, 'PlugAuth::Plugin::FlatUserList';
-isa_ok $t->app->auth->next_auth, 'PlugAuth::Plugin::FlatAuth';
-is $t->app->auth->next_auth->next_auth, undef, 'app->auth->next_auth->next_auth is undef';
-
-$t->get_ok("http://foo:foo\@localhost:$port/auth")
+$url->userinfo('foo:foo');
+$t->get_ok("$url/auth")
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
-$t->get_ok("http://bar:bar\@localhost:$port/auth")
+$url->userinfo('bar:bar');
+$t->get_ok("$url/auth")
   ->status_is(403)
   ->content_is("not ok", 'auth succeeded');
   
-$t->get_ok("http://localhost:$port/user")
+$url->userinfo(undef);
+$t->get_ok("$url/user")
     ->status_is(200)
     ->json_is('', [sort
         qw( foo bar ralph bob george )
     ], 'full sorted user list');
 
 do {
-  open(my $fh, '>>', File::Spec->catfile(File::HomeDir->my_home, 'user_list.txt'));
+  open(my $fh, '>>', File::Spec->catfile(File::HomeDir->my_home, qw( var data ), 'user_list'));
   print $fh "optimus";
   close $fh;
   # fake it that the mtime is older for test
-  $t->app->auth->{mtime} -= 5;
+  $cluster->apps->[0]->auth->{mtime} -= 5;
 };
 
-$t->get_ok("http://localhost:$port/user")
+$t->get_ok("$url/user")
     ->status_is(200)
     ->json_is('', [sort
         qw( foo bar ralph bob george optimus )
     ], 'full sorted user list');
 
 do {
-  open(my $fh, '>', File::Spec->catfile(File::HomeDir->my_home, 'user_list.txt'));
+  open(my $fh, '>', File::Spec->catfile(File::HomeDir->my_home, qw( var data ), 'user_list'));
   print $fh "one";
   close $fh;
   # fake it that the mtime is older for test
-  $t->app->auth->{mtime} -= 5;
+  $cluster->apps->[0]->auth->{mtime} -= 5;
 };
 
-$t->get_ok("http://localhost:$port/user")
+$t->get_ok("$url/user")
     ->status_is(200)
     ->json_is('', [sort
         qw( foo bar one )
     ], 'full sorted user list');
+
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+plugins:
+  - PlugAuth::Plugin::FlatUserList:
+      user_list_file: <%= home %>/var/data/user_list
+  - PlugAuth::Plugin::FlatAuth: {}
+
+@@ var/data/user_list
+ralph
+bob
+george
+bar
+
+
+@@ var/data/user
+foo:U5anayGrSoBQM
+bar:/Rec/o5XAjSxk
+
+
+@@ var/data/group
+# empty
+
+
+@@ var/data/host
+# empty
+
+
+@@ var/data/resource
+# empty
+

@@ -88,7 +88,7 @@ sub all_users
   if($mtime != $self->{mtime})
   {
     open(my $fh, '<', $self->{filename});
-    my @list = <$fh>;
+    my @list = grep !/^\s*$/, <$fh>;
     chomp @list;
     close $fh;
     $self->{mtime} = $mtime;

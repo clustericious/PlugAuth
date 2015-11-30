@@ -401,7 +401,7 @@ sub delete_group
       my $line = <$fh>;
       chomp $line;
       my($thisgroup, $password) = split /\s*:/, $line;
-      next if lc $thisgroup eq $group;
+      next if defined $thisgroup && lc $thisgroup eq $group;
       $buffer .= "$line\n";
     }
 
@@ -448,7 +448,7 @@ sub update_group
       my $line = <$fh>;
       chomp $line;
       my($thisgroup) = split /\s*:/, $line;
-      $line =~ s{:.*$}{: $users} if lc($thisgroup) eq $group;
+      $line =~ s{:.*$}{: $users} if defined $thisgroup && lc($thisgroup) eq $group;
       $buffer .= "$line\n";
     }
     $buffer;
@@ -490,7 +490,7 @@ sub add_user_to_group
       my $line = <$fh>;
       chomp $line;
       my($thisgroup, $users) = split /\s*:\s*/, $line;
-      if(lc($thisgroup) eq $group)
+      if(defined $thisgroup && lc($thisgroup) eq $group)
       {
         $users = join ',', uniq (split(/\s*,\s*/, $users), $user);
         $buffer .= "$thisgroup: $users\n";
@@ -541,7 +541,7 @@ sub remove_user_from_group
       my $line = <$fh>;
       chomp $line;
       my($thisgroup, $users) = split /\s*:\s*/, $line;
-      if(lc($thisgroup) eq $group)
+      if(defined $thisgroup && lc($thisgroup) eq $group)
       {
         $users = join ',', grep { lc($_) ne $user } uniq @{ $self->users_in_group($group) };
         $buffer .= "$thisgroup: $users\n";

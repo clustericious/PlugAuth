@@ -1,4 +1,0 @@
-/matrix (open): optimus
-/sky (fly): galvatron,starscream
-/troops (lead): galvatron,optimus
-/body (transform): transformer

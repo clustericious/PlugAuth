@@ -1,6 +1,0 @@
-full1: foo,bar,baz,primus
-full2: *
-part1: foo
-part2: baz
-full3: foo,bar,baz,primus
-full4: *

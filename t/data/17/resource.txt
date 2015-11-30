@@ -1,3 +1,0 @@
-/archiveset/1 (view): grimlock
-/archiveset/2 (view): prime
-/archiveset/3 (view): grimlock
