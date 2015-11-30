@@ -87,7 +87,7 @@ Returns a list reference containing all usernames.
 
 route user         => 'GET', '/user';
 
-=head2 $client-E<gt>create_user( \%args )
+=head2 $client-E<gt>create_user( %args )
 
 Create a user with the given username and password.
 
