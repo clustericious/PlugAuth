@@ -1,17 +1,16 @@
 use strict;
 use warnings;
-use FindBin ();
-BEGIN { require "$FindBin::Bin/etc/setup.pl" }
+use Test::Clustericious::Cluster;
 use Test::More tests => 4;
-use Test::Mojo;
-use Test::Differences;
-use YAML::XS qw( Dump );
 
-my $t = Test::Mojo->new('PlugAuth');
-$t->get_ok('/'); # creates $t->ua
-my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
+my $cluster = Test::Clustericious::Cluster->new;
+$cluster->extract_data_section(qr{^var/data});
+$cluster->create_cluster_ok('PlugAuth');
+my($url) = map { $_->clone } @{ $cluster->urls };
+my $t = $cluster->t;
 
-$t->get_ok("http://primus:spark\@localhost:$port/grant")
+$url->userinfo('primus:spark');
+$t->get_ok("$url/grant")
   ->status_is(200);
 
 my $expected = [
@@ -21,5 +20,35 @@ my $expected = [
   '/grant (accounts): primus',
 ];
 
-eq_or_diff Dump($t->tx->res->json), Dump($expected), 'GET /grant';
+is_deeply $t->tx->res->json, $expected, 'GET /grant';
+
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+
+
+@@ var/data/user
+primus:$apr1$Z7Ez/rcT$La4iCiCkNcNEb3vFtDdS60
+
+
+@@ var/data/group
+# empty
+
+
+@@ var/data/host
+# empty
+
+
+@@ var/data/resource
+/user/#u (change_password): #u
+/torpedo/photon (fire): kirk
+ #/xyz (pdq): grimlock
+/grant (accounts): primus
 

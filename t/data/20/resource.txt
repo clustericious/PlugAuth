@@ -1,6 +1,0 @@
-/ (accounts): god
-/altmode (transform): public
-/red (color): autobot
-/purple (color): decepticon
-/battle (retreat): megatron
-/matrix (open): optimus
