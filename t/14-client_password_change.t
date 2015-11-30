@@ -1,35 +1,14 @@
 use strict;
 use warnings;
-use FindBin ();
-BEGIN { require "$FindBin::Bin/etc/setup.pl" }
-use Test::More;
-use Test::Mojo;
-use PlugAuth;
-use Test::Differences;
+use Test::Clustericious::Cluster;
+use Test::More tests => 5;
+use PlugAuth::Client;
 
-$ENV{LOG_LEVEL} = 'FATAL';
+my $cluster = Test::Clustericious::Cluster->new;
+$cluster->extract_data_section(qr{^var/data});
+$cluster->create_cluster_ok('PlugAuth');
 
-BEGIN {
-  my $min_version = '0.09';
-  plan skip_all => 'requires PlugAuth::Client' 
-    # fake it if the PlugAuth::Client dist is checkout as a sibling
-    unless eval q{
-      use lib "$FindBin::Bin/../../PlugAuth-Client/lib";
-      use PlugAuth::Client;
-      1;
-    }
-    # test only works if PlugAuth::Client is installed
-    ||     eval qq{ use PlugAuth::Client $min_version; 1 };
-  plan tests => 4;
-}
-
-my $client = do {
-  my $t = Test::Mojo->new('PlugAuth');
-  my $port = eval { $t->ua->server->url->port } // $t->ua->app_url->port;
-  my $client = PlugAuth::Client->new(server_url => "http://localhost:$port");
-  $client->client($t->ua);
-  $client;
-};
+my $client = PlugAuth::Client->new;
 
 isa_ok $client, 'PlugAuth::Client';
 
@@ -42,3 +21,32 @@ diag $@ if $@;
 
 $client->login('optimus', 'matrix1');
 ok $client->auth, 'client.login(optimus, matrix1); client.auth';
+
+__DATA__
+@@ etc/PlugAuth.conf
+---
+url: <%= cluster->url %>
+user_file: <%= home %>/var/data/user
+group_file: <%= home %>/var/data/group
+host_file: <%= home %>/var/data/host
+resource_file: <%= home %>/var/data/resource
+plug_auth:
+  url: <%= cluster->url %>
+
+
+@@ var/data/user
+primus:gRJIIIdOSXKEQ
+optimus:wXxQZBUrszRkg
+
+
+@@ var/data/group
+# empty
+
+
+@@ var/data/host
+# empty
+
+
+@@ var/data/resource
+/user (change_password): primus
+

@@ -273,7 +273,7 @@ sub change_password
         my $line = <$fh>;
         chomp $line;
         my($thisuser, $oldpassword) = split /:/, $line;
-        if(lc($thisuser) eq $user)
+        if(defined $thisuser && lc($thisuser) eq $user)
         {
           $buffer .= join(':', $user, $password) . "\n";
         }
