@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use FindBin;
+use Clustericious::Commands;
 
 # PODNAME: plugauth
 # ABSTRACT: PlugAuth server
@@ -21,8 +21,5 @@ L<PlugAuth::Guide::Server>
 
 =cut
 
-use Clustericious::Commands;
-
 $ENV{MOJO_APP} ||= 'PlugAuth';
-
 Clustericious::Commands->start;
