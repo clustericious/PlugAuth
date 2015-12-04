@@ -4,6 +4,8 @@ use Test::Clustericious::Cluster;
 use Test::More tests => 26;
 use PlugAuth::Client;
 
+die 'Clustericious 1.01 required' unless ($Clustericious::Client::VERSION//1.01) >= 1.01;
+
 my $cluster = Test::Clustericious::Cluster->new;
 $cluster->extract_data_section(qr{^var/data});
 $cluster->create_cluster_ok('PlugAuth');
