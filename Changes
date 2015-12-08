@@ -2,6 +2,12 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.33      2015-12-07 19:54:31 -0500
+  - Removed deprecated items in preperation for
+    release of Clustericious 1.11.
+  - Fixed test broken with current Clustericious dev
+    (expected to be included with Clustericious 1.11)
+
 0.32      2015-11-30 15:32:53 -0500
   - Remove deprecated use of JSON configuration files
     from test suite.
