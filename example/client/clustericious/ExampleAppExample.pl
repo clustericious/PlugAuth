@@ -6,12 +6,12 @@ package ExampleAppExample::Routes;
 
 use Clustericious::RouteBuilder;
 
-get '/' => sub { shift->render_text('hello') };
+get '/' => sub { shift->render(text => 'hello') };
 
 authenticate;
 authorize;
 
-get '/some/user/resource' => sub { shift->render_text('hello') };
+get '/some/user/resource' => sub { shift->render(text => 'hello') };
 
 package main;
 

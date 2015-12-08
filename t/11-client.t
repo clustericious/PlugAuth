@@ -19,8 +19,7 @@ isa_ok $client, 'PlugAuth::Client';
 # The basics
 subtest basics => sub {
   is $client->welcome, 'welcome to plug auth', 'client.welcome';
-  local $PlugAuth::VERSION = '0.01';
-  is $client->version->[0], '0.01', 'client.version';
+  is $client->version->[0], PlugAuth->VERSION // 'dev', 'client.version';
 };
 
 # Good password

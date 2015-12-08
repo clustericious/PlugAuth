@@ -35,7 +35,7 @@ sub init
     $self->real_auth->refresh;
     $self->real_authz->refresh;
 
-    shift->render_text('ok');
+    shift->render(text => 'ok');
   });
   $self->app->routes->route('/test/setup/basic')->post(sub {
     my $auth = $self->real_auth;
@@ -49,7 +49,7 @@ sub init
     $authz->grant('admin', 'accounts', '/');
     $authz->grant('primus', 'accounts', '/');
     
-    shift->render_text('ok');
+    shift->render(text => 'ok');
   });
 }
 

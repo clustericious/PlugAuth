@@ -12,7 +12,7 @@ sub init
   
   $self->app->routes->under('/hello')->get(sub {
     my($c) = @_;
-    $c->render_text('hello world!');
+    $c->render(text => 'hello world!');
   });
 }
 

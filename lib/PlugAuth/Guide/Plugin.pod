@@ -186,7 +186,7 @@ Mojolicious apps.  Here is a basic example showing how to add a route:
  
    $self->app->routes->under('/hello')->get(sub {
      my($c) = @_;
-     $c->render_text('hello world!');
+     $c->render(text => 'hello world!');
    });
  }
  
