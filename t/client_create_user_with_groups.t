@@ -22,7 +22,7 @@ my $cluster = Test::Clustericious::Cluster->new;
 $cluster->create_cluster_ok(qw( PlugAuth ));
 
 my $client = PlugAuth::Client->new;
-$client->client($cluster->t->ua);
+#$client->client($cluster->t->ua);
 
 $client->create_group( group => 'foo', users => '' );
 eval { 
