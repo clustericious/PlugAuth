@@ -1,4 +1,4 @@
-# PlugAuth [![Build Status](https://secure.travis-ci.org/clustericious/PlugAuth.png)](http://travis-ci.org/clustericious/PlugAuth)
+# PlugAuth [![Build Status](https://secure.travis-ci.org/clustericious/PlugAuth.png)](http://travis-ci.org/clustericious/PlugAuth) [![Build status](https://ci.appveyor.com/api/projects/status/e2u2vl3fqw76tgyf/branch/master?svg=true)](https://ci.appveyor.com/project/clustericious/PlugAuth/branch/master)
 
 Pluggable authentication and authorization server.
 
@@ -174,7 +174,7 @@ See [PlugAuth::Routes](https://metacpan.org/pod/PlugAuth::Routes)
 
 # AUTHOR
 
-Graham Ollis &lt;gollis@sesda3.com>
+Graham Ollis <gollis@sesda3.com>
 
 # COPYRIGHT AND LICENSE
 
