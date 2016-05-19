@@ -379,7 +379,7 @@ sub startup
     }
     else
     {
-      $self->render(text => $message, status => $status);
+      $self->render(text => $message, status => $status, format => 'txt');
     }
   });
     

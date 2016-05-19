@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::Clustericious::Cluster;
-use Test::More tests => 52;
+use Test::More tests => 53;
 
 my $cluster = Test::Clustericious::Cluster->new;
 $cluster->extract_data_section(qr{^var/data});
@@ -11,7 +11,8 @@ my $t = $cluster->t;
 
 $t->get_ok("$url/")
   ->status_is(200)
-  ->content_like(qr/welcome/, 'welcome message!');
+  ->content_like(qr/welcome/, 'welcome message!')
+  ->content_type_like(qr{^text/plain(;.*)?$});
 
 # missing user + pw
 $t->get_ok("$url/auth")
