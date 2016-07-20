@@ -35,11 +35,12 @@ $t->delete_ok("$url/group/disabled/bugs")
   ->status_is(200);
 
 $url->userinfo('bugs:bunny');
-$t->get_ok("$url/auth")
+$url->path('/auth');
+$t->get_ok($url)
   ->status_is(200);
 
 $url->userinfo('roger:rabit');
-$t->get_ok("$url/auth")
+$t->get_ok($url)
   ->status_is(403);
 
 __DATA__

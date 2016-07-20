@@ -10,7 +10,8 @@ my($url) = map { $_->clone } @{ $cluster->urls };
 my $t = $cluster->t;
 
 $url->userinfo('primus:spark');
-$t->get_ok("$url/grant")
+$url->path('/grant');
+$t->get_ok($url)
   ->status_is(200);
 
 my $expected = [

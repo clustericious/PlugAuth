@@ -14,43 +14,50 @@ sub json($) {
     ( { 'Content-Type' => 'application/json' }, encode_json(shift) );
 }
 
+sub url ($$@) {
+  my($url, $path,@rest) = @_;
+  $url = $url->clone;
+  $url->path($path);
+  wantarray ? ($url, @rest) : $url;
+}
+
 # creating a user with bogus credentials should return 403
 
 $url->userinfo('primus:matrix');
-$t->post_ok("$url/user", json { user => 'donald', password => 'duck' } )
+$t->post_ok(url $url, '/user', json { user => 'donald', password => 'duck' } )
   ->status_is(200);
 
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200);
 
 $url->userinfo('primus:bogus');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(403);
 
 $url->userinfo('donald:duck');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200);
   
 $url->userinfo('optimus:matrix');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200);
 
 $url->userinfo('unicron:chaos');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200);
 
 $url->userinfo(undef);
-$t->get_ok("$url/groups/primus")
+$t->get_ok(url $url, '/groups/primus')
   ->status_is(200);
 
 is_deeply [sort @{ $t->tx->res->json }], [sort qw( primus public ) ];
 
 $url->userinfo('primus:matrix');
-$t->post_ok("$url/group", json { group => 'god', users => 'primus,unicron' })
+$t->post_ok(url $url, '/group', json { group => 'god', users => 'primus,unicron' })
   ->status_is(200);
   
 $url->userinfo(undef);
-$t->get_ok("$url/groups/primus")
+$t->get_ok(url $url, '/groups/primus')
   ->status_is(200);
 
 is_deeply [sort @{ $t->tx->res->json }], [sort qw( primus public god ) ];

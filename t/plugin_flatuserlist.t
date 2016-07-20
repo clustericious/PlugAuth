@@ -12,22 +12,29 @@ $cluster->create_cluster_ok('PlugAuth');
 my($url) = map { $_->clone } @{ $cluster->urls };
 my $t = $cluster->t;
 
+sub url ($$@) {
+  my($url, $path,@rest) = @_;
+  $url = $url->clone;
+  $url->path($path);
+  wantarray ? ($url, @rest) : $url;
+}
+
 isa_ok $cluster->apps->[0]->auth, 'PlugAuth::Plugin::FlatUserList';
 isa_ok $cluster->apps->[0]->app->auth->next_auth, 'PlugAuth::Plugin::FlatAuth';
 is $cluster->apps->[0]->auth->next_auth->next_auth, undef, 'app->auth->next_auth->next_auth is undef';
 
 $url->userinfo('foo:foo');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, "/auth")
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
 $url->userinfo('bar:bar');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, "/auth")
   ->status_is(403)
   ->content_is("not ok", 'auth succeeded');
   
 $url->userinfo(undef);
-$t->get_ok("$url/user")
+$t->get_ok(url $url, "/user")
     ->status_is(200)
     ->json_is('', [sort
         qw( foo bar ralph bob george )
@@ -41,7 +48,7 @@ do {
   $cluster->apps->[0]->auth->{mtime} -= 5;
 };
 
-$t->get_ok("$url/user")
+$t->get_ok(url $url, "/user")
     ->status_is(200)
     ->json_is('', [sort
         qw( foo bar ralph bob george optimus )
@@ -55,7 +62,7 @@ do {
   $cluster->apps->[0]->auth->{mtime} -= 5;
 };
 
-$t->get_ok("$url/user")
+$t->get_ok(url $url, "/user")
     ->status_is(200)
     ->json_is('', [sort
         qw( foo bar one )

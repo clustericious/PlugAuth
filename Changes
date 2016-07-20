@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Mojo 7.x compatability
 
 0.33      2015-12-07 19:54:31 -0500
   - Removed deprecated items in preperation for

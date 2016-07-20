@@ -19,88 +19,96 @@ $t->get_ok("$url/auth")
   ->status_is(401)
   ->content_like(qr[authenticate], 'got authenticate header');
 
+sub url ($$)
+{
+  my($url,$path) = @_;
+  $url = $url->clone;
+  $url->path($path);
+  $url;
+}
+
 # good user
 $url->userinfo('charliebrown:snoopy');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
 # good user with funky name
 $url->userinfo("this.user.has.a.dot\@dot.com:fudd");
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
 # good user in two places
 $url->userinfo('elmer:fudd');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
 $url->userinfo('elmer:glue');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
 # unknown user
 $url->userinfo('charliebrown:snoopy');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", 'auth succeeded');
 
 # bad pw
 $url->userinfo('charliebrown:badpass');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(403)
   ->content_is("not ok", 'auth failed');
 
 # missing pw
 $url->userinfo('charliebrown');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(403)
   ->content_is("not ok", 'auth failed');
 
 # check for trusted host
 $url->userinfo(undef);
-$t->get_ok("$url/host/127.9.9.9/trusted")
+$t->get_ok(url $url, '/host/127.9.9.9/trusted')
   ->status_is(200)
   ->content_is("ok", "trusted host");
 
-$t->get_ok("$url/host/123.123.123.123/trusted")
+$t->get_ok(url $url, '/host/123.123.123.123/trusted')
   ->status_is(403)
   ->content_is("not ok", "untrusted host");
 
 # good user with mixed case
 $url->userinfo('CharlieBrown:snoopy');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", 'case insensative username');
 
 # bad pw
 $url->userinfo('CharlieBrown:badpass');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(403)
   ->content_is("not ok", 'case insensative username auth failed');
 
 # apache md5
 $url->userinfo('deckard:androidsdream');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", "apache md5 password is okay");
 
 $url->userinfo('deckard:androidsdreamx');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(403)
   ->content_is("not ok", "bad apache md5 password is not okay");
 
 # unix md5
 $url->userinfo('bar:foo');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(200)
   ->content_is("ok", "unix md5 password is okay");
 
 $url->userinfo('foo:foox');
-$t->get_ok("$url/auth")
+$t->get_ok(url $url, '/auth')
   ->status_is(403)
   ->content_is("not ok", "bad unix md5 password is not okay");
 
