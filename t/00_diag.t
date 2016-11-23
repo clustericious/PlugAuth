@@ -26,7 +26,6 @@ $modules{$_} = $_ for qw(
   JSON::XS
   List::MoreUtils
   Log::Log4perl
-  Log::Log4perl::CommandLine
   Path::Class
   Role::Tiny
   Term::Prompt
