@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.37      2017-07-23 17:12:25 -0400
   - Require Clustericious 1.24 for recent Mojolicious compat
 
 0.36      2017-07-22 21:59:57 -0400
