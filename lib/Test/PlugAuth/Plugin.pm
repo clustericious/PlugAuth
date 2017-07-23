@@ -2,6 +2,7 @@ package Test::PlugAuth::Plugin;
 
 use strict;
 use warnings;
+use Test2::Plugin::FauxHomeDir;
 
 # ABSTRACT: Private package for Test::PlugAUth::Plugin::* modules
 # VERSION
@@ -14,15 +15,5 @@ L<Test::PlugAuth::Plugin::Authz>,
 L<Test::PlugAuth::Plugin::Refresh>
 
 =cut
-
-BEGIN {
-  $ENV{LOG_LEVEL} = "ERROR";
-
-  unless($INC{'File/HomeDir/Test.pm'}) 
-  {
-    require File::HomeDir::Test;
-    File::HomeDir::Test->import;
-  }
-}
 
 1;

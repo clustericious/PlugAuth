@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Remove dependency on File::HomeDir
 
 0.35      2016-11-28 14:31:26 -0500
   - Remove dependency on Log::Log4perl::CommandLine

@@ -19,7 +19,6 @@ $modules{$_} = $_ for qw(
   DateTime
   EV
   ExtUtils::MakeMaker
-  File::HomeDir
   File::Touch
   JSON::MaybeXS
   JSON::PP
@@ -29,6 +28,7 @@ $modules{$_} = $_ for qw(
   Path::Class
   Role::Tiny
   Term::Prompt
+  Test2::Plugin::FauxHomeDir
   Test::Builder
   Test::Clustericious::Cluster
   Test::Clustericious::Config
