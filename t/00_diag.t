@@ -23,7 +23,7 @@ $modules{$_} = $_ for qw(
   JSON::MaybeXS
   JSON::PP
   JSON::XS
-  List::MoreUtils
+  List::Util
   Log::Log4perl
   Path::Class
   Role::Tiny
