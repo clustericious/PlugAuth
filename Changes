@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Remove dependency on List::MoreUtils
 
 0.37      2017-07-23 17:12:25 -0400
   - Require Clustericious 1.24 for recent Mojolicious compat

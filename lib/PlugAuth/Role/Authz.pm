@@ -3,7 +3,7 @@ package PlugAuth::Role::Authz;
 use strict;
 use warnings;
 use Role::Tiny;
-use List::MoreUtils qw( uniq );
+use List::Util qw( uniq );
 
 # ABSTRACT: Role for PlugAuth authorization plugins
 # VERSION

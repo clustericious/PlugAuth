@@ -18,10 +18,9 @@ use strict;
 use warnings;
 use Log::Log4perl qw/:easy/;
 use Mojo::ByteStream qw/b/;
-use List::MoreUtils qw/mesh/;
 use Clustericious::RouteBuilder;
 use Clustericious::Config;
-use List::MoreUtils qw( uniq );
+use List::Util qw( uniq );
 
 =head1 ROUTES
 

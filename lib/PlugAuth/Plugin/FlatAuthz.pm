@@ -80,7 +80,7 @@ use Text::Glob qw( match_glob );
 use Clone qw( clone );
 use Role::Tiny::With;
 use File::Touch;
-use List::MoreUtils qw( uniq );
+use List::Util qw( uniq );
 
 with 'PlugAuth::Role::Plugin';
 with 'PlugAuth::Role::Authz';
