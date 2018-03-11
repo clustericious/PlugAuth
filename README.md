@@ -1,6 +1,6 @@
 # PlugAuth [![Build Status](https://secure.travis-ci.org/clustericious/PlugAuth.png)](http://travis-ci.org/clustericious/PlugAuth) [![Build status](https://ci.appveyor.com/api/projects/status/e2u2vl3fqw76tgyf/branch/master?svg=true)](https://ci.appveyor.com/project/clustericious/PlugAuth/branch/master)
 
-Pluggable authentication and authorization server.
+(Deprecated) Pluggable authentication and authorization server.
 
 # SYNOPSIS
 
@@ -22,6 +22,9 @@ and _authenticate_ and _authorize_ in your Clustericious application's Routes.pm
     };
 
 # DESCRIPTION
+
+**NOTE**: This module has been deprecated, and may be removed on or after 31 December 2018.
+Please see [https://github.com/clustericious/Clustericious/issues/46](https://github.com/clustericious/Clustericious/issues/46).
 
 (For a quick start guide on how to setup a PlugAuth server, please see
 [PlugAuth::Guide::Server](https://metacpan.org/pod/PlugAuth::Guide::Server))
