@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Deprecated. See https://github.com/clustericious/Clustericious/issues/46
 
 0.38      2017-07-26 04:31:05 -0400
   - Remove dependency on List::MoreUtils

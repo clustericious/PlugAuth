@@ -1,6 +1,6 @@
 package PlugAuth;
 
-# ABSTRACT: Pluggable authentication and authorization server.
+# ABSTRACT: (Deprecated) Pluggable authentication and authorization server.
 # VERSION
 
 =head1 SYNOPSIS
@@ -23,6 +23,9 @@ and I<authenticate> and I<authorize> in your Clustericious application's Routes.
  };
 
 =head1 DESCRIPTION
+
+B<NOTE>: This module has been deprecated, and may be removed on or after 31 December 2018.
+Please see L<https://github.com/clustericious/Clustericious/issues/46>.
 
 (For a quick start guide on how to setup a PlugAuth server, please see
 L<PlugAuth::Guide::Server>)
